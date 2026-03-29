@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Monitor Priority</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #f7f4ed 0%, #efe8d8 100%);
+      color: #172033;
+    }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .summary { color: #5b6474; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .card {
+      background: #fffdf8;
+      border: 1px solid #e8dfcf;
+      border-top: 5px solid var(--accent);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    .top { display:flex; justify-content:space-between; gap:12px; align-items:start; }
+    .tier { color:#5b6474; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
+    h2 { margin:4px 0 2px; font-size:28px; }
+    .line { margin:0; color:#5b6474; font-size:14px; }
+    .badge {
+      background: color-mix(in srgb, var(--accent) 14%, white);
+      color: var(--accent);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .note { color:#172033; line-height:1.5; margin:14px 0 8px; }
+    .next { color:#5b6474; line-height:1.5; margin:0 0 14px; }
+    dl { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; margin:0; }
+    dl div { background:#faf6ee; border:1px solid #efe5d4; border-radius:12px; padding:10px 12px; }
+    dt { margin-bottom:4px; font-size:12px; color:#5b6474; text-transform:uppercase; letter-spacing:.06em; }
+    dd { margin:0; font-weight:600; }
+  </style>
+</head>
+<body>
+  <h1>Monitor Priority</h1>
+  <div class="summary">Cross-asset order for daily review based on the current preferred line and operating action.</div>
+  <div class="grid">
+            <section class="card" style="--accent:#0f766e">
+              <div class="top">
+                <div>
+                  <div class="tier">Tier 1</div>
+                  <h2>IWM</h2>
+                  <p class="line">baseline_threshold</p>
+                </div>
+                <span class="badge">selected_now</span>
+              </div>
+              <p class="note">IWM is the current highest-priority live-like line.</p>
+              <p class="next">Review chart and current context first.</p>
+              <dl>
+                <div><dt>status</dt><dd>active</dd></div>
+                <div><dt>recent count</dt><dd>45</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-10</dd></div>
+                <div><dt>last selected</dt><dd>2026-03-10</dd></div>
+                <div><dt>days since last</dt><dd>0</dd></div>
+              </dl>
+            </section>
+            
+
+            <section class="card" style="--accent:#d97706">
+              <div class="top">
+                <div>
+                  <div class="tier">Tier 2</div>
+                  <h2>NVDA</h2>
+                  <p class="line">binary_top12_5</p>
+                </div>
+                <span class="badge">watchlist_wait</span>
+              </div>
+              <p class="note">NVDA stays on the active watchlist and is the next place to look if price action improves.</p>
+              <p class="next">Keep on shortlist and watch for renewed selection.</p>
+              <dl>
+                <div><dt>status</dt><dd>watchlist_ready</dd></div>
+                <div><dt>recent count</dt><dd>6</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-17</dd></div>
+                <div><dt>last selected</dt><dd>2026-02-25</dd></div>
+                <div><dt>days since last</dt><dd>20</dd></div>
+              </dl>
+            </section>
+            
+
+            <section class="card" style="--accent:#d97706">
+              <div class="top">
+                <div>
+                  <div class="tier">Tier 2</div>
+                  <h2>XLE</h2>
+                  <p class="line">distance_to_252_high</p>
+                </div>
+                <span class="badge">watchlist_wait</span>
+              </div>
+              <p class="note">XLE stays on the active watchlist and is the next place to look if price action improves.</p>
+              <p class="next">Keep on shortlist and watch for renewed selection.</p>
+              <dl>
+                <div><dt>status</dt><dd>watchlist_ready</dd></div>
+                <div><dt>recent count</dt><dd>6</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-26</dd></div>
+                <div><dt>last selected</dt><dd>2026-02-19</dd></div>
+                <div><dt>days since last</dt><dd>35</dd></div>
+              </dl>
+            </section>
+            
+
+            <section class="card" style="--accent:#64748b">
+              <div class="top">
+                <div>
+                  <div class="tier">Tier 3</div>
+                  <h2>QQQ</h2>
+                  <p class="line">distance_bottom5</p>
+                </div>
+                <span class="badge">inactive_wait</span>
+              </div>
+              <p class="note">QQQ has a valid preferred line, but there is no current trigger.</p>
+              <p class="next">Monitor passively; no immediate action.</p>
+              <dl>
+                <div><dt>status</dt><dd>watchlist_ready</dd></div>
+                <div><dt>recent count</dt><dd>0</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-26</dd></div>
+                <div><dt>last selected</dt><dd>n/a</dd></div>
+                <div><dt>days since last</dt><dd>n/a</dd></div>
+              </dl>
+            </section>
+            
+
+            <section class="card" style="--accent:#64748b">
+              <div class="top">
+                <div>
+                  <div class="tier">Tier 3</div>
+                  <h2>TSLA</h2>
+                  <p class="line">fallback_top15</p>
+                </div>
+                <span class="badge">inactive_wait</span>
+              </div>
+              <p class="note">TSLA has a valid preferred line, but there is no current trigger.</p>
+              <p class="next">Monitor passively; no immediate action.</p>
+              <dl>
+                <div><dt>status</dt><dd>preferred_overlay</dd></div>
+                <div><dt>recent count</dt><dd>0</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-18</dd></div>
+                <div><dt>last selected</dt><dd>n/a</dd></div>
+                <div><dt>days since last</dt><dd>n/a</dd></div>
+              </dl>
+            </section>
+            
+
+            <section class="card" style="--accent:#2563eb">
+              <div class="top">
+                <div>
+                  <div class="tier">Tier 4</div>
+                  <h2>SPY</h2>
+                  <p class="line">baseline_top10</p>
+                </div>
+                <span class="badge">reference_only</span>
+              </div>
+              <p class="note">SPY should only be used as market context.</p>
+              <p class="next">Use only for background regime read.</p>
+              <dl>
+                <div><dt>status</dt><dd>inactive</dd></div>
+                <div><dt>recent count</dt><dd>0</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-17</dd></div>
+                <div><dt>last selected</dt><dd>n/a</dd></div>
+                <div><dt>days since last</dt><dd>n/a</dd></div>
+              </dl>
+            </section>
+            
+
+            <section class="card" style="--accent:#7c3aed">
+              <div class="top">
+                <div>
+                  <div class="tier">Tier 5</div>
+                  <h2>TLT</h2>
+                  <p class="line">atr_pct_20_bottom5</p>
+                </div>
+                <span class="badge">research_only</span>
+              </div>
+              <p class="note">TLT remains research-only until a stronger formulation appears.</p>
+              <p class="next">No live action; research only.</p>
+              <dl>
+                <div><dt>status</dt><dd>inactive</dd></div>
+                <div><dt>recent count</dt><dd>0</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-26</dd></div>
+                <div><dt>last selected</dt><dd>n/a</dd></div>
+                <div><dt>days since last</dt><dd>n/a</dd></div>
+              </dl>
+            </section>
+            </div>
+</body>
+</html>

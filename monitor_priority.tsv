@@ -1,0 +1,8 @@
+priority_tier	asset_key	symbol	action	preferred_line	status	recent_selected_count	latest_date	last_selected_date	days_since_last_selected	priority_note	suggested_next_step
+1	iwm	IWM	selected_now	baseline_threshold	active	45	2026-03-10	2026-03-10	0.0	IWM is the current highest-priority live-like line.	Review chart and current context first.
+2	nvda	NVDA	watchlist_wait	binary_top12_5	watchlist_ready	6	2026-03-17	2026-02-25	20.0	NVDA stays on the active watchlist and is the next place to look if price action improves.	Keep on shortlist and watch for renewed selection.
+2	xle	XLE	watchlist_wait	distance_to_252_high	watchlist_ready	6	2026-03-26	2026-02-19	35.0	XLE stays on the active watchlist and is the next place to look if price action improves.	Keep on shortlist and watch for renewed selection.
+3	qqq	QQQ	inactive_wait	distance_bottom5	watchlist_ready	0	2026-03-26			QQQ has a valid preferred line, but there is no current trigger.	Monitor passively; no immediate action.
+3	tsla	TSLA	inactive_wait	fallback_top15	preferred_overlay	0	2026-03-18			TSLA has a valid preferred line, but there is no current trigger.	Monitor passively; no immediate action.
+4	spy	SPY	reference_only	baseline_top10	inactive	0	2026-03-17			SPY should only be used as market context.	Use only for background regime read.
+5	tlt	TLT	research_only	atr_pct_20_bottom5	inactive	0	2026-03-26			TLT remains research-only until a stronger formulation appears.	No live action; research only.

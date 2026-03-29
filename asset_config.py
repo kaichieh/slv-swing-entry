@@ -173,5 +173,13 @@ def get_monitor_board_chart_path() -> Path:
     return REPO_DIR / "monitor_board.html"
 
 
+def get_monitor_priority_path() -> Path:
+    return REPO_DIR / "monitor_priority.tsv"
+
+
+def get_monitor_priority_chart_path() -> Path:
+    return REPO_DIR / "monitor_priority.html"
+
+
 def stooq_url(symbol: str) -> str:
     return f"https://stooq.com/q/d/l/?s={symbol.lower()}.us&i=d"
