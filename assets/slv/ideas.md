@@ -1,11 +1,11 @@
-# Ideas Pool
+# SLV Ideas
 
 ## Label Ideas
 
-- 試 `60d +10% / -5%`
-- 試 `60d +6% / -3%`
-- 試 `80d +8% / -4%`
-- 比較 `drop-neutral` 與 `keep-all binary`
+- test `60d +10% / -5%`
+- test `60d +6% / -3%`
+- test `80d +8% / -4%`
+- compare `drop-neutral` versus `keep-all binary`
 
 ## Feature Ideas
 

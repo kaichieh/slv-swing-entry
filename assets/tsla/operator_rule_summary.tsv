@@ -1,0 +1,9 @@
+model_name	extra_features	headline_score	rule_name	threshold_or_cutoff	selected_count	predicted_positive_rate	precision	recall	hit_rate	avg_return	max_drawdown_compound	trade_count
+tsla_15_8_ret_60_distance_to_252_high	ret_60, distance_to_252_high	0.5742585230228225	threshold	0.523	7	0.4531	0.502	0.6087	0.6060606060606061	0.13673338116523615	-0.427	33
+tsla_15_8_ret_60_distance_to_252_high	ret_60, distance_to_252_high	0.5742585230228225	top_10pct	0.6419	2	0.1011	0.5357	0.1449	0.7333333333333333	0.22485020124541108	0.0	15
+tsla_15_8_ret_60_distance_to_252_high	ret_60, distance_to_252_high	0.5742585230228225	top_15pct	0.6199	4	0.1498	0.5301	0.2126	0.7368421052631579	0.2569129559176716	0.0	19
+tsla_15_8_ret_60_distance_to_252_high	ret_60, distance_to_252_high	0.5742585230228225	top_20pct	0.6035	5	0.2004	0.5225	0.2802	0.6363636363636364	0.20439016325759002	0.0	22
+tsla_15_8_ret_60_sma_gap_60_distance_to_252_high	ret_60, sma_gap_60, distance_to_252_high	0.5852827636697466	threshold	0.508	7	0.4477	0.5242	0.628	0.6060606060606061	0.13407103080891147	-0.2202	33
+tsla_15_8_ret_60_sma_gap_60_distance_to_252_high	ret_60, sma_gap_60, distance_to_252_high	0.5852827636697466	top_10pct	0.5899	4	0.1011	0.4464	0.1208	0.75	0.19627315737664908	0.0	16
+tsla_15_8_ret_60_sma_gap_60_distance_to_252_high	ret_60, sma_gap_60, distance_to_252_high	0.5852827636697466	top_15pct	0.5739	4	0.1498	0.4458	0.1787	0.65	0.1944799069744692	0.0	20
+tsla_15_8_ret_60_sma_gap_60_distance_to_252_high	ret_60, sma_gap_60, distance_to_252_high	0.5852827636697466	top_20pct	0.5598	6	0.2004	0.4865	0.2609	0.6666666666666666	0.2289695291193478	0.0	21

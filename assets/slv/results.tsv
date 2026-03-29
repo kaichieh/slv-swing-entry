@@ -9,3 +9,9 @@ uncommitted	0.4615	0.3691	0.5372	0.6588	0.5036	0.4797	0.5534	fail	candidate	atr_
 uncommitted	0.4674	0.4034	0.5526	0.6399	0.5007	0.4807	0.5489	fail	discard	sma_gap_120 improves validation balance but does not translate into enough out-of-sample balance to matter
 uncommitted	0.4835	0.3960	0.5234	0.6946	0.5830	0.5094	0.5797	fail	candidate	60d plus 12 over 6 with ret_60 is the most promising nearby label sweep but still falls short of the promotion gate
 uncommitted	0.5900	0.5173	0.5828	0.3429	0.2719	0.5101	0.4665	fail	discard	exit ret_60 plus sma_gap_60 is the best exit round variant but remains much weaker than the entry line on test quality
+uncommitted	0.4757	0.3181	0.5040	0.7037	0.5456	0.4985	0.5455	fail	discard	60d plus 10 over 5 baseline improves f1 but still collapses toward near-all-positive predictions and does not beat the better SLV candidates
+uncommitted	0.4911	0.3711	0.5373	0.6917	0.5662	0.5316	0.5629	fail	candidate	60d plus 10 over 5 with ret_60 is the cleanest of the unfinished SLV label checks but still trails the stronger 60d plus 12 over 6 ret_60 path on overall score
+uncommitted	0.4807	0.3706	0.5381	0.6298	0.4810	0.4933	0.5355	fail	discard	60d plus 6 over 3 baseline remains too imbalanced and weaker than the nearby wider-barrier alternatives
+uncommitted	0.4810	0.3833	0.5419	0.6114	0.4711	0.4822	0.5291	fail	discard	60d plus 6 over 3 with ret_60 improves validation balance slightly but degrades test quality too much to matter
+uncommitted	0.4775	0.0000	0.5053	0.7093	0.0000	0.4972	0.5789	fail	discard	60d plus 12 over 6 with atr_pct_20 keeps strong f1 but collapses toward all-positive behavior and does not beat the ret_60 candidate on usable balance
+uncommitted	0.4860	0.0000	0.5270	0.6816	0.0000	0.4861	0.5684	fail	discard	60d plus 12 over 6 with ret_60 plus sma_gap_60 plus rolling_vol_60 improves validation slightly but weakens test balance and walk-forward quality versus the simpler ret_60 line

@@ -1,4 +1,5 @@
 # NVDA Ideas
 
-- 先驗證 `+12% / -6%` 是否比保守 barrier 更合理
-- 檢查高波動標的是否需要較短 horizon
+- test wider barriers around `+12% / -6%` if the current combo stalls
+- compare additional regime features against the current 3-feature winner
+- test alternative horizons once the current `60d +15%/-8%` line is fully exhausted

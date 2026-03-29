@@ -1,4 +1,6 @@
 # QQQ Ideas
 
-- 比較 `60d +8%/-4%` 與更偏指數風格的 barrier
-- 檢查 `ret_60`、`sma_gap_60`、`atr_pct_20`
+- test more asymmetric return targets instead of standard barrier labels
+- compare regression feature sets beyond `distance_to_252_high`
+- add regime filters to reduce sign instability
+- test whether recent-watchlist buckets work better than a hard entry classifier

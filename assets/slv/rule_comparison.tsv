@@ -1,0 +1,13 @@
+model_name	rule_name	threshold_or_cutoff	selected_count	predicted_positive_rate	precision	recall	hit_rate	avg_return	max_drawdown_compound
+slv_60d_12_6_ret_60	threshold	0.339	11	0.9118	0.5579	0.9202	0.4545	0.0949	-0.1657
+slv_60d_12_6_ret_60	top_10pct	0.4482	8	0.1008	0.5312	0.0969	0.75	0.1402	-0.1271
+slv_60d_12_6_ret_60	top_15pct	0.4365	9	0.1512	0.4896	0.1339	0.6667	0.1025	-0.1786
+slv_60d_12_6_ret_60	top_20pct	0.4276	9	0.2	0.5354	0.1937	0.7778	0.1533	-0.0601
+slv_60d_12_6_atr_pct_20	threshold	0.486	11	0.9969	0.5513	0.9943	0.4545	0.1134	-0.1242
+slv_60d_12_6_atr_pct_20	top_10pct	0.5055	5	0.1008	0.5625	0.1026	0.8	0.1457	-0.0152
+slv_60d_12_6_atr_pct_20	top_15pct	0.503	8	0.1512	0.5729	0.1567	0.75	0.136	-0.0675
+slv_60d_12_6_atr_pct_20	top_20pct	0.5017	9	0.2	0.5354	0.1937	0.6667	0.1173	-0.2074
+slv_60d_12_6_ret_60_sma_gap_60_rolling_vol_60	threshold	0.334	11	0.9213	0.5453	0.9088	0.4545	0.0965	-0.1657
+slv_60d_12_6_ret_60_sma_gap_60_rolling_vol_60	top_10pct	0.4413	9	0.1008	0.5469	0.0997	0.6667	0.0992	-0.2223
+slv_60d_12_6_ret_60_sma_gap_60_rolling_vol_60	top_15pct	0.4308	9	0.1512	0.4896	0.1339	0.6667	0.0933	-0.2386
+slv_60d_12_6_ret_60_sma_gap_60_rolling_vol_60	top_20pct	0.4204	10	0.2	0.5276	0.1909	0.7	0.12	-0.2223
