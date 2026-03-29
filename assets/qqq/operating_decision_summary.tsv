@@ -1,0 +1,4 @@
+model_name	direction	bucket_pct	recent_rows	recent_selected_count	latest_date	latest_predicted_return	latest_selected	cutoff	last_selected_date
+distance_bottom5	bottom	5.0	60	0	2026-03-26	0.035252	False	-0.019215	
+distance_plus_atr_bottom5	bottom	5.0	60	0	2026-03-26	0.033504	False	-0.013639	
+distance_bottom3	bottom	3.0	60	0	2026-03-26	0.035252	False	-0.034378	

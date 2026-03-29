@@ -31,6 +31,10 @@
 
 - [x] Compare the current volatility-style TLT ranking line against a genuinely different price-action family. Performance: `assets/tlt/regression_family_walkforward.tsv` and `assets/tlt/regression_family_recent.tsv` compared `atr_pct_20` against `ret_60 + sma_gap_60` on the `bottom 5%` bucket. The result was decisive: `atr_pct_20` kept a positive `avg_bucket_return=0.59%` with `min_fold_excess_return=-0.31%`, while the price-action family fell to `avg_bucket_return=-0.81%` and `min_fold_excess_return=-1.50%`. The recent rows for the price-action family also stayed entirely inactive through `2026-03-26`. So TLT should stay on the volatility-style regression track, not pivot to a broad trend family.
 
+## Round 7 Decision Summary
+
+- [x] Save a decision summary for the current and alternate TLT regression families. Performance: `assets/tlt/regression_decision_summary.tsv` compared `atr_pct_20` with a different mean-reversion family, `drawdown_20`, on the `bottom 5%` bucket. Neither selected any of the latest `60` rows through `2026-03-26`, but `atr_pct_20` still had the cleaner operating cutoff at `-0.0104` versus `-0.0078` for `drawdown_20`. This reinforces that TLT still does not have a live-like watchlist line, but `atr_pct_20` remains the only credible base if work continues.
+
 ## Next Round
 
 - [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.

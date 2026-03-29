@@ -1,0 +1,3 @@
+model_name	direction	bucket_pct	recent_rows	recent_selected_count	latest_date	latest_predicted_return	latest_selected	cutoff	last_selected_date
+atr_pct_20	bottom	5.0	60	0	2026-03-26	0.008757	False	-0.010396	
+drawdown_20	bottom	5.0	60	0	2026-03-26	0.00367	False	-0.007785	

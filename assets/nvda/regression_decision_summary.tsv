@@ -1,0 +1,2 @@
+model_name	direction	bucket_pct	recent_rows	recent_selected_count	latest_date	latest_predicted_return	latest_selected	cutoff	last_selected_date
+regression_top10	top	10.0	60	0	2026-03-26	0.063209	False	0.155219	

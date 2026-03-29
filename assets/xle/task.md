@@ -31,6 +31,10 @@
 
 - [x] Compare the two most plausible XLE ranking candidates directly under walk-forward. Performance: `assets/xle/regression_walkforward_compare.tsv` showed that `distance_to_252_high` is now the more stable operating choice even though it trailed slightly on the static full-sample table. It reached `avg_bucket_return=5.84%`, `avg_hit_rate=65.45%`, and crucially kept `min_fold_excess_return=+0.49%`, while `ret_60 + sma_gap_60` fell to `min_fold_excess_return=-1.24%`. That means XLE now has a split: the old combo still looks good on the static split, but `distance_to_252_high` is the cleaner walk-forward candidate.
 
+## Round 7 Decision Summary
+
+- [x] Save a recent operating decision summary for the leading XLE ranking candidates. Performance: `assets/xle/regression_decision_summary.tsv` confirmed that the walk-forward winner is also the more live-like line. `distance_to_252_high + bottom 10%` selected `6` of the latest `60` rows and was last active on `2026-02-19`, while `ret_60 + sma_gap_60 + bottom 10%` selected `0` of the latest `60`. So XLE should now treat `distance_to_252_high + bottom 10%` as the active operating candidate, even if the older combo still looks fine on one static split.
+
 ## Next Round
 
 - [ ] If XLE work continues, promote `distance_to_252_high + bottom 10%` into recent/rule-style monitoring and treat it as the leading operating candidate.

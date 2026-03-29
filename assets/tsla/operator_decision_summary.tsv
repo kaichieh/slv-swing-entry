@@ -1,0 +1,4 @@
+model_name	rule_name	recent_rows	recent_selected_count	latest_date	latest_probability_or_score	latest_selected	cutoff_or_threshold	last_selected_date
+adopted_top10	top_10pct	60	0	2026-03-18	0.41363	False	0.589892	
+adopted_top20	top_20pct	60	0	2026-03-18	0.41363	False	0.559831	
+fallback_top15	top_15pct	60	0	2026-03-18	0.391317	False	0.619859	

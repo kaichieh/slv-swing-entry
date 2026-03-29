@@ -47,6 +47,10 @@
 
 - [x] Compare the active binary watchlist overlay against the ranking side study on the latest dates. Performance: `assets/nvda/regression_operator_recent.tsv` confirmed that the regression lane is still too far from live usefulness. Even by `2026-03-26`, the ranking candidate's `predicted_return=0.0632` stayed far below the active `top 10%` cutoff at `0.1552`, so it never entered the bucket. That keeps the binary `top_12_5pct` overlay as the only practical NVDA watchlist lane for now.
 
+## Round 7 Decision Summary
+
+- [x] Save a direct lane decision summary for NVDA. Performance: `assets/nvda/operator_decision_summary.tsv` and `assets/nvda/regression_decision_summary.tsv` made the split explicit. The binary `top_12.5%` overlay selected `6` of the latest `60` rows and was last active on `2026-02-25`, while the regression `top 10%` lane selected `0` of the latest `60`. That closes the practical decision for now: NVDA should stay on the binary-watchlist lane until a future formulation change produces a live-capable ranking line.
+
 ## Next Round
 
 - [x] Run a clean dedicated `rolling_vol_60` pass for NVDA. Performance: the dedicated train path confirmed `rolling_vol_60` is viable but not best-in-class, and `ret_60 + sma_gap_60 + rolling_vol_60` only reached `validation_f1=0.7009`, `validation_bal_acc=0.5509`, `test_f1=0.6463`, `test_bal_acc=0.5204`, `headline_score=0.6099`.
