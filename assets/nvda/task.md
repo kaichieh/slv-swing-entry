@@ -19,7 +19,7 @@
 
 - [x] Test `ret_60`. Performance: `validation_f1=0.7034`, `validation_bal_acc=0.5527`, `test_f1=0.6480`, `test_bal_acc=0.5195`, `headline_score=0.6114`; essentially flat versus the `15/-8` baseline.
 - [x] Test `sma_gap_60`. Performance: `validation_f1=0.7027`, `validation_bal_acc=0.5489`, `test_f1=0.6486`, `test_bal_acc=0.5185`, `headline_score=0.6107`; no real lift.
-- [ ] Test `rolling_vol_60`. Performance: not yet run through the live training path; `research_batch.py` generated a degenerate near-all-positive result, so this still needs a cleaner dedicated pass.
+- [x] Test `rolling_vol_60`. Performance: after wiring `rolling_vol_60` into the standard prepare/train path, it reached `validation_f1=0.7010`, `validation_bal_acc=0.5522`, `test_f1=0.6484`, `test_bal_acc=0.5246`, `headline_score=0.6122`; this was clean and non-degenerate, but still weaker than `atr_pct_20`.
 - [x] Test `atr_pct_20`. Performance: `validation_f1=0.7056`, `validation_bal_acc=0.5724`, `test_f1=0.6455`, `test_bal_acc=0.5264`, `headline_score=0.6145`; best single add-on so far by balance and headline score.
 - [x] Test `distance_to_252_high`. Performance: `validation_f1=0.7013`, `validation_bal_acc=0.5494`, `test_f1=0.6485`, `test_bal_acc=0.5206`, `headline_score=0.6111`; weaker than `atr_pct_20`.
 - [x] Test `close_location_20` and `up_day_ratio_20`. Performance: `close_location_20` reached `headline_score=0.6114`; `up_day_ratio_20` reached `headline_score=0.6085`; both trailed `atr_pct_20`.
@@ -40,6 +40,6 @@
 
 ## Next Round
 
-- [ ] Run a clean dedicated `rolling_vol_60` pass for NVDA, because the current `research_batch.py` path behaved too degenerately to trust.
+- [x] Run a clean dedicated `rolling_vol_60` pass for NVDA. Performance: the dedicated train path confirmed `rolling_vol_60` is viable but not best-in-class, and `ret_60 + sma_gap_60 + rolling_vol_60` only reached `validation_f1=0.7009`, `validation_bal_acc=0.5509`, `test_f1=0.6463`, `test_bal_acc=0.5204`, `headline_score=0.6099`.
 - [ ] Re-run threshold versus `top 15% / 17.5% / 20%` on the winning 3-feature combo with a non-degenerate scoring path.
 - [ ] If NVDA still behaves like a trend continuation model, add `above_200dma_flag` or a relative-strength feature versus `QQQ`.

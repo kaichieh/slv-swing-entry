@@ -59,6 +59,7 @@ FEATURE_COLUMNS = [
 
 EXPERIMENTAL_FEATURE_COLUMNS = [
     "ret_60",
+    "rolling_vol_60",
     "drawdown_60",
     "volatility_20",
     "volume_vs_60",
@@ -202,6 +203,7 @@ def add_context_features(frame: pd.DataFrame) -> pd.DataFrame:
     low = df["low"]
     eps = 1e-6
 
+    df["rolling_vol_60"] = df["ret_1"].rolling(60).std()
     rolling_high_252 = close.rolling(252).max()
     rolling_high_20 = high.rolling(20).max()
     rolling_low_20 = low.rolling(20).min()
