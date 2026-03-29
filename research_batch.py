@@ -1,5 +1,5 @@
 """
-Run a batch of formal SLV research comparisons and export compact summaries.
+Run a batch of formal asset research comparisons and export compact summaries.
 """
 
 from __future__ import annotations
@@ -11,18 +11,18 @@ from dataclasses import asdict, dataclass
 import numpy as np
 import pandas as pd
 
+import asset_config as ac
 import predict_latest as live
 import prepare as pr
 import train as tr
 
-REPO_DIR = os.path.dirname(os.path.abspath(__file__))
-CACHE_DIR = os.path.join(REPO_DIR, ".cache", "slv-swing-entry")
-BACKTEST_OUTPUT_PATH = os.path.join(REPO_DIR, "backtest_comparison.tsv")
-REGIME_OUTPUT_PATH = os.path.join(REPO_DIR, "regime_summary.tsv")
-SIGNAL_OUTPUT_PATH = os.path.join(REPO_DIR, "signal_bucket_summary.tsv")
-FORWARD_OUTPUT_PATH = os.path.join(REPO_DIR, "forward_trade_summary.tsv")
-RULE_OUTPUT_PATH = os.path.join(REPO_DIR, "rule_comparison.tsv")
-ROUND_OUTPUT_PATH = os.path.join(CACHE_DIR, "research_batch.json")
+CACHE_DIR = str(ac.get_cache_dir())
+BACKTEST_OUTPUT_PATH = str(ac.get_backtest_output_path())
+REGIME_OUTPUT_PATH = str(ac.get_regime_output_path())
+SIGNAL_OUTPUT_PATH = str(ac.get_signal_output_path())
+FORWARD_OUTPUT_PATH = str(ac.get_forward_output_path())
+RULE_OUTPUT_PATH = str(ac.get_rule_output_path())
+ROUND_OUTPUT_PATH = str(ac.get_research_batch_path())
 FUTURE_RETURN_COLUMN = "future_return_60"
 DEFAULT_INTERACTIONS = (("drawdown_20", "volume_vs_20"),)
 HEADLINE_SCORE_WEIGHTS = {
@@ -819,7 +819,7 @@ def round_float(value: float) -> float:
 
 def main() -> None:
     ensure_cache_dir()
-    raw = pr.download_slv_prices()
+    raw = pr.download_asset_prices()
     default_frame = build_labeled_frame(raw)
 
     model_specs = [

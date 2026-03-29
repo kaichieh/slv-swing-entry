@@ -7,9 +7,10 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+import asset_config as ac
 from research_batch import compute_headline_score, passes_promotion_gate
 
-RESULTS_PATH = Path(__file__).with_name("results.tsv")
+RESULTS_PATH = Path(ac.get_results_path())
 FIELD_ORDER = [
     "commit_id",
     "validation_f1",

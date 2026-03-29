@@ -1,5 +1,5 @@
 """
-Prepare SLV swing-entry data with barrier-based labels.
+Prepare asset-specific swing-entry data with barrier-based labels.
 
 Default label:
 - 1 if +8% is hit before -4% within 60 trading days
@@ -19,20 +19,20 @@ from urllib.request import Request, urlopen
 import numpy as np
 import pandas as pd
 
-HORIZON_DAYS = 60
-UPPER_BARRIER = 0.08
-LOWER_BARRIER = -0.04
+import asset_config as ac
+
+ASSET_CONFIG = ac.load_asset_config()
+HORIZON_DAYS = int(ASSET_CONFIG["horizon_days"])
+UPPER_BARRIER = float(ASSET_CONFIG["upper_barrier"])
+LOWER_BARRIER = float(ASSET_CONFIG["lower_barrier"])
 TRAIN_FRACTION = 0.70
 VALID_FRACTION = 0.15
-LABEL_MODE = "drop-neutral"
+LABEL_MODE = str(ASSET_CONFIG["label_mode"])
 
-REPO_DIR = os.path.dirname(os.path.abspath(__file__))
-CACHE_DIR = os.path.join(REPO_DIR, ".cache", "slv-swing-entry")
-RAW_DATA_PATH = os.path.join(CACHE_DIR, "slv_daily.csv")
-PROCESSED_DATA_PATH = os.path.join(CACHE_DIR, "slv_features.csv")
-METADATA_PATH = os.path.join(CACHE_DIR, "metadata.json")
-
-SLV_STOOQ_URL = "https://stooq.com/q/d/l/?s=slv.us&i=d"
+CACHE_DIR = str(ac.get_cache_dir())
+RAW_DATA_PATH = str(ac.get_raw_data_path())
+PROCESSED_DATA_PATH = str(ac.get_processed_data_path())
+METADATA_PATH = str(ac.get_metadata_path())
 TARGET_COLUMN = "target_hit_up_first"
 
 FEATURE_COLUMNS = [
@@ -164,7 +164,7 @@ def download_prices_from_yahoo(symbol: str) -> pd.DataFrame:
 def download_prices_from_stooq(url: str) -> pd.DataFrame:
     frame = pd.read_csv(StringIO(fetch_text(url)))
     if frame.empty:
-        raise RuntimeError("Downloaded SLV dataset from stooq is empty.")
+        raise RuntimeError(f"Downloaded {ac.get_asset_symbol()} dataset from stooq is empty.")
     return normalize_ohlcv_frame(frame)
 
 
@@ -186,8 +186,13 @@ def download_symbol_prices(symbol: str, stooq_url: str, cache_path: str) -> pd.D
     return frame
 
 
+def download_asset_prices() -> pd.DataFrame:
+    symbol = ac.get_asset_symbol()
+    return download_symbol_prices(symbol, ac.stooq_url(symbol), RAW_DATA_PATH)
+
+
 def download_slv_prices() -> pd.DataFrame:
-    return download_symbol_prices("SLV", SLV_STOOQ_URL, RAW_DATA_PATH)
+    return download_asset_prices()
 
 
 def add_context_features(frame: pd.DataFrame) -> pd.DataFrame:
@@ -367,7 +372,8 @@ def save_processed_dataset(df: pd.DataFrame) -> None:
     ensure_cache_dir()
     df.to_csv(PROCESSED_DATA_PATH, index=False)
     metadata = {
-        "symbol": "SLV",
+        "asset_key": str(ASSET_CONFIG["asset_key"]),
+        "symbol": ac.get_asset_symbol(),
         "horizon_days": int(config["horizon_days"]),
         "upper_barrier": float(config["upper_barrier"]),
         "lower_barrier": float(config["lower_barrier"]),
@@ -424,8 +430,9 @@ def describe_dataset(df: pd.DataFrame) -> str:
 
 def main() -> None:
     config = get_runtime_config()
-    print("Downloading SLV daily prices...")
-    raw = download_slv_prices()
+    symbol = ac.get_asset_symbol()
+    print(f"Downloading {symbol} daily prices...")
+    raw = download_asset_prices()
     processed = add_features(raw)
     save_processed_dataset(processed)
     print("Prepared dataset:")

@@ -1,11 +1,2 @@
-commit_id	validation_f1	validation_accuracy	validation_bal_acc	test_f1	test_accuracy	test_bal_acc	headline_score	promotion_gate	status	description
-uncommitted	0.4591	0.3763	0.5364	0.6439	0.4936	0.4715	0.5445	fail	live	initial SLV 60d +8/-4 drop-neutral baseline with baseline-only live default
-uncommitted	0.4642	0.3791	0.5428	0.6470	0.5050	0.4841	0.5512	fail	candidate	ret_60 is the cleanest single-feature follow-up but still fails to recover test balanced accuracy
-uncommitted	0.4596	0.3777	0.5374	0.6438	0.4964	0.4749	0.5456	fail	discard	sma_gap_60 alone does not beat ret_60 or the baseline enough to justify promotion
-uncommitted	0.4636	0.3777	0.5418	0.6470	0.5050	0.4841	0.5509	fail	discard	ret_60 plus sma_gap_60 matches ret_60 on test but does not improve the core balance problem
-uncommitted	0.4613	0.3720	0.5378	0.6497	0.5078	0.4868	0.5520	fail	candidate	ret_60 plus sma_gap_60 with neg_weight 1.15 slightly improves test metrics but remains below promotion quality
-uncommitted	0.4577	0.3491	0.5276	0.6628	0.5021	0.4771	0.5525	fail	candidate	ret_60 plus sma_gap_60 plus rolling_vol_60 gives the best test f1 so far but still lacks balanced accuracy and validation stability
-uncommitted	0.4615	0.3691	0.5372	0.6588	0.5036	0.4797	0.5535	fail	candidate	atr_pct_20 is the strongest low-risk single add-on by headline score but still fails to repair test balanced accuracy
-uncommitted	0.4674	0.4034	0.5526	0.6399	0.5007	0.4807	0.5489	fail	discard	sma_gap_120 improves validation balance but does not translate into enough out-of-sample balance to matter
-uncommitted	0.4835	0.3960	0.5234	0.6946	0.5830	0.5094	0.5797	fail	candidate	60d plus 12 over 6 with ret_60 is the most promising nearby label sweep but still falls short of the promotion gate
-uncommitted	0.5900	0.5173	0.5828	0.3429	0.2719	0.5101	0.4664	fail	discard	exit ret_60 plus sma_gap_60 is the best exit round variant but remains much weaker than the entry line on test quality
+This repo now stores per-asset results under assets/<asset>/results.tsv.
+Use AR_ASSET=slv|qqq|nvda|tsla when running scripts.

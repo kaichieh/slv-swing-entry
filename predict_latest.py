@@ -1,5 +1,5 @@
 """
-Score the latest available SLV daily bar without requiring future labels.
+Score the latest available asset daily bar without requiring future labels.
 
 Default live config starts from the baseline feature set only.
 """
@@ -10,8 +10,9 @@ import json
 
 import numpy as np
 
+import asset_config as ac
 import train as tr
-from prepare import add_price_features, download_slv_prices
+from prepare import add_price_features, download_asset_prices
 
 DEFAULT_LIVE_EXTRA_FEATURES = ()
 WEAK_BULLISH_QUANTILE = 0.70
@@ -236,7 +237,7 @@ def build_rule_rationale(probability: float, threshold: float, rule_summary: dic
 
 def main() -> None:
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
-    raw_prices = download_slv_prices()
+    raw_prices = download_asset_prices()
     live_features = add_price_features(raw_prices)
     splits = tr.load_splits()
     feature_names = build_feature_names()
@@ -284,6 +285,8 @@ def main() -> None:
             "model_reasons": model_rationale,
             "rule_reason": rule_rationale,
         },
+        "asset_key": str(ac.load_asset_config()["asset_key"]),
+        "symbol": ac.get_asset_symbol(),
         "latest_raw_date": latest_live["date"].iloc[0].strftime("%Y-%m-%d"),
         "latest_open": round(float(latest_live["open"].iloc[0]), 2),
         "latest_high": round(float(latest_live["high"].iloc[0]), 2),

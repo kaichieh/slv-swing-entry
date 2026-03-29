@@ -1,5 +1,5 @@
 """
-Run the first exit-signal research round on pure SLV features.
+Run the first exit-signal research round on pure asset features.
 
 Exit label definition:
 - 1 if -8% is hit before +4% within 60 trading days
@@ -15,12 +15,12 @@ import os
 import numpy as np
 import pandas as pd
 
+import asset_config as ac
 import prepare as pr
 import research_batch as rb
 
-REPO_DIR = os.path.dirname(os.path.abspath(__file__))
-CACHE_DIR = os.path.join(REPO_DIR, ".cache", "slv-swing-entry")
-ROUND_OUTPUT_PATH = os.path.join(CACHE_DIR, "exit_round1.json")
+CACHE_DIR = str(ac.get_cache_dir())
+ROUND_OUTPUT_PATH = str(ac.get_exit_round_path())
 
 EXIT_HORIZON_DAYS = 60
 EXIT_UPPER_BARRIER = 0.04
@@ -104,7 +104,7 @@ def model_rows(frame: pd.DataFrame) -> list[dict[str, object]]:
 
 def main() -> None:
     os.makedirs(CACHE_DIR, exist_ok=True)
-    raw = pr.download_slv_prices()
+    raw = pr.download_asset_prices()
     frame = build_exit_frame(raw)
     payload = {
         "label_definition": {

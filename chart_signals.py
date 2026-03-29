@@ -1,5 +1,5 @@
 """
-Render a local HTML chart of recent SLV closes colored by live model signal.
+Render a local HTML chart of recent asset closes colored by live model signal.
 """
 
 from __future__ import annotations
@@ -10,6 +10,7 @@ from html import escape
 
 import numpy as np
 
+import asset_config as ac
 import train as tr
 from predict_latest import (
     RULE_TOP_PCT,
@@ -22,9 +23,9 @@ from predict_latest import (
     score_latest_row,
     summarize_rule,
 )
-from prepare import add_price_features, download_slv_prices, load_splits
+from prepare import add_price_features, download_asset_prices, load_splits
 
-OUTPUT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".cache", "slv-swing-entry", "signal_chart.html")
+OUTPUT_PATH = str(ac.get_chart_output_path())
 DEFAULT_LOOKBACK_DAYS = 5 * 252
 SIGNAL_COLORS = {
     "no_entry": "#9ca3af",
@@ -52,7 +53,7 @@ def build_history_probabilities(weights: np.ndarray, splits: dict[str, object], 
 
 def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[str, object]]:
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
-    raw_prices = download_slv_prices()
+    raw_prices = download_asset_prices()
     live_features = add_price_features(raw_prices)
     splits = load_splits()
     feature_names = build_feature_names()
@@ -108,7 +109,7 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
 
 
 def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
-    title = "SLV Live Signal Chart"
+    title = f"{ac.get_asset_symbol()} Live Signal Chart"
     payload = json.dumps({"rows": rows, "meta": meta}, ensure_ascii=False)
     color_legend = "".join(
         f'<span class="legend-item"><span class="swatch" style="background:{escape(color)}"></span>{escape(name)}</span>'

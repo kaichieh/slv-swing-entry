@@ -1,5 +1,5 @@
 """
-Train a NumPy logistic baseline for SLV swing-entry classification.
+Train a NumPy logistic baseline for asset-specific swing-entry classification.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+import asset_config as ac
 from prepare import EXPERIMENTAL_FEATURE_COLUMNS, FEATURE_COLUMNS, HORIZON_DAYS, TARGET_COLUMN, load_splits
 
 SEED = 42
@@ -262,7 +263,7 @@ def main() -> None:
     )
 
     print("---")
-    print(f"task:                 SLV_{HORIZON_DAYS}d_swing_entry")
+    print(f"task:                 {ac.get_asset_symbol()}_{HORIZON_DAYS}d_swing_entry")
     print(f"target_column:        {TARGET_COLUMN}")
     print(f"model:                logistic_regression")
     print(f"features:             {len(feature_names)}")

@@ -1,0 +1,8 @@
+{
+  "asset_key": "tsla",
+  "symbol": "TSLA",
+  "horizon_days": 60,
+  "upper_barrier": 0.12,
+  "lower_barrier": -0.06,
+  "label_mode": "drop-neutral"
+}
