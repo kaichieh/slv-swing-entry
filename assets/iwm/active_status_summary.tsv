@@ -1,0 +1,3 @@
+line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
+baseline_threshold	binary_operator	primary	True	active	45	2026-03-10	0.473054	True	0.45	2026-03-10	Default operating line. Use this for actual IWM watchlist decisions.
+rs_sidecar_threshold	binary_operator	sidecar	False	active	44	2026-03-10	0.460113	True	0.436	2026-03-10	Context-only sidecar. Treat as IWM-vs-SPY confirmation rather than a separate signal stream.

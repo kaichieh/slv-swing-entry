@@ -1,0 +1,3 @@
+line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
+baseline_top10	binary_operator	reference_side_line	True	inactive	0	2026-03-17	0.318356	False	0.385763	nan	Reference-only. Keep for market context, not for live entries.
+rolling_vol_top10	binary_operator	reference_side_line	False	inactive	0	2026-03-17	0.389515	False	0.452192	nan	Reference-only. Keep for market context, not for live entries.

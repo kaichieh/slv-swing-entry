@@ -63,6 +63,10 @@
 - [x] Refresh the active QQQ regression recent output and chart on the default `distance_to_252_high + bottom 5%` line. Performance: `assets/qqq/regression_recent.tsv` and `assets/qqq/regression_recent.html` are now re-aligned to that active watchlist rule. The latest saved row `2026-03-26` remained unselected with `predicted_return=0.0353` versus cutoff `-0.0192`, which matches the current no-watchlist conclusion.
 - [ ] Once a non-degenerate candidate appears, re-run threshold versus top-percentile rules and a 4-fold walk-forward check.
 
+## Round 10 Active Status Summary
+
+- [x] Save a one-file active status summary for the current QQQ watchlist candidates. Performance: `assets/qqq/active_status_summary.tsv` now keeps the active choice and side studies in one place. The repo still prefers `distance_to_252_high + bottom 5%` as the primary QQQ watchlist because it has the best robustness-first profile, while `distance_to_252_high + atr_pct_20 + bottom 5%` and `distance_to_252_high + bottom 3%` remain secondary. All three still had `0` recent selections through `2026-03-26`.
+
 ## Notes
 
 - QQQ currently looks much more label-limited than feature-limited.

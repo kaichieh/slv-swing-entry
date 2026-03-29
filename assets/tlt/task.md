@@ -43,6 +43,10 @@
 
 - [x] Refresh the active TLT regression recent output and chart on the surviving `atr_pct_20 + bottom 5%` line. Performance: `assets/tlt/regression_recent.tsv` and `assets/tlt/regression_recent.html` are now aligned to that active line. The latest saved row `2026-03-26` remained unselected, with `predicted_return=0.0088` versus cutoff `-0.0104`. This does not change the research conclusion, but it makes the active TLT line explicit for future review.
 
+## Round 10 Active Status Summary
+
+- [x] Save a one-file active status summary for the surviving TLT regression line. Performance: `assets/tlt/active_status_summary.tsv` now captures the current state of `atr_pct_20 + bottom 5%` in one place. The line remains inactive with `recent_selected_count=0`, latest `predicted_return=0.0088`, and no recent selected rows, which reinforces that TLT is still research-only unless a truly new formulation is introduced.
+
 ## Next Round
 
 - [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.

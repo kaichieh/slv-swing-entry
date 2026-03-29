@@ -44,6 +44,10 @@
 
 - [x] Save a compact usage summary for the remaining SPY side lines. Performance: `assets/spy/operator_usage_summary.tsv` confirmed that neither line is active right now. Both `baseline_top10` and `rolling_vol_top10` had `0` selections in the latest `60` rows and were still below cutoff on `2026-03-17`. That means SPY should now be treated as fully reference-only unless a new formulation appears later.
 
+## Round 10 Active Status Summary
+
+- [x] Save a one-file active status summary for the SPY side lines. Performance: `assets/spy/active_status_summary.tsv` now makes the practical decision explicit. Both `baseline_top10` and `rolling_vol_top10` are inactive with `recent_selected_count=0`, latest date `2026-03-17`, and no recent selected rows. This confirms there is no live SPY operating lane to preserve; SPY should stay reference-only.
+
 ## Next Round
 
 - [ ] If SPY work continues at all, keep only the simpler `10/-5 + top_10pct` side line for reference and stop extending it.

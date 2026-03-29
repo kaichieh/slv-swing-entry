@@ -44,6 +44,10 @@
 
 - [x] Save a compact usage summary for the surviving IWM operator lines. Performance: `assets/iwm/operator_usage_summary.tsv` confirmed that the baseline threshold and sidecar threshold are both currently active, with `45` and `44` selections in the latest `60` rows and both still selected on `2026-03-10`. This makes the practical guidance very simple: use the baseline as the default line, and read the sidecar as confirmation rather than as a second signal stream.
 
+## Round 10 Active Status Summary
+
+- [x] Save a one-file active status summary for the current IWM operating lines. Performance: `assets/iwm/active_status_summary.tsv` now packages the current usage decision into one table. The baseline threshold remains the preferred line with `recent_selected_count=45` and latest selected on `2026-03-10`, while the `rs_vs_benchmark_60` sidecar is also active at `44` selections but is explicitly marked as confirmation-only. This closes the practical next step for IWM: there is no reason to treat the sidecar as a separate watchlist stream.
+
 ## Next Round
 
 - [ ] If an operator-only choice is needed, document when to prefer the sidecar over the baseline threshold line.

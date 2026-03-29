@@ -57,6 +57,10 @@
 - [x] Save a compact usage summary for the remaining TSLA overlays. Performance: `assets/tsla/operator_usage_summary.tsv` showed that both the adopted `top 10%` and fallback `top 15%` overlays remained inactive in the latest `60` rows, with no selections after the current no-entry stretch. That keeps the historical preference intact: fallback `top 15%` remains the operator choice, but there is still no live pressure to act.
 - [ ] If the combo stays stable under walk-forward, promote it from adopted candidate to documented default operating line in the TSLA notes. Performance: blocked for now because the current walk-forward pass is still too regime-sensitive.
 
+## Round 10 Active Status Summary
+
+- [x] Save a one-file active status summary for the current TSLA overlays. Performance: `assets/tsla/active_status_summary.tsv` now makes the execution split explicit. `fallback_top15` is still the preferred conservative overlay because it keeps the strongest historical operator profile, while `adopted_top10` and `adopted_top20` remain model-reference overlays. All three stayed inactive across the recent saved window, so there is still no live pressure to change the current TSLA no-entry stance.
+
 ## Notes
 
 - TSLA is no longer purely label-limited; `distance_to_252_high` unlocked a meaningful separation signal.

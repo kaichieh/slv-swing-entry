@@ -43,6 +43,10 @@
 
 - [x] Refresh the active XLE regression recent output and chart on `distance_to_252_high + bottom 10%`. Performance: `assets/xle/regression_recent.tsv` and `assets/xle/regression_recent.html` are now aligned to the active distance-based line. The latest saved row `2026-03-26` was not selected, but the recent window still contained `6` selections and last fired on `2026-02-19`, which is enough to justify treating it as the current XLE operating watchlist.
 
+## Round 10 Active Status Summary
+
+- [x] Save a one-file active status summary for the main XLE ranking lines. Performance: `assets/xle/active_status_summary.tsv` now closes the operator choice cleanly. `distance_to_252_high + bottom 10%` is marked as the preferred XLE watchlist with `recent_selected_count=6`, last selected on `2026-02-19`, and the latest saved row still below the watchlist cutoff. `ret_60 + sma_gap_60` remains a secondary static-split study only.
+
 ## Next Round
 
 - [ ] If XLE work continues, promote `distance_to_252_high + bottom 10%` into recent/rule-style monitoring and treat it as the leading operating candidate.
