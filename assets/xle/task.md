@@ -11,9 +11,9 @@
 ## Round 2 Label Sanity
 
 - [ ] Compare `drop-neutral` versus `keep-all binary`.
-- [ ] Compare `60d +10%/-5%`, `60d +12%/-6%`, and `60d +8%/-4%`.
-- [ ] Compare `40d +10%/-5%` versus `60d +10%/-5%`.
-- [ ] Review whether XLE is more interpretable than broad equities under the current barrier workflow.
+- [x] Compare `60d +10%/-5%`, `60d +12%/-6%`, and `60d +8%/-4%`. Performance: none of the nearby barriers fixed the collapse. `60d +8%/-4%` posted the best headline score at `0.5079`, but `test_positive_rate` was still `1.0000`; `60d +12%/-6%` also stayed fully degenerate with `headline_score=0.4952`.
+- [x] Compare `40d +10%/-5%` versus `60d +10%/-5%`. Performance: `40d +10%/-5%` did not help, with `test_f1=0.5191`, `test_bal_acc=0.5000`, `headline_score=0.4897`.
+- [x] Review whether XLE is more interpretable than broad equities under the current barrier workflow. Performance: not yet. XLE still behaves more like an all-positive commodity-beta classifier than a usable swing-entry line.
 
 ## Round 3 Feature Sweep
 
@@ -33,3 +33,4 @@
 
 - XLE is intended to cover inflation and commodity-driven equity regimes that are underrepresented in the current set.
 - The first baseline acted like a commodity-beta always-long model, so the next round should focus on label redesign or stronger regime filters before broader feature sweeps.
+- The label sanity pass confirmed that no nearby barrier fixes the problem, so the next useful XLE step is regime or formulation change, not more of the same binary tuning.

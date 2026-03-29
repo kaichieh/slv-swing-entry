@@ -11,9 +11,9 @@
 ## Round 2 Label Sanity
 
 - [ ] Compare `drop-neutral` versus `keep-all binary`.
-- [ ] Compare `60d +6%/-3%`, `60d +8%/-4%`, and `60d +4%/-2%`.
-- [ ] Compare `40d +6%/-3%` versus `60d +6%/-3%`.
-- [ ] Review whether TLT produces a genuinely different signal family from equities.
+- [x] Compare `60d +6%/-3%`, `60d +8%/-4%`, and `60d +4%/-2%`. Performance: `60d +4%/-2%` had the highest headline score at `0.4693`, but it stayed fully collapsed with `test_positive_rate=1.0000`. `60d +8%/-4%` was the only less-degenerate line, reducing `test_positive_rate` to `0.3439` and lifting `test_bal_acc` to `0.5277`, but its overall quality stayed weak at `headline_score=0.3855`.
+- [x] Compare `40d +6%/-3%` versus `60d +6%/-3%`. Performance: `40d +6%/-3%` was also weak, with `test_f1=0.2587`, `test_bal_acc=0.4649`, `headline_score=0.3673`.
+- [x] Review whether TLT produces a genuinely different signal family from equities. Performance: yes, but not in a good way under the current binary workflow. The line is much more label-sensitive than the equity assets, and the least-degenerate candidate is still too weak to justify a normal feature sweep.
 
 ## Round 3 Feature Sweep
 
@@ -33,3 +33,4 @@
 
 - TLT is intended to cover rates and recession regimes, so even a modestly useful line would diversify the repo a lot.
 - The first baseline strongly suggests TLT may need a different formulation or a narrower label before feature work is worth much.
+- The current TLT evidence now points more strongly toward a formulation change or ranking-style workflow, not a standard binary feature round.

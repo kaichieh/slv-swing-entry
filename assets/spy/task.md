@@ -11,9 +11,9 @@
 ## Round 2 Label Sanity
 
 - [ ] Compare `drop-neutral` versus `keep-all binary`.
-- [ ] Compare `60d +8%/-4%`, `60d +10%/-5%`, and `60d +6%/-3%`.
-- [ ] Compare `40d +8%/-4%` versus `60d +8%/-4%`.
-- [ ] Review whether SPY is still behaving like a near-all-positive market-beta classifier.
+- [x] Compare `60d +8%/-4%`, `60d +10%/-5%`, and `60d +6%/-3%`. Performance: `60d +6%/-3%` posted the highest headline score at `0.5552`, but it remained almost fully positive with `test_positive_rate=0.9991` and `test_bal_acc=0.5008`. `60d +10%/-5%` was the cleanest non-degenerate alternative with `validation_bal_acc=0.6560`, `test_bal_acc=0.5218`, `test_positive_rate=0.6662`, but its overall `headline_score=0.5137` still trailed the default baseline. This means SPY now has a cleaner side candidate, but no clearly promotable replacement yet.
+- [x] Compare `40d +8%/-4%` versus `60d +8%/-4%`. Performance: `40d +8%/-4%` reduced the all-positive behavior versus the default baseline, with `test_positive_rate=0.6731` and `test_bal_acc=0.5455`, but the overall line was too weak at `headline_score=0.4991`.
+- [x] Review whether SPY is still behaving like a near-all-positive market-beta classifier. Performance: yes. The default `8/-4` and tighter `6/-3` labels both stayed too close to always-long behavior, while the wider `10/-5` label was cleaner but not strong enough to replace the baseline. SPY should still be treated as a broad-market reference rather than a ready entry model.
 
 ## Round 3 Feature Sweep
 
@@ -33,3 +33,4 @@
 
 - SPY should become the repo's core broad-market reference if it produces a stable line.
 - The first baseline behaved like a broad-beta always-long classifier, so the next round should focus on label sanity and regime filters rather than treating SPY as a ready entry line.
+- The newest label sanity pass suggests `60d +10%/-5%` is the only SPY variant worth extending, because it is the first one that looks materially less degenerate than the broad baseline.

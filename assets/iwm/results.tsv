@@ -1,2 +1,4 @@
 commit_id	validation_f1	validation_accuracy	validation_bal_acc	test_f1	test_accuracy	test_bal_acc	headline_score	promotion_gate	status	description
 uncommitted	0.5501	0.5035	0.6058	0.5804	0.5154	0.5560	0.5730	pass	baseline	initial IWM 60d plus10/minus5 drop-neutral baseline is the cleanest of the new macro basket and already passes the promotion gate on the first run
+uncommitted	0.4987	0.5536	0.6034	0.5500	0.5281	0.5605	0.5482	fail	reject	60d plus8/minus4 kept decent balance on IWM but did not beat the baseline on headline quality
+uncommitted	0.5250	0.6583	0.6341	0.5139	0.5872	0.5633	0.5429	fail	reject	60d plus12/minus6 made IWM cleaner but still failed to outperform the default 10 over 5 baseline

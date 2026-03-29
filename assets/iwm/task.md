@@ -11,9 +11,9 @@
 ## Round 2 Label Sanity
 
 - [ ] Compare `drop-neutral` versus `keep-all binary`.
-- [ ] Compare `60d +10%/-5%`, `60d +12%/-6%`, and `60d +8%/-4%`.
-- [ ] Compare `40d +10%/-5%` versus `60d +10%/-5%`.
-- [ ] Review whether IWM is cleaner than SPY or simply a noisier broad-beta line.
+- [x] Compare `60d +10%/-5%`, `60d +12%/-6%`, and `60d +8%/-4%`. Performance: neither alternative beat the default baseline. `60d +8%/-4%` reached `test_bal_acc=0.5605` but only `headline_score=0.5482`, while `60d +12%/-6%` reached `test_bal_acc=0.5633` but `headline_score=0.5429`. The default `60d +10%/-5%` line remained strongest at `headline_score=0.5730`.
+- [x] Compare `40d +10%/-5%` versus `60d +10%/-5%`. Performance: `40d +10%/-5%` weakened too much on test quality with `test_f1=0.4028`, `test_bal_acc=0.5316`, `headline_score=0.4917`.
+- [x] Review whether IWM is cleaner than SPY or simply a noisier broad-beta line. Performance: IWM is clearly cleaner than SPY on the current workflow. It already passed the gate on the baseline and the nearby label sweep did not reveal a better replacement, which means the baseline itself is a credible reference line rather than a degenerate market-beta model.
 
 ## Round 3 Feature Sweep
 
@@ -33,3 +33,4 @@
 
 - IWM is the repo's intended small-cap cycle line, so relative performance versus SPY matters.
 - IWM immediately looks like the strongest of the new macro basket, so the next round should focus on validation and simplification rather than rescue work.
+- Because the baseline already passed, the next IWM round should move to feature and rule validation rather than more label tuning.

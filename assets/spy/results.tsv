@@ -1,2 +1,4 @@
 commit_id	validation_f1	validation_accuracy	validation_bal_acc	test_f1	test_accuracy	test_bal_acc	headline_score	promotion_gate	status	description
 uncommitted	0.5628	0.3958	0.5042	0.5248	0.3572	0.5018	0.5230	fail	baseline	initial SPY 60d plus8/minus4 drop-neutral baseline collapsed toward near-all-positive predictions and should be treated as a market-beta reference only for now
+uncommitted	0.5689	0.6612	0.6560	0.4444	0.5970	0.5218	0.5137	fail	candidate	60d plus10/minus5 was the cleanest non-degenerate SPY label sanity result even though its headline score trailed the default baseline
+uncommitted	0.6633	0.4965	0.5037	0.5548	0.3844	0.5008	0.5552	fail	reject	60d plus6/minus3 improved headline score on paper but collapsed back toward an almost all-positive SPY classifier
