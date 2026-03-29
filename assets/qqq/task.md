@@ -34,10 +34,10 @@
 
 - [x] Change the QQQ target definition instead of adding more features on the current label. Performance: a second label redesign sweep still failed to break the degeneracy. `60d +12%/-8%` improved the headline score to `0.6135` but still ran at `test_positive_rate=0.9900` and `test_bal_acc=0.4984`; `60d +15%/-8%` fell back to `headline_score=0.5425` with `test_positive_rate=1.0000`; `60d +12%/-10%` inflated `f1` to `0.7532` but was a pure all-positive model with `test_bal_acc=0.5000`; `40d +10%/-6%` landed at `headline_score=0.5610` with `test_positive_rate=0.9847`. The useful conclusion is that QQQ no longer looks fixable through simple barrier tuning inside the current binary setup.
 - [ ] If we want to test `rolling_vol_60` or `sma_gap_120` in the standard train path, wire them into the train-time experimental feature flow instead of only the research batch path.
-- [ ] Replace the current binary barrier target with a ranking-style or percentile-based target for QQQ.
+- [x] Replace the current binary barrier target with a ranking-style or percentile-based target for QQQ. Performance: a first percentile-target prototype was added with `future-return-top-20pct/25pct/30pct`, using `future_return_60` rank as the binary label. This still failed to de-degenerate the model: `top-20pct` reached `validation_bal_acc=0.5171`, `test_bal_acc=0.5055`, `test_positive_rate=0.9746`; `top-25pct` reached `validation_bal_acc=0.5147`, `test_bal_acc=0.4919`, `test_positive_rate=0.9797`; `top-30pct` reached `validation_bal_acc=0.5106`, `test_bal_acc=0.4935`, `test_positive_rate=0.9878`. So the ranking idea was directionally correct, but this simple percentile-to-binary conversion is still too easy for the current logistic setup to collapse.
 - [ ] Once a non-degenerate candidate appears, re-run threshold versus top-percentile rules and a 4-fold walk-forward check.
 
 ## Notes
 
 - QQQ currently looks much more label-limited than feature-limited.
-- Simple barrier redesigns were not enough; the next useful step is to move away from the current binary barrier target rather than keep stacking small features.
+- Simple barrier redesigns were not enough, and a naive percentile-to-binary target also did not fix the collapse. The next useful step is likely a stronger formulation change such as direct return regression, multi-bucket ranking, or a regime-conditioned target.

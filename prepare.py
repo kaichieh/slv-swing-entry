@@ -110,6 +110,37 @@ def get_runtime_config() -> dict[str, float | int | str]:
     }
 
 
+def parse_future_return_top_pct(label_mode: str) -> float | None:
+    prefix = "future-return-top-"
+    suffix = "pct"
+    if not (label_mode.startswith(prefix) and label_mode.endswith(suffix)):
+        return None
+    raw = label_mode[len(prefix) : -len(suffix)]
+    try:
+        value = float(raw)
+    except ValueError:
+        return None
+    if 0.0 < value < 100.0:
+        return value
+    return None
+
+
+def apply_label_mode(labels: np.ndarray, realized_returns: np.ndarray, label_mode: str) -> np.ndarray:
+    if label_mode == "keep-all-binary":
+        return np.where(np.isnan(labels), 0.0, labels)
+    top_pct = parse_future_return_top_pct(label_mode)
+    if top_pct is None:
+        return labels
+    next_labels = np.full(len(realized_returns), np.nan, dtype=np.float64)
+    valid_returns = realized_returns[~np.isnan(realized_returns)]
+    if len(valid_returns) == 0:
+        return next_labels
+    cutoff = float(np.quantile(valid_returns, 1.0 - top_pct / 100.0))
+    valid_mask = ~np.isnan(realized_returns)
+    next_labels[valid_mask] = (realized_returns[valid_mask] >= cutoff).astype(np.float64)
+    return next_labels
+
+
 def ensure_cache_dir() -> None:
     os.makedirs(CACHE_DIR, exist_ok=True)
 
@@ -371,8 +402,7 @@ def add_features(frame: pd.DataFrame) -> pd.DataFrame:
         float(config["upper_barrier"]),
         float(config["lower_barrier"]),
     )
-    if config["label_mode"] == "keep-all-binary":
-        labels = np.where(np.isnan(labels), 0.0, labels)
+    labels = apply_label_mode(labels, realized_returns, str(config["label_mode"]))
     df[TARGET_COLUMN] = labels
     df["future_return_60"] = realized_returns
 

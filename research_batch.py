@@ -137,8 +137,7 @@ def build_labeled_frame(
     df = pr.add_context_features(df)
     df = add_regime_features(df)
     labels, realized_returns = pr.build_barrier_labels(df, horizon_days, upper_barrier, lower_barrier)
-    if label_mode == "keep-all-binary":
-        labels = np.where(np.isnan(labels), 0.0, labels)
+    labels = pr.apply_label_mode(labels, realized_returns, label_mode)
     df[pr.TARGET_COLUMN] = labels
     df[FUTURE_RETURN_COLUMN] = realized_returns
     selectable_experimental = [name for name in pr.EXPERIMENTAL_FEATURE_COLUMNS if name in df.columns]
