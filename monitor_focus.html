@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Monitor Focus</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #f7f4ed 0%, #efe8d8 100%);
+      color: #172033;
+    }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .summary { color: #5b6474; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .card {
+      background: #fffdf8;
+      border: 1px solid #e8dfcf;
+      border-top: 5px solid var(--accent);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    .top { display:flex; justify-content:space-between; gap:12px; align-items:start; }
+    .order { color:#5b6474; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
+    h2 { margin:4px 0 2px; font-size:28px; }
+    .line { margin:0; color:#5b6474; font-size:14px; }
+    .badge {
+      background: color-mix(in srgb, var(--accent) 14%, white);
+      color: var(--accent);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .reason { margin:14px 0 8px; line-height:1.5; }
+    .next { margin:0 0 14px; color:#5b6474; line-height:1.5; }
+    dl { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; margin:0; }
+    dl div { background:#faf6ee; border:1px solid #efe5d4; border-radius:12px; padding:10px 12px; }
+    dt { margin-bottom:4px; font-size:12px; color:#5b6474; text-transform:uppercase; letter-spacing:.06em; }
+    dd { margin:0; font-weight:600; }
+  </style>
+</head>
+<body>
+  <h1>Monitor Focus</h1>
+  <div class="summary">Daily review shortlist generated from the current priority board.</div>
+  <div class="grid">
+            <section class="card" style="--accent:#0f766e">
+              <div class="top">
+                <div>
+                  <div class="order">Review 1</div>
+                  <h2>IWM</h2>
+                  <p class="line">baseline_threshold</p>
+                </div>
+                <span class="badge">selected_now</span>
+              </div>
+              <p class="reason">Currently selected and actionable.</p>
+              <p class="next">Review chart and current context first.</p>
+              <dl>
+                <div><dt>tier</dt><dd>1</dd></div>
+                <div><dt>status</dt><dd>active</dd></div>
+                <div><dt>recent count</dt><dd>45</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-10</dd></div>
+                <div><dt>last selected</dt><dd>2026-03-10</dd></div>
+                <div><dt>days since last</dt><dd>0</dd></div>
+              </dl>
+            </section>
+            
+
+            <section class="card" style="--accent:#d97706">
+              <div class="top">
+                <div>
+                  <div class="order">Review 2</div>
+                  <h2>NVDA</h2>
+                  <p class="line">binary_top12_5</p>
+                </div>
+                <span class="badge">watchlist_wait</span>
+              </div>
+              <p class="reason">Valid watchlist line that is close enough to keep front-of-mind.</p>
+              <p class="next">Keep on shortlist and watch for renewed selection.</p>
+              <dl>
+                <div><dt>tier</dt><dd>2</dd></div>
+                <div><dt>status</dt><dd>watchlist_ready</dd></div>
+                <div><dt>recent count</dt><dd>6</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-17</dd></div>
+                <div><dt>last selected</dt><dd>2026-02-25</dd></div>
+                <div><dt>days since last</dt><dd>20</dd></div>
+              </dl>
+            </section>
+            
+
+            <section class="card" style="--accent:#d97706">
+              <div class="top">
+                <div>
+                  <div class="order">Review 3</div>
+                  <h2>XLE</h2>
+                  <p class="line">distance_to_252_high</p>
+                </div>
+                <span class="badge">watchlist_wait</span>
+              </div>
+              <p class="reason">Valid watchlist line that is close enough to keep front-of-mind.</p>
+              <p class="next">Keep on shortlist and watch for renewed selection.</p>
+              <dl>
+                <div><dt>tier</dt><dd>2</dd></div>
+                <div><dt>status</dt><dd>watchlist_ready</dd></div>
+                <div><dt>recent count</dt><dd>6</dd></div>
+                <div><dt>latest date</dt><dd>2026-03-26</dd></div>
+                <div><dt>last selected</dt><dd>2026-02-19</dd></div>
+                <div><dt>days since last</dt><dd>35</dd></div>
+              </dl>
+            </section>
+            </div>
+</body>
+</html>

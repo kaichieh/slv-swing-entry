@@ -181,5 +181,13 @@ def get_monitor_priority_chart_path() -> Path:
     return REPO_DIR / "monitor_priority.html"
 
 
+def get_monitor_focus_path() -> Path:
+    return REPO_DIR / "monitor_focus.tsv"
+
+
+def get_monitor_focus_chart_path() -> Path:
+    return REPO_DIR / "monitor_focus.html"
+
+
 def stooq_url(symbol: str) -> str:
     return f"https://stooq.com/q/d/l/?s={symbol.lower()}.us&i=d"
