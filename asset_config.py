@@ -18,6 +18,7 @@ class AssetDefaults:
 
 DEFAULT_ASSET_KEY = "slv"
 ASSET_DEFAULTS: dict[str, AssetDefaults] = {
+    "gld": AssetDefaults("gld", "GLD", 0.08, -0.04, 60, "drop-neutral"),
     "slv": AssetDefaults("slv", "SLV", 0.08, -0.04, 60, "drop-neutral"),
     "qqq": AssetDefaults("qqq", "QQQ", 0.08, -0.04, 60, "drop-neutral"),
     "nvda": AssetDefaults("nvda", "NVDA", 0.12, -0.06, 60, "drop-neutral"),
@@ -67,6 +68,16 @@ def get_asset_symbol(asset_key: str | None = None) -> str:
     return str(load_asset_config(asset_key)["symbol"])
 
 
+def get_live_extra_features(asset_key: str | None = None) -> tuple[str, ...]:
+    config = load_asset_config(asset_key)
+    raw = config.get("live_extra_features", [])
+    if isinstance(raw, str):
+        return tuple(part.strip() for part in raw.split(",") if part.strip())
+    if isinstance(raw, list):
+        return tuple(str(part).strip() for part in raw if str(part).strip())
+    return ()
+
+
 def get_cache_dir(asset_key: str | None = None) -> Path:
     key = asset_key or get_asset_key()
     return REPO_DIR / ".cache" / f"{key}-swing-entry"
@@ -88,6 +99,10 @@ def get_metadata_path(asset_key: str | None = None) -> Path:
 
 def get_chart_output_path(asset_key: str | None = None) -> Path:
     return get_cache_dir(asset_key) / "signal_chart.html"
+
+
+def get_latest_prediction_path(asset_key: str | None = None) -> Path:
+    return get_cache_dir(asset_key) / "latest_prediction.json"
 
 
 def get_research_batch_path(asset_key: str | None = None) -> Path:

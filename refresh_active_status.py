@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 import asset_config as ac
+import chart_signals as cs
 
 
 def read_tsv(path: Path) -> pd.DataFrame:
@@ -204,6 +205,7 @@ def build_tsla(asset_dir: Path) -> pd.DataFrame:
 
 
 BUILDERS = {
+    "gld": None,
     "iwm": build_iwm,
     "spy": build_spy,
     "tlt": build_tlt,
@@ -212,6 +214,37 @@ BUILDERS = {
     "qqq": build_qqq,
     "tsla": build_tsla,
 }
+
+
+def build_gld(asset_dir: Path) -> pd.DataFrame:
+    latest_prediction_path = ac.get_latest_prediction_path("gld")
+    if not latest_prediction_path.exists():
+        raise FileNotFoundError(f"Missing GLD latest prediction file: {latest_prediction_path}")
+    payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+    rows, _meta = cs.build_chart_rows(60)
+    recent_selected_count = sum(1 for row in rows if str(row["signal"]) != "no_entry")
+    latest_row = rows[-1]
+    return pd.DataFrame(
+        [
+            {
+                "line_id": "ret_60_sma_gap_60_live",
+                "lane_type": "binary_operator",
+                "role": "primary",
+                "preferred": True,
+                "status": "active" if bool(payload["signal_summary"]["predicted_label"]) else "inactive",
+                "recent_selected_count": recent_selected_count,
+                "latest_date": str(payload["latest_raw_date"]),
+                "latest_value": float(payload["signal_summary"]["predicted_probability"]),
+                "latest_selected": bool(payload["signal_summary"]["predicted_label"]),
+                "cutoff": float(payload["signal_summary"]["decision_threshold"]),
+                "last_selected_date": str(latest_row["date"]) if bool(payload["signal_summary"]["predicted_label"]) else "",
+                "usage_note": "Current GLD live line uses ret_60 + sma_gap_60 style extras; top-20% remains a reference rule rather than the default operator.",
+            }
+        ]
+    )
+
+
+BUILDERS["gld"] = build_gld
 
 
 def main() -> None:

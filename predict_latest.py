@@ -7,6 +7,7 @@ Default live config starts from the baseline feature set only.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import numpy as np
 
@@ -20,7 +21,7 @@ from prepare import (
     download_asset_prices,
 )
 
-DEFAULT_LIVE_EXTRA_FEATURES = ()
+DEFAULT_LIVE_EXTRA_FEATURES = ac.get_live_extra_features()
 WEAK_BULLISH_QUANTILE = 0.70
 BULLISH_QUANTILE = 0.90
 VERY_STRONG_BULLISH_QUANTILE = 0.97
@@ -319,7 +320,10 @@ def main() -> None:
             if key in {"ret_20", "ret_60", "drawdown_20", "volume_vs_20", "rsi_14", "sma_gap_20", "sma_gap_60"}
         },
     }
-    print(json.dumps(output, indent=2))
+    latest_prediction_path = Path(ac.get_latest_prediction_path())
+    latest_prediction_path.parent.mkdir(parents=True, exist_ok=True)
+    latest_prediction_path.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(json.dumps(output, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

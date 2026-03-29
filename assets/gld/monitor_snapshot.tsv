@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+gld	GLD	ret_60_sma_gap_60_live	binary_operator	primary	active	selected_now	14	2026-03-27	0.4901	True	0.465	2026-03-27	0	Preferred line is currently selected.

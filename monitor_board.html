@@ -54,11 +54,22 @@
       border-radius: 3px;
       display: inline-block;
     }
+    .section {
+      margin-top: 18px;
+    }
+    .section h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+    .section-sub {
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
     .spotlight-grid {
       display: grid;
-      grid-template-columns: repeat(7, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 10px;
-      margin-bottom: 18px;
     }
     .spotlight-card {
       display: block;
@@ -95,34 +106,41 @@
       line-height: 1.45;
       margin-top: 8px;
     }
-    #chart {
-      width: 100%;
-      overflow-x: auto;
-      border-top: 1px solid #efe8db;
-      padding-top: 10px;
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
     }
-    svg {
+    .role-card {
       display: block;
-      height: 420px;
-    }
-    .axis-label {
-      fill: var(--muted);
-      font-size: 12px;
-    }
-    .tooltip {
-      position: fixed;
-      pointer-events: none;
-      background: rgba(17, 24, 39, 0.94);
-      color: #fff;
+      text-decoration: none;
+      background: #faf6ee;
+      border: 1px solid #eadfcb;
+      border-top: 4px solid var(--accent);
+      border-radius: 12px;
       padding: 10px 12px;
-      border-radius: 10px;
+    }
+    .role-symbol {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .role-badge {
       font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .role-line {
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .role-note {
+      font-size: 12px;
+      color: var(--muted);
       line-height: 1.45;
-      transform: translate(12px, 12px);
-      display: none;
-      white-space: pre-line;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      max-width: 320px;
     }
   </style>
 </head>
@@ -130,15 +148,33 @@
   <div class="wrap">
     <div class="card">
       <h1>Monitor Board</h1>
-      <div class="sub">Single homepage for non-SLV assets. Click any top card or bottom bar to open that asset's chart page. watchlist_wait=2 | inactive_wait=2 | selected_now=1 | reference_only=1 | research_only=1</div>
-      <div class="spotlight-grid">
-    <a class="spotlight-card" href=".cache/iwm-swing-entry/signal_chart.html" style="--accent:#0f766e">
+      <div class="sub">Single homepage for non-SLV assets. Read it top-down: first who matters today, then what role each asset plays in the research set. selected_now=2 | watchlist_wait=2 | inactive_wait=2 | reference_only=1 | research_only=1</div>
+
+      <div class="section">
+        <h2>Today</h2>
+        <div class="section-sub">Only current operating states. Card accent colors match the latest bar color inside each asset chart; the textual today_status still tells you whether it is selected_now, watchlist_wait, or inactive_wait.</div>
+        <div class="legend"><span class="legend-item"><span class="swatch" style="background:#9ca3af"></span>no_entry</span><span class="legend-item"><span class="swatch" style="background:#fde68a"></span>weak_bullish</span><span class="legend-item"><span class="swatch" style="background:#f59e0b"></span>bullish</span><span class="legend-item"><span class="swatch" style="background:#16a34a"></span>strong_bullish</span><span class="legend-item"><span class="swatch" style="background:#065f46"></span>very_strong_bullish / selected</span></div>
+        <div class="spotlight-grid">
+    <a class="spotlight-card" href=".cache/gld-swing-entry/signal_chart.html" style="--accent:#f59e0b">
       <div class="spotlight-date">2026-03-27</div>
-      <div class="spotlight-symbol" style="color:#0f766e">IWM</div>
+      <div class="spotlight-symbol" style="color:#f59e0b">GLD</div>
+      <div class="spotlight-line">ret_60_sma_gap_60_live</div>
+      <div class="spotlight-metric">today_status=selected_now</div>
+      <div class="spotlight-metric">recent_selected=14/60</div>
+      <div class="spotlight-metric">latest=0.4901</div>
+      <div class="spotlight-metric">cutoff=0.4650</div>
+      <div class="spotlight-metric">last_selected=2026-03-27</div>
+      <div class="spotlight-metric">days_since_last=0</div>
+      <div class="spotlight-note">Preferred line is currently selected.</div>
+    </a>
+    
+
+    <a class="spotlight-card" href=".cache/iwm-swing-entry/signal_chart.html" style="--accent:#f59e0b">
+      <div class="spotlight-date">2026-03-27</div>
+      <div class="spotlight-symbol" style="color:#f59e0b">IWM</div>
       <div class="spotlight-line">baseline_threshold</div>
-      <div class="spotlight-metric">action=selected_now</div>
-      <div class="spotlight-metric">status=active</div>
-      <div class="spotlight-metric">recent=45</div>
+      <div class="spotlight-metric">today_status=selected_now</div>
+      <div class="spotlight-metric">recent_selected=45/60</div>
       <div class="spotlight-metric">latest=0.4731</div>
       <div class="spotlight-metric">cutoff=0.4500</div>
       <div class="spotlight-metric">last_selected=2026-03-10</div>
@@ -147,13 +183,12 @@
     </a>
     
 
-    <a class="spotlight-card" href=".cache/nvda-swing-entry/signal_chart.html" style="--accent:#f59e0b">
+    <a class="spotlight-card" href=".cache/nvda-swing-entry/signal_chart.html" style="--accent:#fde68a">
       <div class="spotlight-date">2026-03-27</div>
-      <div class="spotlight-symbol" style="color:#f59e0b">NVDA</div>
+      <div class="spotlight-symbol" style="color:#fde68a">NVDA</div>
       <div class="spotlight-line">binary_top12_5</div>
-      <div class="spotlight-metric">action=watchlist_wait</div>
-      <div class="spotlight-metric">status=watchlist_ready</div>
-      <div class="spotlight-metric">recent=6</div>
+      <div class="spotlight-metric">today_status=watchlist_wait</div>
+      <div class="spotlight-metric">recent_selected=6/60</div>
       <div class="spotlight-metric">latest=0.4926</div>
       <div class="spotlight-metric">cutoff=0.5126</div>
       <div class="spotlight-metric">last_selected=2026-02-25</div>
@@ -162,13 +197,12 @@
     </a>
     
 
-    <a class="spotlight-card" href="assets/xle/regression_recent.html" style="--accent:#f59e0b">
+    <a class="spotlight-card" href="assets/xle/regression_recent.html" style="--accent:#f8d9a0">
       <div class="spotlight-date">2026-03-27</div>
-      <div class="spotlight-symbol" style="color:#f59e0b">XLE</div>
+      <div class="spotlight-symbol" style="color:#f8d9a0">XLE</div>
       <div class="spotlight-line">distance_to_252_high</div>
-      <div class="spotlight-metric">action=watchlist_wait</div>
-      <div class="spotlight-metric">status=watchlist_ready</div>
-      <div class="spotlight-metric">recent=6</div>
+      <div class="spotlight-metric">today_status=watchlist_wait</div>
+      <div class="spotlight-metric">recent_selected=6/60</div>
       <div class="spotlight-metric">latest=0.0236</div>
       <div class="spotlight-metric">cutoff=-0.0001</div>
       <div class="spotlight-metric">last_selected=2026-02-19</div>
@@ -181,9 +215,8 @@
       <div class="spotlight-date">2026-03-27</div>
       <div class="spotlight-symbol" style="color:#f8d9a0">QQQ</div>
       <div class="spotlight-line">distance_bottom5</div>
-      <div class="spotlight-metric">action=inactive_wait</div>
-      <div class="spotlight-metric">status=watchlist_ready</div>
-      <div class="spotlight-metric">recent=0</div>
+      <div class="spotlight-metric">today_status=inactive_wait</div>
+      <div class="spotlight-metric">recent_selected=0/60</div>
       <div class="spotlight-metric">latest=0.0353</div>
       <div class="spotlight-metric">cutoff=-0.0192</div>
       <div class="spotlight-metric">last_selected=n/a</div>
@@ -192,147 +225,91 @@
     </a>
     
 
-    <a class="spotlight-card" href=".cache/tsla-swing-entry/signal_chart.html" style="--accent:#f8d9a0">
+    <a class="spotlight-card" href=".cache/tsla-swing-entry/signal_chart.html" style="--accent:#fde68a">
       <div class="spotlight-date">2026-03-27</div>
-      <div class="spotlight-symbol" style="color:#f8d9a0">TSLA</div>
+      <div class="spotlight-symbol" style="color:#fde68a">TSLA</div>
       <div class="spotlight-line">fallback_top15</div>
-      <div class="spotlight-metric">action=inactive_wait</div>
-      <div class="spotlight-metric">status=preferred_overlay</div>
-      <div class="spotlight-metric">recent=0</div>
+      <div class="spotlight-metric">today_status=inactive_wait</div>
+      <div class="spotlight-metric">recent_selected=0/60</div>
       <div class="spotlight-metric">latest=0.3913</div>
       <div class="spotlight-metric">cutoff=0.6199</div>
       <div class="spotlight-metric">last_selected=n/a</div>
       <div class="spotlight-metric">days_since_last=n/a</div>
       <div class="spotlight-note">Preferred line is inactive; continue monitoring without action.</div>
     </a>
-    
+    </div>
+      </div>
 
-    <a class="spotlight-card" href=".cache/spy-swing-entry/signal_chart.html" style="--accent:#9ca3af">
-      <div class="spotlight-date">2026-03-27</div>
-      <div class="spotlight-symbol" style="color:#9ca3af">SPY</div>
-      <div class="spotlight-line">baseline_top10</div>
-      <div class="spotlight-metric">action=reference_only</div>
-      <div class="spotlight-metric">status=inactive</div>
-      <div class="spotlight-metric">recent=0</div>
-      <div class="spotlight-metric">latest=0.3184</div>
-      <div class="spotlight-metric">cutoff=0.3858</div>
-      <div class="spotlight-metric">last_selected=n/a</div>
-      <div class="spotlight-metric">days_since_last=n/a</div>
-      <div class="spotlight-note">Keep as market/reference context only.</div>
+      <div class="section">
+        <h2>Role</h2>
+        <div class="section-sub">Structural role in the basket. This section answers whether an asset is a primary line, a reference context line, or still research-only.</div>
+        <div class="legend"><span class="legend-item"><span class="swatch" style="background:#2563eb"></span>primary</span><span class="legend-item"><span class="swatch" style="background:#94a3b8"></span>reference</span><span class="legend-item"><span class="swatch" style="background:#64748b"></span>research</span></div>
+        <div class="role-grid">
+    <a class="role-card" href=".cache/gld-swing-entry/signal_chart.html" style="--accent:#2563eb">
+      <div class="role-symbol">GLD</div>
+      <div class="role-badge">primary</div>
+      <div class="role-line">ret_60_sma_gap_60_live</div>
+      <div class="role-note">Preferred line is currently selected.</div>
     </a>
     
 
-    <a class="spotlight-card" href="assets/tlt/regression_recent.html" style="--accent:#64748b">
-      <div class="spotlight-date">2026-03-27</div>
-      <div class="spotlight-symbol" style="color:#64748b">TLT</div>
-      <div class="spotlight-line">atr_pct_20_bottom5</div>
-      <div class="spotlight-metric">action=research_only</div>
-      <div class="spotlight-metric">status=inactive</div>
-      <div class="spotlight-metric">recent=0</div>
-      <div class="spotlight-metric">latest=0.0088</div>
-      <div class="spotlight-metric">cutoff=-0.0104</div>
-      <div class="spotlight-metric">last_selected=n/a</div>
-      <div class="spotlight-metric">days_since_last=n/a</div>
-      <div class="spotlight-note">Research-only line; no live operating action.</div>
+    <a class="role-card" href=".cache/iwm-swing-entry/signal_chart.html" style="--accent:#2563eb">
+      <div class="role-symbol">IWM</div>
+      <div class="role-badge">primary</div>
+      <div class="role-line">baseline_threshold</div>
+      <div class="role-note">Preferred line is currently selected.</div>
+    </a>
+    
+
+    <a class="role-card" href=".cache/nvda-swing-entry/signal_chart.html" style="--accent:#2563eb">
+      <div class="role-symbol">NVDA</div>
+      <div class="role-badge">primary</div>
+      <div class="role-line">binary_top12_5</div>
+      <div class="role-note">Preferred line is valid but currently waiting below cutoff.</div>
+    </a>
+    
+
+    <a class="role-card" href="assets/xle/regression_recent.html" style="--accent:#2563eb">
+      <div class="role-symbol">XLE</div>
+      <div class="role-badge">primary</div>
+      <div class="role-line">distance_to_252_high</div>
+      <div class="role-note">Preferred line is valid but currently waiting below cutoff.</div>
+    </a>
+    
+
+    <a class="role-card" href="assets/qqq/regression_recent.html" style="--accent:#2563eb">
+      <div class="role-symbol">QQQ</div>
+      <div class="role-badge">primary</div>
+      <div class="role-line">distance_bottom5</div>
+      <div class="role-note">Preferred line is inactive; continue monitoring without action.</div>
+    </a>
+    
+
+    <a class="role-card" href=".cache/tsla-swing-entry/signal_chart.html" style="--accent:#94a3b8">
+      <div class="role-symbol">TSLA</div>
+      <div class="role-badge">reference</div>
+      <div class="role-line">fallback_top15</div>
+      <div class="role-note">Preferred line is inactive; continue monitoring without action.</div>
+    </a>
+    
+
+    <a class="role-card" href=".cache/spy-swing-entry/signal_chart.html" style="--accent:#94a3b8">
+      <div class="role-symbol">SPY</div>
+      <div class="role-badge">reference</div>
+      <div class="role-line">baseline_top10</div>
+      <div class="role-note">Keep as market/reference context only.</div>
+    </a>
+    
+
+    <a class="role-card" href="assets/tlt/regression_recent.html" style="--accent:#64748b">
+      <div class="role-symbol">TLT</div>
+      <div class="role-badge">research</div>
+      <div class="role-line">atr_pct_20_bottom5</div>
+      <div class="role-note">Research-only line; no live operating action.</div>
     </a>
     </div>
-      <div class="legend"><span class="legend-item"><span class="swatch" style="background:#0f766e"></span>selected_now</span><span class="legend-item"><span class="swatch" style="background:#f59e0b"></span>watchlist_wait</span><span class="legend-item"><span class="swatch" style="background:#f8d9a0"></span>inactive_wait</span><span class="legend-item"><span class="swatch" style="background:#9ca3af"></span>reference_only</span><span class="legend-item"><span class="swatch" style="background:#64748b"></span>research_only</span></div>
-      <div id="chart"></div>
+      </div>
     </div>
   </div>
-  <div id="tooltip" class="tooltip"></div>
-  <script>
-    const rows = [{"symbol": "IWM", "action": "selected_now", "preferred_line": "baseline_threshold", "recent_selected_count": 45, "latest_date": "2026-03-27", "latest_value": 0.473054, "last_selected_date": "2026-03-10", "days_since_last_selected": 0, "action_note": "Preferred line is currently selected.", "chart_href": ".cache/iwm-swing-entry/signal_chart.html"}, {"symbol": "NVDA", "action": "watchlist_wait", "preferred_line": "binary_top12_5", "recent_selected_count": 6, "latest_date": "2026-03-27", "latest_value": 0.492579, "last_selected_date": "2026-02-25", "days_since_last_selected": 20, "action_note": "Preferred line is valid but currently waiting below cutoff.", "chart_href": ".cache/nvda-swing-entry/signal_chart.html"}, {"symbol": "XLE", "action": "watchlist_wait", "preferred_line": "distance_to_252_high", "recent_selected_count": 6, "latest_date": "2026-03-27", "latest_value": 0.0235827999059949, "last_selected_date": "2026-02-19", "days_since_last_selected": 35, "action_note": "Preferred line is valid but currently waiting below cutoff.", "chart_href": "assets/xle/regression_recent.html"}, {"symbol": "QQQ", "action": "inactive_wait", "preferred_line": "distance_bottom5", "recent_selected_count": 0, "latest_date": "2026-03-27", "latest_value": 0.0352518795722821, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Preferred line is inactive; continue monitoring without action.", "chart_href": "assets/qqq/regression_recent.html"}, {"symbol": "TSLA", "action": "inactive_wait", "preferred_line": "fallback_top15", "recent_selected_count": 0, "latest_date": "2026-03-27", "latest_value": 0.391317, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Preferred line is inactive; continue monitoring without action.", "chart_href": ".cache/tsla-swing-entry/signal_chart.html"}, {"symbol": "SPY", "action": "reference_only", "preferred_line": "baseline_top10", "recent_selected_count": 0, "latest_date": "2026-03-27", "latest_value": 0.318356, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Keep as market/reference context only.", "chart_href": ".cache/spy-swing-entry/signal_chart.html"}, {"symbol": "TLT", "action": "research_only", "preferred_line": "atr_pct_20_bottom5", "recent_selected_count": 0, "latest_date": "2026-03-27", "latest_value": 0.0087573525098017, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Research-only line; no live operating action.", "chart_href": "assets/tlt/regression_recent.html"}];
-    const colors = {
-      selected_now: "#0f766e",
-      watchlist_wait: "#f59e0b",
-      inactive_wait: "#f8d9a0",
-      reference_only: "#9ca3af",
-      research_only: "#64748b",
-    };
-    const chart = document.getElementById('chart');
-    const tooltip = document.getElementById('tooltip');
-    const width = Math.max(1200, rows.length * 120);
-    const height = 420;
-    const topPad = 40;
-    const leftPad = 56;
-    const rightPad = 24;
-    const innerWidth = width - leftPad - rightPad;
-    const innerHeight = height - topPad - 56;
-    const maxRecent = Math.max(...rows.map(r => r.recent_selected_count), 1);
-    const barWidth = innerWidth / rows.length * 0.72;
-
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-    svg.setAttribute('width', String(width));
-    svg.setAttribute('height', String(height));
-
-    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    bg.setAttribute('x', '0');
-    bg.setAttribute('y', '0');
-    bg.setAttribute('width', String(width));
-    bg.setAttribute('height', String(height));
-    bg.setAttribute('fill', '#fffdf8');
-    svg.appendChild(bg);
-
-    for (let i = 0; i < 5; i += 1) {
-      const y = topPad + (innerHeight / 4) * i;
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', String(leftPad));
-      line.setAttribute('x2', String(width - rightPad));
-      line.setAttribute('y1', String(y));
-      line.setAttribute('y2', String(y));
-      line.setAttribute('stroke', '#d6d3d1');
-      line.setAttribute('stroke-width', '1');
-      line.setAttribute('stroke-dasharray', '3 5');
-      svg.appendChild(line);
-
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', '8');
-      label.setAttribute('y', String(y + 4));
-      label.setAttribute('class', 'axis-label');
-      label.textContent = String(Math.round(maxRecent - (maxRecent / 4) * i));
-      svg.appendChild(label);
-    }
-
-    rows.forEach((row, index) => {
-      const slotWidth = innerWidth / rows.length;
-      const x = leftPad + index * slotWidth + (slotWidth - barWidth) / 2;
-      const barHeight = (row.recent_selected_count / maxRecent) * innerHeight;
-      const y = topPad + innerHeight - barHeight;
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      rect.setAttribute('x', String(x));
-      rect.setAttribute('y', String(y));
-      rect.setAttribute('width', String(barWidth));
-      rect.setAttribute('height', String(Math.max(barHeight, 6)));
-      rect.setAttribute('rx', '6');
-      rect.setAttribute('fill', colors[row.action] || '#475569');
-      rect.setAttribute('opacity', row.action === 'inactive_wait' ? '0.55' : '0.95');
-      rect.style.cursor = 'pointer';
-      rect.addEventListener('mousemove', event => {
-        tooltip.style.display = 'block';
-        tooltip.style.left = (event.clientX + 14) + 'px';
-        tooltip.style.top = (event.clientY + 14) + 'px';
-        tooltip.innerHTML = `<strong>${row.symbol}</strong><br>action=${row.action}<br>line=${row.preferred_line}<br>recent=${row.recent_selected_count}<br>latest=${row.latest_date || 'n/a'}<br>last_selected=${row.last_selected_date || 'n/a'}<br>${row.action_note}`;
-      });
-      rect.addEventListener('mouseleave', () => {
-        tooltip.style.display = 'none';
-      });
-      rect.addEventListener('click', () => {
-        window.location.href = row.chart_href;
-      });
-      svg.appendChild(rect);
-
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', String(x + barWidth / 2));
-      label.setAttribute('y', String(height - 24));
-      label.setAttribute('text-anchor', 'middle');
-      label.setAttribute('class', 'axis-label');
-      label.textContent = row.symbol;
-      svg.appendChild(label);
-    });
-
-    chart.appendChild(svg);
-  </script>
 </body>
 </html>
