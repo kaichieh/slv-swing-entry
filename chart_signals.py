@@ -23,7 +23,14 @@ from predict_latest import (
     score_latest_row,
     summarize_rule,
 )
-from prepare import add_features, download_asset_prices, load_splits
+from prepare import (
+    BENCHMARK_SYMBOL,
+    add_context_features,
+    add_price_features,
+    add_relative_strength_features,
+    download_asset_prices,
+    load_splits,
+)
 
 OUTPUT_PATH = str(ac.get_chart_output_path())
 DEFAULT_LOOKBACK_DAYS = 5 * 252
@@ -54,7 +61,7 @@ def build_history_probabilities(weights: np.ndarray, splits: dict[str, object], 
 def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[str, object]]:
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
     raw_prices = download_asset_prices()
-    live_features = add_features(raw_prices)
+    live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
     splits = load_splits()
     feature_names = build_feature_names()
     weights, threshold = fit_model(splits, feature_names)
@@ -385,6 +392,9 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
     }});
 
     chart.appendChild(svg);
+    requestAnimationFrame(() => {{
+      chart.scrollLeft = chart.scrollWidth;
+    }});
   </script>
 </body>
 </html>

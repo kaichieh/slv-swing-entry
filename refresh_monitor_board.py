@@ -20,39 +20,55 @@ ACTION_PRIORITY = {
 def load_board() -> pd.DataFrame:
     frames: list[pd.DataFrame] = []
     for key in ASSET_KEYS:
-        path = ac.get_monitor_snapshot_path(key)
-        frame = pd.read_csv(path, sep="\t")
+        frame = pd.read_csv(ac.get_monitor_snapshot_path(key), sep="\t")
         frame["sort_priority"] = frame["action"].map(lambda value: ACTION_PRIORITY.get(str(value), 99))
+        frame["chart_href"] = ac.get_primary_chart_path(key).relative_to(ac.REPO_DIR).as_posix()
+        frame["display_latest_date"] = load_display_latest_date(key)
         frames.append(frame)
     board = pd.concat(frames, ignore_index=True)
-    board = board.sort_values(["sort_priority", "symbol"]).drop(columns=["sort_priority"])
-    return board
+    return board.sort_values(["sort_priority", "symbol"]).drop(columns=["sort_priority"])
+
+
+def load_display_latest_date(asset_key: str) -> str:
+    if ac.uses_regression_chart(asset_key):
+        path = ac.get_regression_recent_output_path(asset_key)
+        if path.exists():
+            frame = pd.read_csv(path, sep="\t")
+            if not frame.empty:
+                return str(pd.to_datetime(frame.iloc[-1]["date"]).strftime("%Y-%m-%d"))
+    raw_path = ac.get_raw_data_path(asset_key)
+    if raw_path.exists():
+        frame = pd.read_csv(raw_path)
+        if not frame.empty:
+            return str(pd.to_datetime(frame.iloc[-1]["date"]).strftime("%Y-%m-%d"))
+    return "n/a"
 
 
 def card_color(action: str) -> str:
     if action == "selected_now":
         return "#0f766e"
     if action == "watchlist_wait":
-        return "#d97706"
+        return "#f59e0b"
     if action == "inactive_wait":
-        return "#64748b"
+        return "#f8d9a0"
     if action == "reference_only":
-        return "#2563eb"
+        return "#9ca3af"
     if action == "research_only":
-        return "#7c3aed"
+        return "#64748b"
     return "#475569"
 
 
 def render_spotlight_card(row: pd.Series) -> str:
     color = card_color(str(row["action"]))
+    chart_href = escape(str(row["chart_href"]))
     latest = "n/a" if pd.isna(row["latest_value"]) else f"{float(row['latest_value']):.4f}"
     cutoff = "n/a" if pd.isna(row["cutoff"]) else f"{float(row['cutoff']):.4f}"
     last_date = "n/a" if pd.isna(row["last_selected_date"]) else str(row["last_selected_date"])
     days = "n/a" if pd.isna(row["days_since_last_selected"]) else str(int(float(row["days_since_last_selected"])))
-    latest_date = "n/a" if pd.isna(row["latest_date"]) else str(row["latest_date"])
+    latest_date = str(row["display_latest_date"])
     recent_count = int(row["recent_selected_count"])
     return f"""
-    <div class="spotlight-card" style="--accent:{color}">
+    <a class="spotlight-card" href="{chart_href}" style="--accent:{color}">
       <div class="spotlight-date">{escape(latest_date)}</div>
       <div class="spotlight-symbol" style="color:{color}">{escape(str(row["symbol"]))}</div>
       <div class="spotlight-line">{escape(str(row["preferred_line"]))}</div>
@@ -64,15 +80,14 @@ def render_spotlight_card(row: pd.Series) -> str:
       <div class="spotlight-metric">last_selected={escape(last_date)}</div>
       <div class="spotlight-metric">days_since_last={escape(days)}</div>
       <div class="spotlight-note">{escape(str(row["action_note"]))}</div>
-    </div>
+    </a>
     """
 
 
 def build_html(board: pd.DataFrame) -> str:
     counts = board["action"].value_counts().to_dict()
     summary = " | ".join(f"{key}={value}" for key, value in counts.items())
-    spotlight_rows = board.head(5)
-    spotlight_cards = "\n".join(render_spotlight_card(row) for _, row in spotlight_rows.iterrows())
+    spotlight_cards = "\n".join(render_spotlight_card(row) for _, row in board.iterrows())
     payload = json.dumps(
         [
             {
@@ -80,11 +95,12 @@ def build_html(board: pd.DataFrame) -> str:
                 "action": str(row["action"]),
                 "preferred_line": str(row["preferred_line"]),
                 "recent_selected_count": int(row["recent_selected_count"]),
-                "latest_date": "" if pd.isna(row["latest_date"]) else str(row["latest_date"]),
+                "latest_date": str(row["display_latest_date"]),
                 "latest_value": None if pd.isna(row["latest_value"]) else float(row["latest_value"]),
                 "last_selected_date": "" if pd.isna(row["last_selected_date"]) else str(row["last_selected_date"]),
                 "days_since_last_selected": None if pd.isna(row["days_since_last_selected"]) else int(float(row["days_since_last_selected"])),
                 "action_note": str(row["action_note"]),
+                "chart_href": str(row["chart_href"]),
             }
             for _, row in board.iterrows()
         ],
@@ -101,34 +117,42 @@ def build_html(board: pd.DataFrame) -> str:
   <title>Monitor Board</title>
   <style>
     :root {{
-      --bg: #f7f4ed;
-      --text: #172033;
-      --muted: #5b6474;
-      --card: #fffdf8;
-      --line: #e8dfcf;
+      --bg: #f6f3ec;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --panel: #fffdf8;
     }}
-    * {{ box-sizing: border-box; }}
     body {{
       margin: 0;
-      padding: 28px;
-      font-family: "Segoe UI", "Noto Sans TC", Arial, sans-serif;
-      background: linear-gradient(180deg, #f7f4ed 0%, #efe8d8 100%);
-      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #f6f3ec 0%, #ebe5da 100%);
+      color: var(--ink);
     }}
-    h1 {{ margin: 0 0 8px; font-size: 32px; }}
-    .summary {{ color: var(--muted); margin-bottom: 20px; }}
+    .wrap {{
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }}
     .card {{
-      background: var(--card);
-      border: 1px solid var(--line);
+      background: var(--panel);
+      border: 1px solid #e7e0d4;
       border-radius: 18px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 18px 60px rgba(31, 41, 55, 0.08);
       padding: 20px 20px 12px;
+    }}
+    h1 {{
+      margin: 0 0 8px;
+      font-size: 28px;
+    }}
+    .sub {{
+      color: var(--muted);
+      margin-bottom: 14px;
     }}
     .legend {{
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
-      margin: 12px 0 18px;
+      margin-bottom: 18px;
       font-size: 14px;
     }}
     .legend-item {{
@@ -144,11 +168,13 @@ def build_html(board: pd.DataFrame) -> str:
     }}
     .spotlight-grid {{
       display: grid;
-      grid-template-columns: repeat(5, minmax(180px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(7, minmax(180px, 1fr));
+      gap: 10px;
       margin-bottom: 18px;
     }}
     .spotlight-card {{
+      display: block;
+      text-decoration: none;
       background: #faf6ee;
       border: 1px solid #eadfcb;
       border-top: 4px solid var(--accent);
@@ -213,12 +239,14 @@ def build_html(board: pd.DataFrame) -> str:
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Monitor Board</h1>
-    <div class="summary">非 `SLV` 標的目前監控摘要。{escape(summary)}</div>
-    <div class="spotlight-grid">{spotlight_cards}</div>
-    <div class="legend">{legend}</div>
-    <div id="chart"></div>
+  <div class="wrap">
+    <div class="card">
+      <h1>Monitor Board</h1>
+      <div class="sub">Single homepage for non-SLV assets. Click any top card or bottom bar to open that asset's chart page. {escape(summary)}</div>
+      <div class="spotlight-grid">{spotlight_cards}</div>
+      <div class="legend">{legend}</div>
+      <div id="chart"></div>
+    </div>
   </div>
   <div id="tooltip" class="tooltip"></div>
   <script>
@@ -237,9 +265,8 @@ def build_html(board: pd.DataFrame) -> str:
     const topPad = 40;
     const leftPad = 56;
     const rightPad = 24;
-    const bottomPad = 56;
     const innerWidth = width - leftPad - rightPad;
-    const innerHeight = height - topPad - bottomPad;
+    const innerHeight = height - topPad - 56;
     const maxRecent = Math.max(...rows.map(r => r.recent_selected_count), 1);
     const barWidth = innerWidth / rows.length * 0.72;
 
@@ -289,6 +316,7 @@ def build_html(board: pd.DataFrame) -> str:
       rect.setAttribute('rx', '6');
       rect.setAttribute('fill', colors[row.action] || '#475569');
       rect.setAttribute('opacity', row.action === 'inactive_wait' ? '0.55' : '0.95');
+      rect.style.cursor = 'pointer';
       rect.addEventListener('mousemove', event => {{
         tooltip.style.display = 'block';
         tooltip.style.left = (event.clientX + 14) + 'px';
@@ -297,6 +325,9 @@ def build_html(board: pd.DataFrame) -> str:
       }});
       rect.addEventListener('mouseleave', () => {{
         tooltip.style.display = 'none';
+      }});
+      rect.addEventListener('click', () => {{
+        window.location.href = row.chart_href;
       }});
       svg.appendChild(rect);
 

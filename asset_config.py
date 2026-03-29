@@ -27,6 +27,7 @@ ASSET_DEFAULTS: dict[str, AssetDefaults] = {
     "tlt": AssetDefaults("tlt", "TLT", 0.06, -0.03, 60, "drop-neutral"),
     "xle": AssetDefaults("xle", "XLE", 0.10, -0.05, 60, "drop-neutral"),
 }
+REGRESSION_ASSET_KEYS = {"qqq", "tlt", "xle"}
 
 REPO_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = REPO_DIR / "assets"
@@ -147,6 +148,18 @@ def get_regression_recent_output_path(asset_key: str | None = None) -> Path:
 
 def get_regression_recent_chart_path(asset_key: str | None = None) -> Path:
     return get_asset_dir(asset_key) / "regression_recent.html"
+
+
+def uses_regression_chart(asset_key: str | None = None) -> bool:
+    key = asset_key or get_asset_key()
+    return key in REGRESSION_ASSET_KEYS
+
+
+def get_primary_chart_path(asset_key: str | None = None) -> Path:
+    key = asset_key or get_asset_key()
+    if uses_regression_chart(key):
+        return get_regression_recent_chart_path(key)
+    return get_chart_output_path(key)
 
 
 def get_regression_walkforward_output_path(asset_key: str | None = None) -> Path:

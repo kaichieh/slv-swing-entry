@@ -5,34 +5,42 @@
   <title>Monitor Board</title>
   <style>
     :root {
-      --bg: #f7f4ed;
-      --text: #172033;
-      --muted: #5b6474;
-      --card: #fffdf8;
-      --line: #e8dfcf;
+      --bg: #f6f3ec;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --panel: #fffdf8;
     }
-    * { box-sizing: border-box; }
     body {
       margin: 0;
-      padding: 28px;
-      font-family: "Segoe UI", "Noto Sans TC", Arial, sans-serif;
-      background: linear-gradient(180deg, #f7f4ed 0%, #efe8d8 100%);
-      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #f6f3ec 0%, #ebe5da 100%);
+      color: var(--ink);
     }
-    h1 { margin: 0 0 8px; font-size: 32px; }
-    .summary { color: var(--muted); margin-bottom: 20px; }
+    .wrap {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
     .card {
-      background: var(--card);
-      border: 1px solid var(--line);
+      background: var(--panel);
+      border: 1px solid #e7e0d4;
       border-radius: 18px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 18px 60px rgba(31, 41, 55, 0.08);
       padding: 20px 20px 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .sub {
+      color: var(--muted);
+      margin-bottom: 14px;
     }
     .legend {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
-      margin: 12px 0 18px;
+      margin-bottom: 18px;
       font-size: 14px;
     }
     .legend-item {
@@ -48,11 +56,13 @@
     }
     .spotlight-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(180px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(7, minmax(180px, 1fr));
+      gap: 10px;
       margin-bottom: 18px;
     }
     .spotlight-card {
+      display: block;
+      text-decoration: none;
       background: #faf6ee;
       border: 1px solid #eadfcb;
       border-top: 4px solid var(--accent);
@@ -117,12 +127,13 @@
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Monitor Board</h1>
-    <div class="summary">非 `SLV` 標的目前監控摘要。watchlist_wait=2 | inactive_wait=2 | selected_now=1 | reference_only=1 | research_only=1</div>
-    <div class="spotlight-grid">
-    <div class="spotlight-card" style="--accent:#0f766e">
-      <div class="spotlight-date">2026-03-10</div>
+  <div class="wrap">
+    <div class="card">
+      <h1>Monitor Board</h1>
+      <div class="sub">Single homepage for non-SLV assets. Click any top card or bottom bar to open that asset's chart page. watchlist_wait=2 | inactive_wait=2 | selected_now=1 | reference_only=1 | research_only=1</div>
+      <div class="spotlight-grid">
+    <a class="spotlight-card" href=".cache/iwm-swing-entry/signal_chart.html" style="--accent:#0f766e">
+      <div class="spotlight-date">2026-03-27</div>
       <div class="spotlight-symbol" style="color:#0f766e">IWM</div>
       <div class="spotlight-line">baseline_threshold</div>
       <div class="spotlight-metric">action=selected_now</div>
@@ -133,12 +144,12 @@
       <div class="spotlight-metric">last_selected=2026-03-10</div>
       <div class="spotlight-metric">days_since_last=0</div>
       <div class="spotlight-note">Preferred line is currently selected.</div>
-    </div>
+    </a>
     
 
-    <div class="spotlight-card" style="--accent:#d97706">
-      <div class="spotlight-date">2026-03-17</div>
-      <div class="spotlight-symbol" style="color:#d97706">NVDA</div>
+    <a class="spotlight-card" href=".cache/nvda-swing-entry/signal_chart.html" style="--accent:#f59e0b">
+      <div class="spotlight-date">2026-03-27</div>
+      <div class="spotlight-symbol" style="color:#f59e0b">NVDA</div>
       <div class="spotlight-line">binary_top12_5</div>
       <div class="spotlight-metric">action=watchlist_wait</div>
       <div class="spotlight-metric">status=watchlist_ready</div>
@@ -148,12 +159,12 @@
       <div class="spotlight-metric">last_selected=2026-02-25</div>
       <div class="spotlight-metric">days_since_last=20</div>
       <div class="spotlight-note">Preferred line is valid but currently waiting below cutoff.</div>
-    </div>
+    </a>
     
 
-    <div class="spotlight-card" style="--accent:#d97706">
-      <div class="spotlight-date">2026-03-26</div>
-      <div class="spotlight-symbol" style="color:#d97706">XLE</div>
+    <a class="spotlight-card" href="assets/xle/regression_recent.html" style="--accent:#f59e0b">
+      <div class="spotlight-date">2026-03-27</div>
+      <div class="spotlight-symbol" style="color:#f59e0b">XLE</div>
       <div class="spotlight-line">distance_to_252_high</div>
       <div class="spotlight-metric">action=watchlist_wait</div>
       <div class="spotlight-metric">status=watchlist_ready</div>
@@ -163,12 +174,12 @@
       <div class="spotlight-metric">last_selected=2026-02-19</div>
       <div class="spotlight-metric">days_since_last=35</div>
       <div class="spotlight-note">Preferred line is valid but currently waiting below cutoff.</div>
-    </div>
+    </a>
     
 
-    <div class="spotlight-card" style="--accent:#64748b">
-      <div class="spotlight-date">2026-03-26</div>
-      <div class="spotlight-symbol" style="color:#64748b">QQQ</div>
+    <a class="spotlight-card" href="assets/qqq/regression_recent.html" style="--accent:#f8d9a0">
+      <div class="spotlight-date">2026-03-27</div>
+      <div class="spotlight-symbol" style="color:#f8d9a0">QQQ</div>
       <div class="spotlight-line">distance_bottom5</div>
       <div class="spotlight-metric">action=inactive_wait</div>
       <div class="spotlight-metric">status=watchlist_ready</div>
@@ -178,12 +189,12 @@
       <div class="spotlight-metric">last_selected=n/a</div>
       <div class="spotlight-metric">days_since_last=n/a</div>
       <div class="spotlight-note">Preferred line is inactive; continue monitoring without action.</div>
-    </div>
+    </a>
     
 
-    <div class="spotlight-card" style="--accent:#64748b">
-      <div class="spotlight-date">2026-03-18</div>
-      <div class="spotlight-symbol" style="color:#64748b">TSLA</div>
+    <a class="spotlight-card" href=".cache/tsla-swing-entry/signal_chart.html" style="--accent:#f8d9a0">
+      <div class="spotlight-date">2026-03-27</div>
+      <div class="spotlight-symbol" style="color:#f8d9a0">TSLA</div>
       <div class="spotlight-line">fallback_top15</div>
       <div class="spotlight-metric">action=inactive_wait</div>
       <div class="spotlight-metric">status=preferred_overlay</div>
@@ -193,20 +204,51 @@
       <div class="spotlight-metric">last_selected=n/a</div>
       <div class="spotlight-metric">days_since_last=n/a</div>
       <div class="spotlight-note">Preferred line is inactive; continue monitoring without action.</div>
+    </a>
+    
+
+    <a class="spotlight-card" href=".cache/spy-swing-entry/signal_chart.html" style="--accent:#9ca3af">
+      <div class="spotlight-date">2026-03-27</div>
+      <div class="spotlight-symbol" style="color:#9ca3af">SPY</div>
+      <div class="spotlight-line">baseline_top10</div>
+      <div class="spotlight-metric">action=reference_only</div>
+      <div class="spotlight-metric">status=inactive</div>
+      <div class="spotlight-metric">recent=0</div>
+      <div class="spotlight-metric">latest=0.3184</div>
+      <div class="spotlight-metric">cutoff=0.3858</div>
+      <div class="spotlight-metric">last_selected=n/a</div>
+      <div class="spotlight-metric">days_since_last=n/a</div>
+      <div class="spotlight-note">Keep as market/reference context only.</div>
+    </a>
+    
+
+    <a class="spotlight-card" href="assets/tlt/regression_recent.html" style="--accent:#64748b">
+      <div class="spotlight-date">2026-03-27</div>
+      <div class="spotlight-symbol" style="color:#64748b">TLT</div>
+      <div class="spotlight-line">atr_pct_20_bottom5</div>
+      <div class="spotlight-metric">action=research_only</div>
+      <div class="spotlight-metric">status=inactive</div>
+      <div class="spotlight-metric">recent=0</div>
+      <div class="spotlight-metric">latest=0.0088</div>
+      <div class="spotlight-metric">cutoff=-0.0104</div>
+      <div class="spotlight-metric">last_selected=n/a</div>
+      <div class="spotlight-metric">days_since_last=n/a</div>
+      <div class="spotlight-note">Research-only line; no live operating action.</div>
+    </a>
     </div>
+      <div class="legend"><span class="legend-item"><span class="swatch" style="background:#0f766e"></span>selected_now</span><span class="legend-item"><span class="swatch" style="background:#f59e0b"></span>watchlist_wait</span><span class="legend-item"><span class="swatch" style="background:#f8d9a0"></span>inactive_wait</span><span class="legend-item"><span class="swatch" style="background:#9ca3af"></span>reference_only</span><span class="legend-item"><span class="swatch" style="background:#64748b"></span>research_only</span></div>
+      <div id="chart"></div>
     </div>
-    <div class="legend"><span class="legend-item"><span class="swatch" style="background:#0f766e"></span>selected_now</span><span class="legend-item"><span class="swatch" style="background:#d97706"></span>watchlist_wait</span><span class="legend-item"><span class="swatch" style="background:#64748b"></span>inactive_wait</span><span class="legend-item"><span class="swatch" style="background:#2563eb"></span>reference_only</span><span class="legend-item"><span class="swatch" style="background:#7c3aed"></span>research_only</span></div>
-    <div id="chart"></div>
   </div>
   <div id="tooltip" class="tooltip"></div>
   <script>
-    const rows = [{"symbol": "IWM", "action": "selected_now", "preferred_line": "baseline_threshold", "recent_selected_count": 45, "latest_date": "2026-03-10", "latest_value": 0.473054, "last_selected_date": "2026-03-10", "days_since_last_selected": 0, "action_note": "Preferred line is currently selected."}, {"symbol": "NVDA", "action": "watchlist_wait", "preferred_line": "binary_top12_5", "recent_selected_count": 6, "latest_date": "2026-03-17", "latest_value": 0.492579, "last_selected_date": "2026-02-25", "days_since_last_selected": 20, "action_note": "Preferred line is valid but currently waiting below cutoff."}, {"symbol": "XLE", "action": "watchlist_wait", "preferred_line": "distance_to_252_high", "recent_selected_count": 6, "latest_date": "2026-03-26", "latest_value": 0.0235827999059949, "last_selected_date": "2026-02-19", "days_since_last_selected": 35, "action_note": "Preferred line is valid but currently waiting below cutoff."}, {"symbol": "QQQ", "action": "inactive_wait", "preferred_line": "distance_bottom5", "recent_selected_count": 0, "latest_date": "2026-03-26", "latest_value": 0.0352518795722821, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Preferred line is inactive; continue monitoring without action."}, {"symbol": "TSLA", "action": "inactive_wait", "preferred_line": "fallback_top15", "recent_selected_count": 0, "latest_date": "2026-03-18", "latest_value": 0.391317, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Preferred line is inactive; continue monitoring without action."}, {"symbol": "SPY", "action": "reference_only", "preferred_line": "baseline_top10", "recent_selected_count": 0, "latest_date": "2026-03-17", "latest_value": 0.318356, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Keep as market/reference context only."}, {"symbol": "TLT", "action": "research_only", "preferred_line": "atr_pct_20_bottom5", "recent_selected_count": 0, "latest_date": "2026-03-26", "latest_value": 0.0087573525098017, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Research-only line; no live operating action."}];
+    const rows = [{"symbol": "IWM", "action": "selected_now", "preferred_line": "baseline_threshold", "recent_selected_count": 45, "latest_date": "2026-03-27", "latest_value": 0.473054, "last_selected_date": "2026-03-10", "days_since_last_selected": 0, "action_note": "Preferred line is currently selected.", "chart_href": ".cache/iwm-swing-entry/signal_chart.html"}, {"symbol": "NVDA", "action": "watchlist_wait", "preferred_line": "binary_top12_5", "recent_selected_count": 6, "latest_date": "2026-03-27", "latest_value": 0.492579, "last_selected_date": "2026-02-25", "days_since_last_selected": 20, "action_note": "Preferred line is valid but currently waiting below cutoff.", "chart_href": ".cache/nvda-swing-entry/signal_chart.html"}, {"symbol": "XLE", "action": "watchlist_wait", "preferred_line": "distance_to_252_high", "recent_selected_count": 6, "latest_date": "2026-03-27", "latest_value": 0.0235827999059949, "last_selected_date": "2026-02-19", "days_since_last_selected": 35, "action_note": "Preferred line is valid but currently waiting below cutoff.", "chart_href": "assets/xle/regression_recent.html"}, {"symbol": "QQQ", "action": "inactive_wait", "preferred_line": "distance_bottom5", "recent_selected_count": 0, "latest_date": "2026-03-27", "latest_value": 0.0352518795722821, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Preferred line is inactive; continue monitoring without action.", "chart_href": "assets/qqq/regression_recent.html"}, {"symbol": "TSLA", "action": "inactive_wait", "preferred_line": "fallback_top15", "recent_selected_count": 0, "latest_date": "2026-03-27", "latest_value": 0.391317, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Preferred line is inactive; continue monitoring without action.", "chart_href": ".cache/tsla-swing-entry/signal_chart.html"}, {"symbol": "SPY", "action": "reference_only", "preferred_line": "baseline_top10", "recent_selected_count": 0, "latest_date": "2026-03-27", "latest_value": 0.318356, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Keep as market/reference context only.", "chart_href": ".cache/spy-swing-entry/signal_chart.html"}, {"symbol": "TLT", "action": "research_only", "preferred_line": "atr_pct_20_bottom5", "recent_selected_count": 0, "latest_date": "2026-03-27", "latest_value": 0.0087573525098017, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Research-only line; no live operating action.", "chart_href": "assets/tlt/regression_recent.html"}];
     const colors = {
       selected_now: "#0f766e",
-      watchlist_wait: "#d97706",
-      inactive_wait: "#64748b",
-      reference_only: "#2563eb",
-      research_only: "#7c3aed",
+      watchlist_wait: "#f59e0b",
+      inactive_wait: "#f8d9a0",
+      reference_only: "#9ca3af",
+      research_only: "#64748b",
     };
     const chart = document.getElementById('chart');
     const tooltip = document.getElementById('tooltip');
@@ -215,9 +257,8 @@
     const topPad = 40;
     const leftPad = 56;
     const rightPad = 24;
-    const bottomPad = 56;
     const innerWidth = width - leftPad - rightPad;
-    const innerHeight = height - topPad - bottomPad;
+    const innerHeight = height - topPad - 56;
     const maxRecent = Math.max(...rows.map(r => r.recent_selected_count), 1);
     const barWidth = innerWidth / rows.length * 0.72;
 
@@ -267,6 +308,7 @@
       rect.setAttribute('rx', '6');
       rect.setAttribute('fill', colors[row.action] || '#475569');
       rect.setAttribute('opacity', row.action === 'inactive_wait' ? '0.55' : '0.95');
+      rect.style.cursor = 'pointer';
       rect.addEventListener('mousemove', event => {
         tooltip.style.display = 'block';
         tooltip.style.left = (event.clientX + 14) + 'px';
@@ -275,6 +317,9 @@
       });
       rect.addEventListener('mouseleave', () => {
         tooltip.style.display = 'none';
+      });
+      rect.addEventListener('click', () => {
+        window.location.href = row.chart_href;
       });
       svg.appendChild(rect);
 
