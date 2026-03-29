@@ -1,0 +1,2 @@
+commit_id	validation_f1	validation_accuracy	validation_bal_acc	test_f1	test_accuracy	test_bal_acc	headline_score	promotion_gate	status	description
+uncommitted	0.5628	0.3958	0.5042	0.5248	0.3572	0.5018	0.5230	fail	baseline	initial SPY 60d plus8/minus4 drop-neutral baseline collapsed toward near-all-positive predictions and should be treated as a market-beta reference only for now

@@ -22,6 +22,10 @@ ASSET_DEFAULTS: dict[str, AssetDefaults] = {
     "qqq": AssetDefaults("qqq", "QQQ", 0.08, -0.04, 60, "drop-neutral"),
     "nvda": AssetDefaults("nvda", "NVDA", 0.12, -0.06, 60, "drop-neutral"),
     "tsla": AssetDefaults("tsla", "TSLA", 0.12, -0.06, 60, "drop-neutral"),
+    "spy": AssetDefaults("spy", "SPY", 0.08, -0.04, 60, "drop-neutral"),
+    "iwm": AssetDefaults("iwm", "IWM", 0.10, -0.05, 60, "drop-neutral"),
+    "tlt": AssetDefaults("tlt", "TLT", 0.06, -0.03, 60, "drop-neutral"),
+    "xle": AssetDefaults("xle", "XLE", 0.10, -0.05, 60, "drop-neutral"),
 }
 
 REPO_DIR = Path(__file__).resolve().parent

@@ -1,0 +1,2 @@
+commit_id	validation_f1	validation_accuracy	validation_bal_acc	test_f1	test_accuracy	test_bal_acc	headline_score	promotion_gate	status	description
+uncommitted	0.3851	0.2406	0.5019	0.3912	0.2432	0.5000	0.4174	fail	baseline	initial TLT 60d plus6/minus3 drop-neutral baseline fully collapsed into all-positive predictions and is a candidate for formulation change rather than feature tuning

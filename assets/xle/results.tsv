@@ -1,0 +1,2 @@
+commit_id	validation_f1	validation_accuracy	validation_bal_acc	test_f1	test_accuracy	test_bal_acc	headline_score	promotion_gate	status	description
+uncommitted	0.4030	0.2575	0.5046	0.5319	0.3623	0.5000	0.4936	fail	baseline	initial XLE 60d plus10/minus5 drop-neutral baseline collapsed into all-positive behavior and needs label or regime work before feature expansion
