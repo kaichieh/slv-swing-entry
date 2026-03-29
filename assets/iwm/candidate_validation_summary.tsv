@@ -1,0 +1,3 @@
+model_name	extra_features	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	threshold
+baseline	baseline	0.550063	0.605778	0.580411	0.556014	0.73743	0.569559	0.45
+rs_vs_benchmark_60	rs_vs_benchmark_60	0.526976	0.575348	0.592417	0.564343	0.761173	0.5692	0.436

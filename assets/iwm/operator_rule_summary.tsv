@@ -1,0 +1,11 @@
+model_name	rule_name	threshold_or_cutoff	selected_count	predicted_positive_rate	precision	recall	hit_rate	avg_return	max_drawdown_compound
+baseline	threshold	0.45	12	0.7374	0.4545	0.8027	0.75	0.037	-0.1342
+baseline	top_10pct	0.4757	8	0.1006	0.4444	0.107	0.375	0.0153	-0.0957
+baseline	top_12_5pct	0.4732	9	0.1257	0.4556	0.1371	0.4444	0.0286	-0.0903
+baseline	top_15pct	0.4711	9	0.1508	0.4167	0.1505	0.4444	0.0204	-0.0903
+baseline	top_20pct	0.4683	10	0.2011	0.4167	0.2007	0.6	0.0463	-0.1284
+rs_vs_benchmark_60	threshold	0.436	12	0.7612	0.4587	0.8361	0.75	0.0361	-0.1342
+rs_vs_benchmark_60	top_10pct	0.4673	8	0.1006	0.4722	0.1137	0.5	0.0242	-0.0957
+rs_vs_benchmark_60	top_12_5pct	0.4644	8	0.1257	0.4667	0.1405	0.375	0.0167	-0.0957
+rs_vs_benchmark_60	top_15pct	0.462	10	0.1508	0.4444	0.1605	0.5	0.0248	-0.0903
+rs_vs_benchmark_60	top_20pct	0.459	10	0.2011	0.4375	0.2107	0.6	0.0463	-0.1284

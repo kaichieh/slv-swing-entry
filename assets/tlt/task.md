@@ -19,10 +19,14 @@
 
 - [x] Run a first regression prototype instead of a normal feature sweep. Performance: `assets/tlt/regression_prototype_summary.tsv` confirmed that TLT behaves more like a formulation problem than a standard feature problem. The best current prototype was `atr_pct_20` with `validation_corr=0.0724`, `test_corr=-0.0955`, and `test_bottom10_avg_return=0.29%`, while the full test average stayed negative near `-0.93%`. `distance_to_252_high` and the baseline regression both stayed weak. This is not a ready signal, but it is still more promising than the binary classifier path.
 
+## Round 4 Regression Validation
+
+- [x] Formalize the first TLT ranking path with saved summary, recent, and walk-forward outputs using `atr_pct_20`. Performance: `assets/tlt/regression_summary.tsv` showed that the least-bad operating choice is `bottom 5%`, with `test_avg_return=0.73%` against an overall `test_avg_return=-0.93%`, while the `top` buckets stayed clearly negative. `assets/tlt/regression_recent.tsv` showed the latest saved row on `2026-03-26` was not selected. `assets/tlt/regression_walkforward.tsv` was mixed but still directionally interesting: fold 1 reached `test_bucket_avg_return=1.48%` versus `test_avg_return=0.46%`, fold 2 stayed weak at `-0.18%`, and fold 3 recovered to `0.48%` while the full fold average was `-1.65%`. This keeps TLT on a research-only regression track.
+
 ## Next Round
 
-- [ ] If TLT is too different for the binary workflow, test whether regression/ranking is a better fit.
-- [ ] If a binary candidate works, run threshold versus percentile operating rules and walk-forward validation.
+- [ ] If TLT work continues, compare `atr_pct_20` against one more ranking feature set such as `atr_pct_20 + distance_to_252_high` before any live chart work.
+- [ ] Do not return TLT to the binary workflow unless a genuinely different label family is introduced.
 
 ## Notes
 

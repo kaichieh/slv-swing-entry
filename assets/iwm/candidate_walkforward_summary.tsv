@@ -1,0 +1,7 @@
+model_name	fold	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate
+baseline	fold_1	0.561594	0.5	0.40402	0.5	1.0
+baseline	fold_2	0.406061	0.504216	0.4334	0.498448	0.988665
+baseline	fold_3	0.505393	0.640674	0.459064	0.525116	0.438287
+rs_vs_benchmark_60	fold_1	0.561594	0.5	0.40402	0.5	1.0
+rs_vs_benchmark_60	fold_2	0.40402	0.5	0.435468	0.5	1.0
+rs_vs_benchmark_60	fold_3	0.444444	0.55193	0.616025	0.581306	0.787154

@@ -1,0 +1,3 @@
+model_name	extra_features	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	threshold
+baseline_10_5	baseline	0.568935	0.655958	0.444444	0.521759	0.666156	0.513688	0.308
+rolling_vol_60	rolling_vol_60	0.599291	0.687074	0.460033	0.547147	0.62634	0.536723	0.381

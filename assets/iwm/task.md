@@ -19,14 +19,19 @@
 
 - [x] Test `ret_60`, `sma_gap_60`, `rolling_vol_60`, `atr_pct_20`, `distance_to_252_high`, and `rs_vs_benchmark_60` versus `SPY`. Performance: the strongest add-on was `rs_vs_benchmark_60`, reaching `validation_f1=0.5270`, `validation_bal_acc=0.5753`, `test_f1=0.5924`, `test_bal_acc=0.5643`, `headline_score=0.5692`. `distance_to_252_high` and `ret_60 + sma_gap_60` were close behind at `0.5655` and `0.5647`, and `rolling_vol_60` was the cleanest validation-side add-on at `validation_bal_acc=0.6256`. But the key conclusion is that the baseline itself still remained strongest at `headline_score=0.5730`, so the feature sweep did not dislodge it.
 
+## Round 4 Validation
+
+- [x] Compare threshold versus top-percentile operating rules on the default baseline and the `rs_vs_benchmark_60` side candidate. Performance: threshold remained the only broadly usable operator for both lines, with `avg_return=3.70%` on the baseline and `3.61%` on the relative-strength candidate. The best percentile overlay was `top_20pct`, which reached `avg_return=4.63%`, but it only produced `10` non-overlapping trades and did not clearly improve the operating case.
+- [x] Add 4-fold walk-forward validation on the baseline and the `rs_vs_benchmark_60` side candidate. Performance: the first two folds still collapsed toward always-long behavior for both lines, but fold 3 was informative. The relative-strength side candidate reached `test_f1=0.6160`, `test_bal_acc=0.5813`, and `test_positive_rate=0.7872`, ahead of the baseline at `0.4591 / 0.5251 / 0.4383`. That keeps the baseline as the active IWM default, while `rs_vs_benchmark_60` becomes the only sidecar still worth keeping.
+
 ## Next Round
 
-- [ ] Because IWM already has a pass-level baseline and no better feature extension yet, compare threshold versus top-percentile rules on the default baseline before trying more features.
-- [ ] Add walk-forward validation on the baseline and the `rs_vs_benchmark_60` side candidate to confirm whether the edge is robust.
+- [ ] If IWM goes live as-is, save recent operator output for the baseline threshold line and the `rs_vs_benchmark_60` sidecar.
+- [ ] If more IWM work continues, compare baseline threshold against `rs_vs_benchmark_60` under a stricter walk-forward trading overlay instead of adding more nearby features.
 
 ## Notes
 
 - IWM is the repo's intended small-cap cycle line, so relative performance versus SPY matters.
 - IWM immediately looks like the strongest of the new macro basket, so the next round should focus on validation and simplification rather than rescue work.
 - Because the baseline already passed, the next IWM round should move to feature and rule validation rather than more label tuning.
-- The first feature sweep suggests `rs_vs_benchmark_60` is the only IWM add-on clearly worth keeping around for later validation.
+- The first feature sweep suggests `rs_vs_benchmark_60` is the only IWM add-on clearly worth keeping around for later validation, but the broad baseline still has the cleaner full-sample case.

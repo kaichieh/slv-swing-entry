@@ -1,0 +1,7 @@
+model_name	rule_name	fold	trade_count	hit_rate	avg_return	max_drawdown_compound	threshold_or_cutoff
+adopted_combo	top_20pct	fold_1	6	1.0	0.499085	0.0	0.555153
+adopted_combo	top_20pct	fold_2	7	0.428571	0.103679	-0.533515	0.511632
+adopted_combo	top_20pct	fold_3	8	0.625	0.136012	-0.139337	0.500649
+fallback_combo	top_15pct	fold_1	6	1.0	0.562721	0.0	0.5147
+fallback_combo	top_15pct	fold_2	7	0.428571	0.096325	-0.563317	0.50108
+fallback_combo	top_15pct	fold_3	6	0.833333	0.138457	0.0	0.527615

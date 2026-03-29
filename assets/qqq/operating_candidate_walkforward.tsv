@@ -1,0 +1,7 @@
+model_name	fold	validation_avg_return	test_avg_return	validation_bucket_avg_return	test_bucket_avg_return	validation_bucket_hit_rate	test_bucket_hit_rate
+distance_only	fold_1	0.052913	0.041101	0.047158	0.071028	0.6	0.872727
+distance_only	fold_2	0.041101	0.05847	0.068543	0.221516	0.909091	0.981818
+distance_only	fold_3	0.05847	0.026512	0.228115	0.052125	0.981818	0.727273
+distance_plus_atr	fold_1	0.052913	0.041101	0.035919	0.066139	0.563636	0.890909
+distance_plus_atr	fold_2	0.041101	0.05847	0.064966	0.215246	0.909091	0.963636
+distance_plus_atr	fold_3	0.05847	0.026512	0.220327	0.039537	0.963636	0.6

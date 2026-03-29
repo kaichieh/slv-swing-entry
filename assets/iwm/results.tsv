@@ -3,3 +3,4 @@ uncommitted	0.5501	0.5035	0.6058	0.5804	0.5154	0.5560	0.5730	pass	baseline	initi
 uncommitted	0.4987	0.5536	0.6034	0.5500	0.5281	0.5605	0.5482	fail	reject	60d plus8/minus4 kept decent balance on IWM but did not beat the baseline on headline quality
 uncommitted	0.5250	0.6583	0.6341	0.5139	0.5872	0.5633	0.5429	fail	reject	60d plus12/minus6 made IWM cleaner but still failed to outperform the default 10 over 5 baseline
 uncommitted	0.5270	0.0000	0.5753	0.5924	0.0000	0.5643	0.5692	fail	candidate	rs_vs_benchmark_60 versus SPY is the strongest IWM feature add-on so far, but the default baseline still edges it out on headline score
+uncommitted	0.5501	0.5035	0.6058	0.5804	0.5154	0.5560	0.5730	pass	validated	IWM baseline still holds after rule and walk-forward validation, while rs_vs_benchmark_60 remains only a sidecar rather than a replacement

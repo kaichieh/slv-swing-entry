@@ -19,14 +19,18 @@
 
 - [x] Run a first regression prototype instead of a normal feature sweep. Performance: `assets/xle/regression_prototype_summary.tsv` showed that XLE is at least more recoverable than TLT under a ranking formulation. The best current prototype was `ret_60 + sma_gap_60`, with `validation_corr=0.0344`, `test_corr=-0.0599`, `test_bottom10_avg_return=5.72%`, and `test_avg_return=3.30%`. `distance_to_252_high` and `atr_pct_20` were slightly weaker but still directionally useful. This does not rescue the binary line, but it gives XLE a credible ranking-style path.
 
+## Round 4 Regression Validation
+
+- [x] Formalize the first XLE ranking path with saved summary, recent, and walk-forward outputs on `ret_60 + sma_gap_60`. Performance: `assets/xle/regression_summary.tsv` confirmed that both `top` and `bottom` buckets can beat the full test average, but `bottom 10%` remained the cleanest operating choice at `test_avg_return=5.72%` versus the overall `3.30%`, with `65.69%` hit rate. `assets/xle/regression_recent.tsv` showed the latest saved row on `2026-03-26` was not selected. `assets/xle/regression_walkforward.tsv` stayed mixed but materially better than TLT: fold 1 was still weak at `-1.14%`, while folds 2 and 3 reached `8.15%` and `6.16%` test bucket returns. That keeps XLE on a credible ranking-style path without yet supporting adoption.
+
 ## Next Round
 
-- [ ] If XLE finds a credible candidate, compare threshold versus top-percentile rules.
-- [ ] If XLE stays too regime-sensitive, use walk-forward validation before any adoption decision.
+- [ ] If XLE work continues, compare `ret_60 + sma_gap_60` directly against `distance_to_252_high` in a dedicated ranking walk-forward table before any operating adoption.
+- [ ] Keep XLE on a ranking-style workflow rather than retrying nearby binary barriers.
 
 ## Notes
 
 - XLE is intended to cover inflation and commodity-driven equity regimes that are underrepresented in the current set.
 - The first baseline acted like a commodity-beta always-long model, so the next round should focus on label redesign or stronger regime filters before broader feature sweeps.
 - The label sanity pass confirmed that no nearby barrier fixes the problem, so the next useful XLE step is regime or formulation change, not more of the same binary tuning.
-- The first regression prototype now points to `ret_60 + sma_gap_60` as the cleanest XLE side path if the asset stays on a ranking-style workflow.
+- The first regression prototype now points to `ret_60 + sma_gap_60` as the cleanest XLE side path if the asset stays on a ranking-style workflow, but it still needs one more direct ranking compare before it can become an operating line.

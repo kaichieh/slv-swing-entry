@@ -19,14 +19,19 @@
 
 - [x] Test `ret_60`, `sma_gap_60`, `atr_pct_20`, `distance_to_252_high`, `rolling_vol_60`, and `above_200dma_flag` on the cleaner `60d +10%/-5%` SPY label. Performance: the best feature add-on was `rolling_vol_60`, with `validation_f1=0.5993`, `validation_bal_acc=0.6871`, `test_f1=0.4600`, `test_bal_acc=0.5471`, `headline_score=0.5367`, and `test_positive_rate=0.6263`. `atr_pct_20` and `distance_to_252_high` were close behind at `headline_score=0.5253` and `0.5232`, but none of them beat the broad default baseline on overall score. This means SPY now has a cleaner secondary line, but still not a better mainline candidate than its market-reference baseline.
 
+## Round 4 Validation
+
+- [x] Compare simpler top-percentile operating rules on the cleaner `60d +10%/-5%` SPY side path. Performance: threshold was still flat-to-negative on both candidates, with `avg_return=-0.18%` on the plain `10/-5` line and `-0.79%` on the `rolling_vol_60` extension. The only operator-style line worth keeping was `rolling_vol_60 + top_10pct`, which reached `avg_return=2.81%`, `hit_rate=50.00%`, and `max_drawdown_compound=-9.79%`, but only across `6` non-overlapping trades.
+- [x] Add 4-fold walk-forward validation on the plain `10/-5` line and the `rolling_vol_60` extension. Performance: `rolling_vol_60` was modestly more stable than the plain side candidate, with `test_bal_acc=0.6223 / 0.5578 / 0.5605` across folds, versus `0.6344 / 0.5818 / 0.5373` for the plain `10/-5` line. That is enough to keep `rolling_vol_60` as the only SPY side candidate, but not enough to turn SPY into anything more than a market reference.
+
 ## Next Round
 
-- [ ] If SPY remains too broad-beta, compare simpler top-percentile operating rules before adding more features.
-- [ ] If a non-degenerate line appears, run 4-fold walk-forward and forward-trade validation.
+- [ ] If SPY work continues, treat `rolling_vol_60 + top_10pct` as the only operator-style side candidate worth keeping.
+- [ ] Otherwise keep SPY as the repo's market reference and stop adding nearby SPY features for now.
 
 ## Notes
 
 - SPY should become the repo's core broad-market reference if it produces a stable line.
 - The first baseline behaved like a broad-beta always-long classifier, so the next round should focus on label sanity and regime filters rather than treating SPY as a ready entry line.
 - The newest label sanity pass suggests `60d +10%/-5%` is the only SPY variant worth extending, because it is the first one that looks materially less degenerate than the broad baseline.
-- The first feature sweep on that `10/-5` side path suggests `rolling_vol_60` is the only add-on worth keeping for future SPY validation.
+- The first feature sweep on that `10/-5` side path suggests `rolling_vol_60` is the only add-on worth keeping for future SPY validation, and even then only as a side candidate rather than a mainline replacement.
