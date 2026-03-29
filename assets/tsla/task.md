@@ -65,6 +65,10 @@
 
 - [x] Render a lightweight HTML status page for the TSLA overlays. Performance: `assets/tsla/active_status.html` now turns the current operator split into a quick visual dashboard. The fallback `top 15%` overlay is clearly marked as preferred, while the adopted-line overlays remain visible as reference-only context.
 
+## Round 12 Monitor Snapshot
+
+- [x] Save a preferred-line monitor snapshot for day-to-day use. Performance: `assets/tsla/monitor_snapshot.tsv` now reduces the TSLA operator choice to a single current stance row. The preferred line remains `fallback_top15`, but the action is `inactive_wait` because the conservative overlay still has `0` recent selections and no current live trigger.
+
 ## Notes
 
 - TSLA is no longer purely label-limited; `distance_to_252_high` unlocked a meaningful separation signal.

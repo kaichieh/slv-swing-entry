@@ -52,6 +52,10 @@
 
 - [x] Render a lightweight HTML status page for the current IWM operating lines. Performance: `assets/iwm/active_status.html` now mirrors the active summary in a human-readable view. The page makes the baseline-versus-sidecar split obvious: the baseline is still the preferred line, while the relative-strength sidecar is only a confirmation layer.
 
+## Round 12 Monitor Snapshot
+
+- [x] Save a preferred-line monitor snapshot for day-to-day use. Performance: `assets/iwm/monitor_snapshot.tsv` now compresses the current IWM stance into a single row. The preferred line remains `baseline_threshold`, the latest row on `2026-03-10` is still selected, and the asset action is therefore `selected_now`. This is the clearest sign in the non-SLV set that is still live-like right now.
+
 ## Next Round
 
 - [ ] If an operator-only choice is needed, document when to prefer the sidecar over the baseline threshold line.

@@ -52,6 +52,10 @@
 
 - [x] Render a lightweight HTML status page for the SPY side lines. Performance: `assets/spy/active_status.html` now shows the same reference-only conclusion in a faster visual format. Both remaining SPY side lines are inactive, so the page is mainly there to make future non-events obvious.
 
+## Round 12 Monitor Snapshot
+
+- [x] Save a preferred-line monitor snapshot for day-to-day use. Performance: `assets/spy/monitor_snapshot.tsv` now reduces the current SPY stance to a single row. The preferred line is still `baseline_top10`, but the action is explicitly `reference_only`, which means SPY should only be used as market context and not as a live entry lane.
+
 ## Next Round
 
 - [ ] If SPY work continues at all, keep only the simpler `10/-5 + top_10pct` side line for reference and stop extending it.

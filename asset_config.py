@@ -161,5 +161,9 @@ def get_active_status_chart_path(asset_key: str | None = None) -> Path:
     return get_asset_dir(asset_key) / "active_status.html"
 
 
+def get_monitor_snapshot_path(asset_key: str | None = None) -> Path:
+    return get_asset_dir(asset_key) / "monitor_snapshot.tsv"
+
+
 def stooq_url(symbol: str) -> str:
     return f"https://stooq.com/q/d/l/?s={symbol.lower()}.us&i=d"

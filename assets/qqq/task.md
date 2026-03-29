@@ -71,6 +71,10 @@
 
 - [x] Render a lightweight HTML status page for the QQQ watchlist candidates. Performance: `assets/qqq/active_status.html` now gives the current sparse-watchlist decision a visual home. It keeps `distance_to_252_high + bottom 5%` as the preferred line and makes it easier to see that the tighter and richer side studies are still secondary despite their attractive backtest returns.
 
+## Round 12 Monitor Snapshot
+
+- [x] Save a preferred-line monitor snapshot for day-to-day use. Performance: `assets/qqq/monitor_snapshot.tsv` now compresses the current QQQ stance into one row. The preferred line remains `distance_bottom5`, but the action is `inactive_wait` because there were still `0` recent selections and the latest row on `2026-03-26` stayed well above the bottom-bucket cutoff.
+
 ## Notes
 
 - QQQ currently looks much more label-limited than feature-limited.

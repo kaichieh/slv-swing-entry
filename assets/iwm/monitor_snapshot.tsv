@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+iwm	IWM	baseline_threshold	binary_operator	primary	active	selected_now	45	2026-03-10	0.473054	True	0.45	2026-03-10	0	Preferred line is currently selected.

@@ -51,6 +51,10 @@
 
 - [x] Render a lightweight HTML status page for the XLE ranking lines. Performance: `assets/xle/active_status.html` now makes the active XLE operating choice easy to review without opening TSV files. The distance-based line is clearly marked as preferred, while the older combo is explicitly demoted to side-study status.
 
+## Round 12 Monitor Snapshot
+
+- [x] Save a preferred-line monitor snapshot for day-to-day use. Performance: `assets/xle/monitor_snapshot.tsv` now distills the current XLE stance into a single monitoring row. The preferred line is `distance_to_252_high`, the action is `watchlist_wait`, and the last selected date remains `2026-02-19`, which means XLE stays on the active watchlist but is currently waiting below cutoff.
+
 ## Next Round
 
 - [ ] If XLE work continues, promote `distance_to_252_high + bottom 10%` into recent/rule-style monitoring and treat it as the leading operating candidate.

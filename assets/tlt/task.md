@@ -51,6 +51,10 @@
 
 - [x] Render a lightweight HTML status page for the surviving TLT regression line. Performance: `assets/tlt/active_status.html` now gives TLT a visual research dashboard consistent with the other assets. It keeps the current message simple: `atr_pct_20 + bottom 5%` is still the only line worth carrying, and it is still inactive.
 
+## Round 12 Monitor Snapshot
+
+- [x] Save a preferred-line monitor snapshot for day-to-day use. Performance: `assets/tlt/monitor_snapshot.tsv` now makes the TLT stance explicit in one row. The preferred line remains `atr_pct_20_bottom5`, but the action is `research_only`, which formally separates TLT from the repo's watchlist-ready assets.
+
 ## Next Round
 
 - [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.

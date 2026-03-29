@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+spy	SPY	baseline_top10	binary_operator	reference_side_line	inactive	reference_only	0	2026-03-17	0.318356	False	0.385763			Keep as market/reference context only.
