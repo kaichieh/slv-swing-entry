@@ -67,6 +67,10 @@
 
 - [x] Save a one-file active status summary for the current QQQ watchlist candidates. Performance: `assets/qqq/active_status_summary.tsv` now keeps the active choice and side studies in one place. The repo still prefers `distance_to_252_high + bottom 5%` as the primary QQQ watchlist because it has the best robustness-first profile, while `distance_to_252_high + atr_pct_20 + bottom 5%` and `distance_to_252_high + bottom 3%` remain secondary. All three still had `0` recent selections through `2026-03-26`.
 
+## Round 11 Active Status HTML
+
+- [x] Render a lightweight HTML status page for the QQQ watchlist candidates. Performance: `assets/qqq/active_status.html` now gives the current sparse-watchlist decision a visual home. It keeps `distance_to_252_high + bottom 5%` as the preferred line and makes it easier to see that the tighter and richer side studies are still secondary despite their attractive backtest returns.
+
 ## Notes
 
 - QQQ currently looks much more label-limited than feature-limited.

@@ -153,5 +153,13 @@ def get_regression_walkforward_output_path(asset_key: str | None = None) -> Path
     return get_asset_dir(asset_key) / "regression_walkforward.tsv"
 
 
+def get_active_status_output_path(asset_key: str | None = None) -> Path:
+    return get_asset_dir(asset_key) / "active_status_summary.tsv"
+
+
+def get_active_status_chart_path(asset_key: str | None = None) -> Path:
+    return get_asset_dir(asset_key) / "active_status.html"
+
+
 def stooq_url(symbol: str) -> str:
     return f"https://stooq.com/q/d/l/?s={symbol.lower()}.us&i=d"

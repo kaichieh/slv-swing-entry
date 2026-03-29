@@ -63,6 +63,10 @@
 
 - [x] Save a one-file active status summary for the current NVDA operating overlays. Performance: `assets/nvda/active_status_summary.tsv` now packages the watchlist choice into one table. `binary_top12_5` remains the preferred practical overlay, with `recent_selected_count=6`, latest score `0.4926`, and last selected date `2026-02-25`, while `binary_top10` stays secondary because it matches recent activity but has the weaker historical trade profile.
 
+## Round 11 Active Status HTML
+
+- [x] Render a lightweight HTML status page for the NVDA operator overlays. Performance: `assets/nvda/active_status.html` now gives the binary watchlist lane a direct visual summary. The page keeps the current decision obvious: `top 12.5%` is still the preferred practical overlay, and `top 10%` is only a tighter side option.
+
 ## Next Round
 
 - [x] Run a clean dedicated `rolling_vol_60` pass for NVDA. Performance: the dedicated train path confirmed `rolling_vol_60` is viable but not best-in-class, and `ret_60 + sma_gap_60 + rolling_vol_60` only reached `validation_f1=0.7009`, `validation_bal_acc=0.5509`, `test_f1=0.6463`, `test_bal_acc=0.5204`, `headline_score=0.6099`.

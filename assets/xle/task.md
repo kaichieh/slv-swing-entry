@@ -47,6 +47,10 @@
 
 - [x] Save a one-file active status summary for the main XLE ranking lines. Performance: `assets/xle/active_status_summary.tsv` now closes the operator choice cleanly. `distance_to_252_high + bottom 10%` is marked as the preferred XLE watchlist with `recent_selected_count=6`, last selected on `2026-02-19`, and the latest saved row still below the watchlist cutoff. `ret_60 + sma_gap_60` remains a secondary static-split study only.
 
+## Round 11 Active Status HTML
+
+- [x] Render a lightweight HTML status page for the XLE ranking lines. Performance: `assets/xle/active_status.html` now makes the active XLE operating choice easy to review without opening TSV files. The distance-based line is clearly marked as preferred, while the older combo is explicitly demoted to side-study status.
+
 ## Next Round
 
 - [ ] If XLE work continues, promote `distance_to_252_high + bottom 10%` into recent/rule-style monitoring and treat it as the leading operating candidate.

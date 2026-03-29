@@ -48,6 +48,10 @@
 
 - [x] Save a one-file active status summary for the SPY side lines. Performance: `assets/spy/active_status_summary.tsv` now makes the practical decision explicit. Both `baseline_top10` and `rolling_vol_top10` are inactive with `recent_selected_count=0`, latest date `2026-03-17`, and no recent selected rows. This confirms there is no live SPY operating lane to preserve; SPY should stay reference-only.
 
+## Round 11 Active Status HTML
+
+- [x] Render a lightweight HTML status page for the SPY side lines. Performance: `assets/spy/active_status.html` now shows the same reference-only conclusion in a faster visual format. Both remaining SPY side lines are inactive, so the page is mainly there to make future non-events obvious.
+
 ## Next Round
 
 - [ ] If SPY work continues at all, keep only the simpler `10/-5 + top_10pct` side line for reference and stop extending it.

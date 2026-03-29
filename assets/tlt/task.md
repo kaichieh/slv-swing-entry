@@ -47,6 +47,10 @@
 
 - [x] Save a one-file active status summary for the surviving TLT regression line. Performance: `assets/tlt/active_status_summary.tsv` now captures the current state of `atr_pct_20 + bottom 5%` in one place. The line remains inactive with `recent_selected_count=0`, latest `predicted_return=0.0088`, and no recent selected rows, which reinforces that TLT is still research-only unless a truly new formulation is introduced.
 
+## Round 11 Active Status HTML
+
+- [x] Render a lightweight HTML status page for the surviving TLT regression line. Performance: `assets/tlt/active_status.html` now gives TLT a visual research dashboard consistent with the other assets. It keeps the current message simple: `atr_pct_20 + bottom 5%` is still the only line worth carrying, and it is still inactive.
+
 ## Next Round
 
 - [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.

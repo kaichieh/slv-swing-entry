@@ -61,6 +61,10 @@
 
 - [x] Save a one-file active status summary for the current TSLA overlays. Performance: `assets/tsla/active_status_summary.tsv` now makes the execution split explicit. `fallback_top15` is still the preferred conservative overlay because it keeps the strongest historical operator profile, while `adopted_top10` and `adopted_top20` remain model-reference overlays. All three stayed inactive across the recent saved window, so there is still no live pressure to change the current TSLA no-entry stance.
 
+## Round 11 Active Status HTML
+
+- [x] Render a lightweight HTML status page for the TSLA overlays. Performance: `assets/tsla/active_status.html` now turns the current operator split into a quick visual dashboard. The fallback `top 15%` overlay is clearly marked as preferred, while the adopted-line overlays remain visible as reference-only context.
+
 ## Notes
 
 - TSLA is no longer purely label-limited; `distance_to_252_high` unlocked a meaningful separation signal.

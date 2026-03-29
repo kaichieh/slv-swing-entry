@@ -48,6 +48,10 @@
 
 - [x] Save a one-file active status summary for the current IWM operating lines. Performance: `assets/iwm/active_status_summary.tsv` now packages the current usage decision into one table. The baseline threshold remains the preferred line with `recent_selected_count=45` and latest selected on `2026-03-10`, while the `rs_vs_benchmark_60` sidecar is also active at `44` selections but is explicitly marked as confirmation-only. This closes the practical next step for IWM: there is no reason to treat the sidecar as a separate watchlist stream.
 
+## Round 11 Active Status HTML
+
+- [x] Render a lightweight HTML status page for the current IWM operating lines. Performance: `assets/iwm/active_status.html` now mirrors the active summary in a human-readable view. The page makes the baseline-versus-sidecar split obvious: the baseline is still the preferred line, while the relative-strength sidecar is only a confirmation layer.
+
 ## Next Round
 
 - [ ] If an operator-only choice is needed, document when to prefer the sidecar over the baseline threshold line.
