@@ -1,1 +1,13 @@
 commit_id	validation_f1	validation_accuracy	validation_bal_acc	test_f1	test_accuracy	test_bal_acc	headline_score	promotion_gate	status	description
+uncommitted	0.6312	0.4637	0.5043	0.6314	0.4620	0.5011	0.5796	fail	baseline	QQQ default baseline with 60d plus8/minus4 drop-neutral label
+uncommitted	0.5825	0.4277	0.5129	0.5697	0.4075	0.4895	0.5425	fail	reject	keep-all binary underperformed the default QQQ baseline
+uncommitted	0.6272	0.4583	0.5025	0.6101	0.4397	0.5012	0.5701	fail	reject	60d plus10/minus5 did not solve the near-all-positive bias
+uncommitted	0.6224	0.4552	0.5057	0.6059	0.4358	0.5019	0.5680	fail	reject	60d plus6/minus3 also stayed too close to an all-positive model
+uncommitted	0.6191	0.4730	0.5247	0.5804	0.4232	0.4983	0.5579	fail	reject	40d plus8/minus4 improved validation balance but weakened test performance
+uncommitted	0.6317	0.4648	0.5053	0.6314	0.4620	0.5011	0.5798	fail	candidate	ret_60 changed almost nothing and did not fix the near-all-positive bias
+uncommitted	0.6312	0.4637	0.5043	0.6314	0.4620	0.5011	0.5796	fail	reject	sma_gap_60 stayed identical to the QQQ baseline
+uncommitted	0.6312	0.4637	0.5043	0.6314	0.4620	0.5011	0.5796	fail	reject	atr_pct_20 did not change the QQQ baseline behavior
+uncommitted	0.6312	0.4637	0.5043	0.6314	0.4620	0.5011	0.5796	fail	reject	distance_to_252_high did not change the QQQ baseline behavior
+uncommitted	0.6312	0.4637	0.5043	0.6314	0.4620	0.5011	0.5796	fail	reject	close_location_20 did not change the QQQ baseline behavior
+uncommitted	0.6312	0.4637	0.5043	0.6314	0.4620	0.5011	0.5796	fail	reject	neg_weight 1.10 and 1.20 were effectively identical to baseline
+uncommitted	0.6312	0.4620	0.5043	0.6303	0.4608	0.4998	0.5790	fail	reject	neg_weight 1.30 barely reduced the positive rate and slightly hurt the score

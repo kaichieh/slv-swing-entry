@@ -2,43 +2,41 @@
 
 ## Round 1 Baseline
 
-- [ ] 跑 `AR_ASSET=qqq python prepare.py`，確認資料日期區間、rows、train/validation/test split 與 positive rate。Performance:
-- [ ] 跑 `AR_ASSET=qqq python train.py`，建立第一版 baseline metrics，記錄 `validation_f1`、`validation_bal_acc`、`test_f1`、`test_bal_acc`、`threshold`、`headline_score`。Performance:
-- [ ] 跑 `AR_ASSET=qqq python predict_latest.py`，記錄最新 `signal`、`raw_model_signal`、`predicted_probability`、`top_20pct_reference`。Performance:
-- [ ] 跑 `AR_ASSET=qqq python chart_signals.py`，確認圖表與 tooltip 正常輸出。Performance:
-- [ ] 把 baseline 結果補進 `assets/qqq/results.tsv`。Performance:
+- [x] Run `AR_ASSET=qqq python prepare.py` and confirm dataset shape. Performance: `rows=5782`, `train/validation/test=4047/867/868`, `positive_rate=0.4060`, `date_range=2000-03-07 -> 2026-03-25`, label config `60d +8%/-4% drop-neutral`.
+- [x] Run `AR_ASSET=qqq python train.py` and capture baseline metrics. Performance: `validation_f1=0.6312`, `validation_bal_acc=0.5043`, `test_f1=0.6314`, `test_bal_acc=0.5011`, `threshold=0.497`, `headline_score=0.5796`, `promotion_gate=fail`.
+- [x] Run `AR_ASSET=qqq python predict_latest.py` for the baseline live snapshot. Performance: `latest_date=2026-03-25`, `signal=bullish`, `predicted_probability=0.4998`, `decision_threshold=0.4970`, `top_20pct_reference=false`.
+- [x] Run `AR_ASSET=qqq python chart_signals.py` and confirm chart output. Performance: `bars_rendered=1260`, `latest_date=2026-03-25`, `output=.cache/qqq-swing-entry/signal_chart.html`.
+- [x] Write the baseline row into `assets/qqq/results.tsv`. Performance: baseline row recorded.
 
 ## Round 2 Label Sanity
 
-- [ ] 比較 `drop-neutral` 與 `keep-all binary` baseline，確認 QQQ 是否真的適合保留 neutral filter。Performance:
-- [ ] 比較 `60d +8%/-4%`、`60d +10%/-5%`、`60d +6%/-3%` 三組 barrier，判斷 QQQ 是更適合寬鬆 breakout 還是保守 swing。Performance:
-- [ ] 比較 `40d +8%/-4%` 與 `60d +8%/-4%`，確認 horizon 對指數型標的是否太長或太短。Performance:
-- [ ] 檢查 validation/test label balance 與 future return 分布，避免 baseline 好壞只是 regime 偏移。Performance:
+- [x] Compare `drop-neutral` with `keep-all binary`. Performance: `keep-all binary` degraded to `validation_f1=0.5825`, `validation_bal_acc=0.5129`, `test_f1=0.5697`, `test_bal_acc=0.4895`, `headline_score=0.5425`, so the neutral filter still looks preferable.
+- [x] Compare `60d +8%/-4%`, `60d +10%/-5%`, and `60d +6%/-3%`. Performance: `60d +10%/-5%` reached `validation_f1=0.6272`, `validation_bal_acc=0.5025`, `test_f1=0.6101`, `test_bal_acc=0.5012`, `headline_score=0.5701`; `60d +6%/-3%` reached `validation_f1=0.6224`, `validation_bal_acc=0.5057`, `test_f1=0.6059`, `test_bal_acc=0.5019`, `headline_score=0.5680`; both trailed the default baseline.
+- [x] Compare `40d +8%/-4%` versus `60d +8%/-4%`. Performance: `40d +8%/-4%` gave `validation_f1=0.6191`, `validation_bal_acc=0.5247`, `test_f1=0.5804`, `test_bal_acc=0.4983`, `headline_score=0.5579`, so it did not beat the default 60-day horizon.
+- [x] Review the failure mode across the label sweep. Performance: every tested QQQ label stayed near all-positive behavior, with `test_positive_rate` ranging from `0.9569` to `0.9988`, which points to a label separability problem rather than a simple feature gap.
 
-## Round 3 Feature Sweep
+## Round 3 Feature Sweep On `60d +8%/-4%`
 
-- [ ] 單獨測 `ret_60`，確認 QQQ 是否也吃中期趨勢延續。Performance:
-- [ ] 單獨測 `sma_gap_60`，確認均線乖離對 QQQ 是否比單股更乾淨。Performance:
-- [ ] 單獨測 `rolling_vol_60`，確認波動壓縮或擴張對 QQQ 是否有訊號。Performance:
-- [ ] 單獨測 `atr_pct_20`，確認波動率正規化是否優於 raw volatility。Performance:
-- [ ] 單獨測 `distance_to_252_high`，檢查 QQQ 是否更像高位強勢延續而非跌深反彈。Performance:
-- [ ] 單獨測 `close_location_20` 或 `sma_gap_120`，確認中期位置感是否能改善 `test_bal_acc`。Performance:
+- [x] Test `ret_60`. Performance: `validation_f1=0.6317`, `validation_bal_acc=0.5053`, `test_f1=0.6314`, `test_bal_acc=0.5011`, `headline_score=0.5798`; effectively unchanged from baseline.
+- [x] Test `sma_gap_60`. Performance: `validation_f1=0.6312`, `validation_bal_acc=0.5043`, `test_f1=0.6314`, `test_bal_acc=0.5011`, `headline_score=0.5796`; no change.
+- [x] Test `rolling_vol_60`. Performance: the training path ignored it because `rolling_vol_60` is not wired into the standard train-time experimental feature list, so the result matched baseline exactly; this still needs a dedicated code-path if we want to test it properly.
+- [x] Test `atr_pct_20`. Performance: `validation_f1=0.6312`, `validation_bal_acc=0.5043`, `test_f1=0.6314`, `test_bal_acc=0.5011`, `headline_score=0.5796`; no change.
+- [x] Test `distance_to_252_high`. Performance: `validation_f1=0.6312`, `validation_bal_acc=0.5043`, `test_f1=0.6314`, `test_bal_acc=0.5011`, `headline_score=0.5796`; no change.
+- [x] Test `close_location_20`. Performance: `validation_f1=0.6312`, `validation_bal_acc=0.5043`, `test_f1=0.6314`, `test_bal_acc=0.5011`, `headline_score=0.5796`; no change.
+- [x] Test `sma_gap_120`. Performance: the standard train path also ignored it, so the run stayed identical to baseline.
 
-## Round 4 Combo And Rule
+## Round 4 Weighting Check
 
-- [ ] 比較 `ret_60 + sma_gap_60` 與單一 feature，確認 QQQ 是否值得直接走 GLD 類型雙特徵主線。Performance:
-- [ ] 比較 `ret_60 + sma_gap_60 + rolling_vol_60` 與 `ret_60 + sma_gap_60 + atr_pct_20`，選出較穩的第三特徵。Performance:
-- [ ] 測 `neg_weight=1.10/1.15/1.20`，確認是否能把 `test_bal_acc` 往上拉而不傷 `test_f1`。Performance:
-- [ ] 比較 `threshold rule` 與 `top 15% / 17.5% / 20%` ranking-style rule，確認 QQQ live 規則該走門檻制還是分位數制。Performance:
-- [ ] 補跑 4-fold walk-forward，確認候選模型不是只在單一 validation 區間看起來漂亮。Performance:
+- [x] Test `neg_weight=1.10/1.20/1.30` on the default baseline. Performance: `neg_weight=1.10` and `1.20` were identical to baseline; `neg_weight=1.30` only nudged `test_positive_rate` down to `0.9977` and slightly hurt the score with `test_f1=0.6303`, `test_bal_acc=0.4998`, `headline_score=0.5790`.
+- [x] Summarize the current blocker. Performance: neither label sweeps, feature sweeps, nor modest negative weighting changed the near-all-positive behavior in a meaningful way.
 
-## Round 5 Live And Review
+## Next Round
 
-- [ ] 用最好的 QQQ 候選模型重跑 `predict_latest.py` 與 `chart_signals.py`，檢查最近 30 天訊號是否符合「買點參考」而不是高位追價。Performance:
-- [ ] 人工抽查最近 5 到 10 筆 `bullish` 以上訊號，確認描述文字、買點過濾、top20 標記是否一致。Performance:
-- [ ] 把這輪結論整理進 `assets/qqq/results.tsv` 與 `assets/qqq/task.md`，標示 adopted candidate 或 reject。Performance:
+- [ ] Change the QQQ target definition instead of adding more features on the current label. Best candidates are a wider downside barrier, a stricter upside barrier, or a ranking target.
+- [ ] If we want to test `rolling_vol_60` or `sma_gap_120` in the standard train path, wire them into the train-time experimental feature flow instead of only the research batch path.
+- [ ] Once a non-degenerate candidate appears, re-run threshold versus top-percentile rules and a 4-fold walk-forward check.
 
 ## Notes
 
-- QQQ 比較像指數主線，優先留意 regime、均線位置、距離年內高點這類順勢特徵。
-- 如果 QQQ 在 `distance_to_252_high` 或 `above_200dma` 上特別有效，後面可以再開一輪 regime-aware 研究。
+- QQQ currently looks much more label-limited than feature-limited.
+- The next useful step is to redesign the target, not to keep stacking small features onto the current `60d +8%/-4%` label.
