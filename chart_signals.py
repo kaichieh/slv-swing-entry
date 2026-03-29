@@ -123,18 +123,18 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
         for name, color in SIGNAL_COLORS.items()
     )
     recent_rows = rows[-5:]
-    bullish_like_count = sum(1 for row in recent_rows if row["signal"] in {"bullish", "strong_bullish"})
+    bullish_like_count = sum(1 for row in recent_rows if row["signal"] in {"bullish", "strong_bullish", "very_strong_bullish"})
     top20_count = sum(1 for row in recent_rows if row["top20_selected"])
     recent_cards = "".join(
         f"""
         <div class="recent-card">
           <div class="recent-date">{escape(str(row["date"]))}</div>
           <div class="recent-signal" style="color:{escape(SIGNAL_COLORS.get(str(row["signal"]), '#1f2937'))}">{escape(str(row["signal"]))}</div>
-          <div class="recent-metric">模型原始訊號={escape(str(row["raw_model_signal"]))}</div>
+          <div class="recent-metric">raw_model_signal={escape(str(row["raw_model_signal"]))}</div>
           <div class="recent-metric">p={escape(f'{row["probability"]:.4f}')}</div>
           <div class="recent-metric">gap={escape(f'{row["confidence_gap"]:.4f}')}</div>
           <div class="recent-metric">top20={'yes' if row["top20_selected"] else 'no'}</div>
-          <div class="recent-metric">買點過濾={'通過' if row["buy_point_ok"] else '未通過'}</div>
+          <div class="recent-metric">buy_point={'pass' if row["buy_point_ok"] else 'blocked'}</div>
           <div class="recent-metric">{escape(str(row["rule_rationale"]))}</div>
           <div class="recent-metric">close={escape(f'{row["close"]:.2f}')}</div>
         </div>
@@ -186,6 +186,31 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
       gap: 14px;
       margin-bottom: 18px;
       font-size: 14px;
+    }}
+    .mode-bar {{
+      display: flex;
+      gap: 10px;
+      margin: 6px 0 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }}
+    .mode-button {{
+      border: 1px solid #d9cfbe;
+      background: #f8f3ea;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }}
+    .mode-button.active {{
+      background: #1f2937;
+      color: #fffdf8;
+      border-color: #1f2937;
+    }}
+    .mode-note {{
+      color: var(--muted);
+      font-size: 13px;
     }}
     .recent-panel {{
       display: grid;
@@ -268,10 +293,15 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
   <div class="wrap">
     <div class="card">
       <h1>{escape(title)}</h1>
-      <div class="sub">最近視窗內的收盤價直條圖，顏色代表模型訊號強弱；白框代表通過買點過濾。最新資料日: {escape(str(meta["latest_date"]))}，回看區間: {escape(str(meta["lookback_days"]))} 根 bars。</div>
+      <div class="sub">最近視窗內的收盤價直條圖。預設顯示 execution signal，也可以切到 raw model signal 看原始模型強度。最新資料日: {escape(str(meta["latest_date"]))}，回看區間: {escape(str(meta["lookback_days"]))} 根 bars。</div>
       <div class="recent-panel">
-        <div class="recent-summary">最近 5 天中，`bullish` 以上共有 <strong>{bullish_like_count}</strong> 天；進入歷史 `top 20%` 強訊號區共有 <strong>{top20_count}</strong> 天。滑鼠移到柱子上可以看到像超賣、回檔、乖離、量能這些描述。</div>
+        <div class="recent-summary">最近 5 天中，`bullish` 以上共有 <strong>{bullish_like_count}</strong> 天；進入歷史 `top 20%` 強訊號區共有 <strong>{top20_count}</strong> 天。卡片先看 execution signal，但也會直接顯示 raw model signal。</div>
         <div class="recent-grid">{recent_cards}</div>
+      </div>
+      <div class="mode-bar">
+        <button id="modeExecution" class="mode-button" type="button">execution signal</button>
+        <button id="modeRaw" class="mode-button active" type="button">raw model signal</button>
+        <div id="modeNote" class="mode-note">Current view: raw model signal before buy-point overlay.</div>
       </div>
       <div class="legend">{color_legend}</div>
       <div id="chart"></div>
@@ -284,6 +314,9 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
     const colors = payload.meta.signal_colors;
     const chart = document.getElementById('chart');
     const tooltip = document.getElementById('tooltip');
+    const modeExecution = document.getElementById('modeExecution');
+    const modeRaw = document.getElementById('modeRaw');
+    const modeNote = document.getElementById('modeNote');
     const width = Math.max(2400, rows.length * 12);
     const height = 560;
     const topPad = 24;
@@ -297,6 +330,7 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
     const minClose = Math.min(...closes);
     const maxClose = Math.max(...closes);
     const closeRange = Math.max(maxClose - minClose, 1);
+    let currentMode = 'raw';
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', `0 0 ${{width}} ${{height}}`);
@@ -332,34 +366,41 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
       svg.appendChild(label);
     }}
 
-    rows.forEach((row, index) => {{
-      const x = leftPad + index * barWidth;
-      const normalized = (row.close - minClose) / closeRange;
-      const barHeight = Math.max(2, normalized * (priceHeight - 8));
-      const y = topPad + priceHeight - barHeight;
+    const barsLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    svg.appendChild(barsLayer);
 
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      rect.setAttribute('x', String(x));
-      rect.setAttribute('y', String(y));
-      rect.setAttribute('width', String(Math.max(1, barWidth - 1)));
-      rect.setAttribute('height', String(barHeight));
-      rect.setAttribute('fill', colors[row.signal] || '#9ca3af');
-      rect.setAttribute('rx', '1.5');
-      rect.setAttribute('opacity', row.buy_point_ok ? '1' : '0.42');
-      rect.setAttribute('stroke', row.buy_point_ok ? '#fffdf8' : 'none');
-      rect.setAttribute('stroke-width', row.buy_point_ok ? '1.5' : '0');
-      rect.addEventListener('mousemove', (event) => {{
-        tooltip.style.display = 'block';
-        tooltip.style.left = `${{event.clientX}}px`;
-        tooltip.style.top = `${{event.clientY}}px`;
-        tooltip.textContent =
-          `${{row.buy_point_ok ? '可觀察買點' : '暫時不是買點'}}\\n${{row.date}}\\nclose=${{row.close}}\\nsignal=${{row.signal}}\\nmodel_signal=${{row.raw_model_signal}}\\np=${{row.probability}}\\ngap=${{row.confidence_gap}}\\ntop20=${{row.top20_selected ? 'yes' : 'no'}}\\n買點提醒=${{row.buy_point_warnings || '無明顯追價警訊'}}\\n模型描述=${{row.model_rationale}}\\n規則描述=${{row.rule_rationale}}\\nret_20=${{row.ret_20}}\\nret_60=${{row.ret_60}}\\ndrawdown_20=${{row.drawdown_20}}\\nsma_gap_20=${{row.sma_gap_20}}\\nrsi_14=${{row.rsi_14}}`;
+    function renderBars(mode) {{
+      barsLayer.replaceChildren();
+      rows.forEach((row, index) => {{
+        const x = leftPad + index * barWidth;
+        const normalized = (row.close - minClose) / closeRange;
+        const barHeight = Math.max(2, normalized * (priceHeight - 8));
+        const y = topPad + priceHeight - barHeight;
+        const displaySignal = mode === 'raw' ? row.raw_model_signal : row.signal;
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', String(x));
+        rect.setAttribute('y', String(y));
+        rect.setAttribute('width', String(Math.max(1, barWidth - 1)));
+        rect.setAttribute('height', String(barHeight));
+        rect.setAttribute('fill', colors[displaySignal] || '#9ca3af');
+        rect.setAttribute('rx', '1.5');
+        rect.setAttribute('opacity', mode === 'raw' ? '0.96' : (row.buy_point_ok ? '1' : '0.42'));
+        rect.setAttribute('stroke', mode === 'raw' ? 'none' : (row.buy_point_ok ? '#fffdf8' : 'none'));
+        rect.setAttribute('stroke-width', mode === 'raw' ? '0' : (row.buy_point_ok ? '1.5' : '0'));
+        rect.addEventListener('mousemove', (event) => {{
+          tooltip.style.display = 'block';
+          tooltip.style.left = `${{event.clientX}}px`;
+          tooltip.style.top = `${{event.clientY}}px`;
+          tooltip.textContent =
+            `${{row.buy_point_ok ? 'buy_point pass' : 'buy_point blocked'}}\\n${{row.date}}\\nclose=${{row.close}}\\nsignal=${{row.signal}}\\nmodel_signal=${{row.raw_model_signal}}\\nchart_mode=${{mode}}\\np=${{row.probability}}\\ngap=${{row.confidence_gap}}\\ntop20=${{row.top20_selected ? 'yes' : 'no'}}\\nbuy_point_note=${{row.buy_point_warnings || 'clean'}}\\nmodel_reason=${{row.model_rationale}}\\nrule_reason=${{row.rule_rationale}}\\nret_20=${{row.ret_20}}\\nret_60=${{row.ret_60}}\\ndrawdown_20=${{row.drawdown_20}}\\nsma_gap_20=${{row.sma_gap_20}}\\nrsi_14=${{row.rsi_14}}`;
+        }});
+        rect.addEventListener('mouseleave', () => {{
+          tooltip.style.display = 'none';
+        }});
+        barsLayer.appendChild(rect);
       }});
-      rect.addEventListener('mouseleave', () => {{
-        tooltip.style.display = 'none';
-      }});
-      svg.appendChild(rect);
-    }});
+    }}
 
     const axisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     axisLine.setAttribute('x1', String(leftPad));
@@ -392,6 +433,21 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
     }});
 
     chart.appendChild(svg);
+    renderBars(currentMode);
+
+    function setMode(mode) {{
+      currentMode = mode;
+      renderBars(mode);
+      modeExecution.classList.toggle('active', mode === 'execution');
+      modeRaw.classList.toggle('active', mode === 'raw');
+      modeNote.textContent = mode === 'raw'
+        ? 'Current view: raw model signal before buy-point overlay.'
+        : 'Current view: execution signal after buy-point overlay.';
+    }}
+
+    modeExecution.addEventListener('click', () => setMode('execution'));
+    modeRaw.addEventListener('click', () => setMode('raw'));
+
     requestAnimationFrame(() => {{
       chart.scrollLeft = chart.scrollWidth;
     }});
@@ -406,7 +462,7 @@ def main() -> None:
     rows, meta = build_chart_rows(lookback_days)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(build_html(rows, meta))
+      f.write(build_html(rows, meta))
     print(f"Saved chart to: {OUTPUT_PATH}")
     print(f"Bars rendered: {len(rows)}")
     print(f"Latest date: {meta['latest_date']}")
