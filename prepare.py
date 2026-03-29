@@ -125,19 +125,48 @@ def parse_future_return_top_pct(label_mode: str) -> float | None:
     return None
 
 
+def parse_future_return_top_bottom_pct(label_mode: str) -> float | None:
+    prefix = "future-return-top-bottom-"
+    suffix = "pct"
+    if not (label_mode.startswith(prefix) and label_mode.endswith(suffix)):
+        return None
+    raw = label_mode[len(prefix) : -len(suffix)]
+    try:
+        value = float(raw)
+    except ValueError:
+        return None
+    if 0.0 < value < 50.0:
+        return value
+    return None
+
+
 def apply_label_mode(labels: np.ndarray, realized_returns: np.ndarray, label_mode: str) -> np.ndarray:
     if label_mode == "keep-all-binary":
         return np.where(np.isnan(labels), 0.0, labels)
     top_pct = parse_future_return_top_pct(label_mode)
-    if top_pct is None:
+    if top_pct is not None:
+        next_labels = np.full(len(realized_returns), np.nan, dtype=np.float64)
+        valid_returns = realized_returns[~np.isnan(realized_returns)]
+        if len(valid_returns) == 0:
+            return next_labels
+        cutoff = float(np.quantile(valid_returns, 1.0 - top_pct / 100.0))
+        valid_mask = ~np.isnan(realized_returns)
+        next_labels[valid_mask] = (realized_returns[valid_mask] >= cutoff).astype(np.float64)
+        return next_labels
+    top_bottom_pct = parse_future_return_top_bottom_pct(label_mode)
+    if top_bottom_pct is None:
         return labels
     next_labels = np.full(len(realized_returns), np.nan, dtype=np.float64)
     valid_returns = realized_returns[~np.isnan(realized_returns)]
     if len(valid_returns) == 0:
         return next_labels
-    cutoff = float(np.quantile(valid_returns, 1.0 - top_pct / 100.0))
+    upper_cutoff = float(np.quantile(valid_returns, 1.0 - top_bottom_pct / 100.0))
+    lower_cutoff = float(np.quantile(valid_returns, top_bottom_pct / 100.0))
     valid_mask = ~np.isnan(realized_returns)
-    next_labels[valid_mask] = (realized_returns[valid_mask] >= cutoff).astype(np.float64)
+    upper_mask = valid_mask & (realized_returns >= upper_cutoff)
+    lower_mask = valid_mask & (realized_returns <= lower_cutoff)
+    next_labels[upper_mask] = 1.0
+    next_labels[lower_mask] = 0.0
     return next_labels
 
 
