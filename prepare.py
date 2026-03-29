@@ -25,6 +25,7 @@ ASSET_CONFIG = ac.load_asset_config()
 HORIZON_DAYS = int(ASSET_CONFIG["horizon_days"])
 UPPER_BARRIER = float(ASSET_CONFIG["upper_barrier"])
 LOWER_BARRIER = float(ASSET_CONFIG["lower_barrier"])
+BENCHMARK_SYMBOL = str(ASSET_CONFIG.get("benchmark_symbol", "")).strip().upper()
 TRAIN_FRACTION = 0.70
 VALID_FRACTION = 0.15
 LABEL_MODE = str(ASSET_CONFIG["label_mode"])
@@ -74,6 +75,7 @@ EXPERIMENTAL_FEATURE_COLUMNS = [
     "up_day_ratio_20",
     "above_200dma_flag",
     "atr_pct_20",
+    "rs_vs_benchmark_60",
 ]
 
 
@@ -192,8 +194,30 @@ def download_asset_prices() -> pd.DataFrame:
     return download_symbol_prices(symbol, ac.stooq_url(symbol), RAW_DATA_PATH)
 
 
+def get_benchmark_cache_path(symbol: str) -> str:
+    return os.path.join(CACHE_DIR, f"{symbol.lower()}_benchmark.csv")
+
+
+def download_benchmark_prices(symbol: str) -> pd.DataFrame:
+    return download_symbol_prices(symbol, ac.stooq_url(symbol), get_benchmark_cache_path(symbol))
+
+
 def download_slv_prices() -> pd.DataFrame:
     return download_asset_prices()
+
+
+def add_relative_strength_features(frame: pd.DataFrame, benchmark_symbol: str) -> pd.DataFrame:
+    if not benchmark_symbol:
+        return frame
+    benchmark = add_price_features(download_benchmark_prices(benchmark_symbol))[["date", "ret_20", "ret_60"]].rename(
+        columns={
+            "ret_20": "benchmark_ret_20",
+            "ret_60": "benchmark_ret_60",
+        }
+    )
+    df = frame.merge(benchmark, on="date", how="left")
+    df["rs_vs_benchmark_60"] = df["ret_60"] - df["benchmark_ret_60"]
+    return df.drop(columns=["benchmark_ret_20", "benchmark_ret_60"])
 
 
 def add_context_features(frame: pd.DataFrame) -> pd.DataFrame:
@@ -339,6 +363,7 @@ def add_price_features(frame: pd.DataFrame) -> pd.DataFrame:
 def add_features(frame: pd.DataFrame) -> pd.DataFrame:
     config = get_runtime_config()
     df = add_price_features(frame)
+    df = add_relative_strength_features(df, BENCHMARK_SYMBOL)
     df = add_context_features(df)
     labels, realized_returns = build_barrier_labels(
         df,
