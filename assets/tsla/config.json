@@ -4,5 +4,6 @@
   "horizon_days": 60,
   "upper_barrier": 0.12,
   "lower_barrier": -0.06,
-  "label_mode": "drop-neutral"
+  "label_mode": "drop-neutral",
+  "default_chart_signal_mode": "execution"
 }
