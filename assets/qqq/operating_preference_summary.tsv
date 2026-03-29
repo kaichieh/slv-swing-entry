@@ -1,0 +1,4 @@
+model_name	direction	bucket_pct	recent_selected_count	latest_selected	last_selected_date	min_fold_excess_return	max_fold_excess_return	cutoff
+distance_bottom5	bottom	5.0	0	False		0.025614	0.163046	-0.019215
+distance_plus_atr_bottom5	bottom	5.0	0	False		0.013025	0.156776	-0.013639
+distance_bottom3	bottom	3.0	0	False		0.035688	0.19873	-0.034378

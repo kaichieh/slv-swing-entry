@@ -36,6 +36,10 @@
 
 - [x] Save a direct operating decision summary for the remaining SPY side lines. Performance: `assets/spy/operator_decision_summary.tsv` showed that neither the plain `top_10pct` line nor the `rolling_vol_60 + top_10pct` extension selected a single row in the latest `60` saved dates. The latest probabilities on `2026-03-17` stayed below both cutoffs, with `0.3184` versus `0.3858` on the plain line and `0.3895` versus `0.4522` on the volatility extension. That confirms SPY is now firmly a reference-only asset.
 
+## Round 8 Overlap Review
+
+- [x] Confirm whether the two remaining SPY side lines at least fire on different dates. Performance: `assets/spy/operator_overlap_summary.tsv` and `assets/spy/operator_overlap_recent.tsv` showed they do not provide a useful diversified watchlist either. Across the latest `60` rows, both lines selected the same `5` rows, the plain line had only `1` unique row, the volatility extension had only `1` unique row, and `53` rows were selected by neither. That removes most of the remaining case for keeping two separate SPY side lines alive.
+
 ## Next Round
 
 - [ ] If SPY work continues at all, keep only the simpler `10/-5 + top_10pct` side line for reference and stop extending it.

@@ -36,6 +36,10 @@
 
 - [x] Save a direct operating decision summary for the baseline and sidecar IWM lines. Performance: `assets/iwm/operator_decision_summary.tsv` showed that both lines were still active into the latest row `2026-03-10`, but the baseline remains the cleaner default. Over the last `60` saved rows, the baseline threshold selected `45` times and the sidecar threshold selected `44` times, with both still selected on the latest date. This means the practical difference is not signal frequency but interpretation: the sidecar should be treated as context for IWM-vs-SPY strength, not as a replacement operating line.
 
+## Round 8 Overlap Review
+
+- [x] Measure how often the baseline and IWM sidecar actually disagree. Performance: `assets/iwm/operator_overlap_summary.tsv` and `assets/iwm/operator_overlap_recent.tsv` showed the two lines are almost identical in practice. In the latest `60` rows they agreed on `59` out of `60` dates, with `44` rows selected by both, `15` selected by neither, and only `1` row selected by the baseline alone. There were `0` rows where the sidecar fired without the baseline. That means the sidecar is useful as explanatory context, but it is not generating a distinct operating stream.
+
 ## Next Round
 
 - [ ] If an operator-only choice is needed, document when to prefer the sidecar over the baseline threshold line.

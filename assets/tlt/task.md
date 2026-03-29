@@ -35,6 +35,10 @@
 
 - [x] Save a decision summary for the current and alternate TLT regression families. Performance: `assets/tlt/regression_decision_summary.tsv` compared `atr_pct_20` with a different mean-reversion family, `drawdown_20`, on the `bottom 5%` bucket. Neither selected any of the latest `60` rows through `2026-03-26`, but `atr_pct_20` still had the cleaner operating cutoff at `-0.0104` versus `-0.0078` for `drawdown_20`. This reinforces that TLT still does not have a live-like watchlist line, but `atr_pct_20` remains the only credible base if work continues.
 
+## Round 8 Family Tiebreak
+
+- [x] Add one more genuinely different TLT family to settle the ranking track. Performance: `assets/tlt/regression_family_decision.tsv` added `close_location_20` to the decision compare. It also failed to produce any recent selections and had the weakest robustness with `min_fold_excess_return=-2.13%`, worse than both `atr_pct_20` and `drawdown_20`. That closes the tiebreak cleanly: `atr_pct_20` is still the only TLT family worth carrying forward.
+
 ## Next Round
 
 - [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.

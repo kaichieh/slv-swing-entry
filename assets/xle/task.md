@@ -35,6 +35,10 @@
 
 - [x] Save a recent operating decision summary for the leading XLE ranking candidates. Performance: `assets/xle/regression_decision_summary.tsv` confirmed that the walk-forward winner is also the more live-like line. `distance_to_252_high + bottom 10%` selected `6` of the latest `60` rows and was last active on `2026-02-19`, while `ret_60 + sma_gap_60 + bottom 10%` selected `0` of the latest `60`. So XLE should now treat `distance_to_252_high + bottom 10%` as the active operating candidate, even if the older combo still looks fine on one static split.
 
+## Round 8 Operating Preference
+
+- [x] Save a direct operating preference summary for the two XLE candidates. Performance: `assets/xle/regression_operating_preference.tsv` tightened the same conclusion with walk-forward context included. `distance_to_252_high + bottom 10%` kept `recent_selected_count=6`, `last_selected_date=2026-02-19`, and a positive `min_fold_excess_return=+0.49%`, while `ret_60 + sma_gap_60 + bottom 10%` stayed at `0` recent selections and `-1.24%` worst-fold excess. This means the repo can now treat the distance-based line as the clear XLE operating preference, not just a tentative alternative.
+
 ## Next Round
 
 - [ ] If XLE work continues, promote `distance_to_252_high + bottom 10%` into recent/rule-style monitoring and treat it as the leading operating candidate.

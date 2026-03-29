@@ -1,0 +1,4 @@
+model_name	rule_name	trade_count	hit_rate	avg_return	recent_selected_count	last_selected_date	cutoff
+adopted_top10	top_10pct	4	1.0	0.164211	0		0.589892
+adopted_top20	top_20pct	6	0.833333	0.125915	0		0.559831
+fallback_top15	top_15pct	4	0.75	0.176006	0		0.619859
