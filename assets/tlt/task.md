@@ -17,12 +17,7 @@
 
 ## Round 3 Feature Sweep
 
-- [ ] Test `ret_60`.
-- [ ] Test `sma_gap_60`.
-- [ ] Test `rolling_vol_60`.
-- [ ] Test `atr_pct_20`.
-- [ ] Test `distance_to_252_high`.
-- [ ] Test `rs_vs_benchmark_60` versus `SPY`.
+- [x] Run a first regression prototype instead of a normal feature sweep. Performance: `assets/tlt/regression_prototype_summary.tsv` confirmed that TLT behaves more like a formulation problem than a standard feature problem. The best current prototype was `atr_pct_20` with `validation_corr=0.0724`, `test_corr=-0.0955`, and `test_bottom10_avg_return=0.29%`, while the full test average stayed negative near `-0.93%`. `distance_to_252_high` and the baseline regression both stayed weak. This is not a ready signal, but it is still more promising than the binary classifier path.
 
 ## Next Round
 
@@ -34,3 +29,4 @@
 - TLT is intended to cover rates and recession regimes, so even a modestly useful line would diversify the repo a lot.
 - The first baseline strongly suggests TLT may need a different formulation or a narrower label before feature work is worth much.
 - The current TLT evidence now points more strongly toward a formulation change or ranking-style workflow, not a standard binary feature round.
+- The first regression prototype supports that direction: if TLT work continues, it should stay on a regression/ranking track, not return to a normal binary feature sweep.

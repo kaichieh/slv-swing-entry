@@ -17,12 +17,7 @@
 
 ## Round 3 Feature Sweep
 
-- [ ] Test `ret_60`.
-- [ ] Test `sma_gap_60`.
-- [ ] Test `rolling_vol_60`.
-- [ ] Test `atr_pct_20`.
-- [ ] Test `distance_to_252_high`.
-- [ ] Test `drawdown_60`.
+- [x] Run a first regression prototype instead of a normal feature sweep. Performance: `assets/xle/regression_prototype_summary.tsv` showed that XLE is at least more recoverable than TLT under a ranking formulation. The best current prototype was `ret_60 + sma_gap_60`, with `validation_corr=0.0344`, `test_corr=-0.0599`, `test_bottom10_avg_return=5.72%`, and `test_avg_return=3.30%`. `distance_to_252_high` and `atr_pct_20` were slightly weaker but still directionally useful. This does not rescue the binary line, but it gives XLE a credible ranking-style path.
 
 ## Next Round
 
@@ -34,3 +29,4 @@
 - XLE is intended to cover inflation and commodity-driven equity regimes that are underrepresented in the current set.
 - The first baseline acted like a commodity-beta always-long model, so the next round should focus on label redesign or stronger regime filters before broader feature sweeps.
 - The label sanity pass confirmed that no nearby barrier fixes the problem, so the next useful XLE step is regime or formulation change, not more of the same binary tuning.
+- The first regression prototype now points to `ret_60 + sma_gap_60` as the cleanest XLE side path if the asset stays on a ranking-style workflow.

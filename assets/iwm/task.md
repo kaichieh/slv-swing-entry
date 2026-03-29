@@ -17,20 +17,16 @@
 
 ## Round 3 Feature Sweep
 
-- [ ] Test `ret_60`.
-- [ ] Test `sma_gap_60`.
-- [ ] Test `rolling_vol_60`.
-- [ ] Test `atr_pct_20`.
-- [ ] Test `distance_to_252_high`.
-- [ ] Test `rs_vs_benchmark_60` versus `SPY`.
+- [x] Test `ret_60`, `sma_gap_60`, `rolling_vol_60`, `atr_pct_20`, `distance_to_252_high`, and `rs_vs_benchmark_60` versus `SPY`. Performance: the strongest add-on was `rs_vs_benchmark_60`, reaching `validation_f1=0.5270`, `validation_bal_acc=0.5753`, `test_f1=0.5924`, `test_bal_acc=0.5643`, `headline_score=0.5692`. `distance_to_252_high` and `ret_60 + sma_gap_60` were close behind at `0.5655` and `0.5647`, and `rolling_vol_60` was the cleanest validation-side add-on at `validation_bal_acc=0.6256`. But the key conclusion is that the baseline itself still remained strongest at `headline_score=0.5730`, so the feature sweep did not dislodge it.
 
 ## Next Round
 
-- [ ] If IWM produces a credible candidate, compare threshold versus top-percentile rules.
-- [ ] If IWM stays regime-sensitive, add walk-forward validation before any adoption decision.
+- [ ] Because IWM already has a pass-level baseline and no better feature extension yet, compare threshold versus top-percentile rules on the default baseline before trying more features.
+- [ ] Add walk-forward validation on the baseline and the `rs_vs_benchmark_60` side candidate to confirm whether the edge is robust.
 
 ## Notes
 
 - IWM is the repo's intended small-cap cycle line, so relative performance versus SPY matters.
 - IWM immediately looks like the strongest of the new macro basket, so the next round should focus on validation and simplification rather than rescue work.
 - Because the baseline already passed, the next IWM round should move to feature and rule validation rather than more label tuning.
+- The first feature sweep suggests `rs_vs_benchmark_60` is the only IWM add-on clearly worth keeping around for later validation.
