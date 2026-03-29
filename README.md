@@ -24,173 +24,78 @@ Each asset keeps its own:
 - `ideas.md`
 - `program.md`
 
-Asset-specific research outputs should also live inside `assets/<asset>/`.
+## Main Output
 
-## Shared Scripts
+Main homepage:
 
-Core research scripts:
+- `monitor_board.html`
 
-- `prepare.py`
-- `train.py`
-- `predict_latest.py`
-- `chart_signals.py`
-- `research_batch.py`
-- `research_exit_round1.py`
-- `score_results.py`
+This is the single dashboard entry point.
 
-Regression / ranking scripts:
+From there you can click into each asset chart:
 
-- `research_regression.py`
-- `research_regression_recent.py`
-- `research_regression_recent_chart.py`
-- `research_regression_walkforward.py`
-- `research_regression_compare.py`
+- binary assets -> `.cache/<asset>-swing-entry/signal_chart.html`
+- regression assets -> `assets/<asset>/regression_recent.html`
 
-Monitoring scripts:
+## Generate Reports
 
-- `refresh_active_status.py`
-- `refresh_monitor_snapshot.py`
-- `refresh_monitor_board.py`
-
-## How To Run Research
-
-Set the target asset first:
+### Refresh everything except SLV
 
 ```powershell
-$env:AR_ASSET='slv'
-$env:PYTHONPATH='C:\Users\Jay\OneDrive\文件\codex\slv-swing-entry\.packages'
+python .\refresh_reports.py
 ```
 
-Then run the standard binary workflow:
+This will:
+
+- refresh each asset chart
+- refresh each asset active-status summary
+- refresh each asset monitor snapshot
+- rebuild `monitor_board.html`
+
+### Refresh only selected assets
 
 ```powershell
-python prepare.py
-python train.py
-python predict_latest.py
-python chart_signals.py
+python .\refresh_reports.py iwm nvda xle
 ```
 
-For the broader research workflow:
+This will refresh only those assets, then rebuild the shared monitor board.
 
-```powershell
-python research_batch.py
-python research_exit_round1.py
-python score_results.py
-```
+## What The Script Does
 
-Swap `slv` for any other asset key as needed.
-
-## How To Regenerate Charts
-
-### Binary assets
-
-Use the standard live prediction + signal chart flow:
-
-```powershell
-$env:AR_ASSET='iwm'
-$env:PYTHONPATH='C:\Users\Jay\OneDrive\文件\codex\slv-swing-entry\.packages'
-python predict_latest.py
-python chart_signals.py
-```
-
-This currently applies to assets such as:
+For binary assets such as:
 
 - `gld`
-- `slv`
 - `iwm`
 - `spy`
 - `nvda`
 - `tsla`
 
-Generated chart path pattern:
+it runs:
 
-- `.cache/<asset>-swing-entry/signal_chart.html`
+- `predict_latest.py`
+- `chart_signals.py`
+- `refresh_active_status.py`
+- `refresh_monitor_snapshot.py`
 
-### Regression assets
-
-Use the regression recent export + chart flow:
-
-```powershell
-$env:AR_ASSET='qqq'
-$env:PYTHONPATH='C:\Users\Jay\OneDrive\文件\codex\slv-swing-entry\.packages'
-python research_regression_recent.py
-python research_regression_recent_chart.py
-```
-
-This currently applies to assets such as:
+For regression assets such as:
 
 - `qqq`
 - `tlt`
 - `xle`
 
-Generated chart path pattern:
+it runs:
 
-- `assets/<asset>/regression_recent.html`
+- `research_regression_recent.py`
+- `research_regression_recent_chart.py`
+- `refresh_active_status.py`
+- `refresh_monitor_snapshot.py`
 
-## How To Regenerate The Monitor Board
-
-The homepage is:
+Then it rebuilds:
 
 - `monitor_board.html`
 
-It summarizes non-SLV assets in two sections:
-
-- `Today`: current operating state
-- `Role`: structural role in the basket
-
-Recommended refresh order:
-
-```powershell
-$env:PYTHONPATH='C:\Users\Jay\OneDrive\文件\codex\slv-swing-entry\.packages'
-python refresh_active_status.py
-python refresh_monitor_snapshot.py
-python refresh_monitor_board.py
-```
-
-Because `refresh_active_status.py` and `refresh_monitor_snapshot.py` are asset-specific, run them with `AR_ASSET` set:
-
-```powershell
-$env:AR_ASSET='iwm'
-python refresh_active_status.py
-python refresh_monitor_snapshot.py
-```
-
-Then regenerate the shared homepage:
-
-```powershell
-python refresh_monitor_board.py
-```
-
-## Practical Daily Refresh
-
-If you want to update one asset and then refresh the homepage:
-
-### Binary example
-
-```powershell
-$env:AR_ASSET='nvda'
-$env:PYTHONPATH='C:\Users\Jay\OneDrive\文件\codex\slv-swing-entry\.packages'
-python predict_latest.py
-python chart_signals.py
-python refresh_active_status.py
-python refresh_monitor_snapshot.py
-python refresh_monitor_board.py
-```
-
-### Regression example
-
-```powershell
-$env:AR_ASSET='xle'
-$env:PYTHONPATH='C:\Users\Jay\OneDrive\文件\codex\slv-swing-entry\.packages'
-python research_regression_recent.py
-python research_regression_recent_chart.py
-python refresh_active_status.py
-python refresh_monitor_snapshot.py
-python refresh_monitor_board.py
-```
-
 ## Notes
 
-- Binary charts and regression charts now both default to a longer recent-history window instead of a 60-bar-only view.
+- Binary charts and regression charts both use a longer recent-history window now.
 - Asset charts auto-scroll to the right on load so the newest bars are visible first.
-- `monitor_board.html` is the main dashboard entry point; use asset charts for full detail.
+- `monitor_board.html` is the main dashboard; use the asset chart pages for detailed context.
