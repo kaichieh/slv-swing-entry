@@ -15,322 +15,279 @@
     body {
       margin: 0;
       padding: 28px;
-      font-family: "Segoe UI", Arial, sans-serif;
+      font-family: "Segoe UI", "Noto Sans TC", Arial, sans-serif;
       background: linear-gradient(180deg, #f7f4ed 0%, #efe8d8 100%);
       color: var(--text);
     }
     h1 { margin: 0 0 8px; font-size: 32px; }
     .summary { color: var(--muted); margin-bottom: 20px; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-    }
     .card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-top: 5px solid var(--accent);
       border-radius: 18px;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      padding: 20px 20px 12px;
     }
-    .card-summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 18px;
-    }
-    .card-summary::-webkit-details-marker { display: none; }
-    .top {
+    .legend {
       display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: start;
-    }
-    .symbol { font-size: 28px; font-weight: 700; }
-    .line { color: var(--muted); font-size: 14px; margin-top: 4px; }
-    .badge {
-      background: color-mix(in srgb, var(--accent) 14%, white);
-      color: var(--accent);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .note { color: var(--muted); line-height: 1.5; min-height: 44px; }
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 14px;
-    }
-    .quick-pill {
-      background: #faf6ee;
-      border: 1px solid #efe5d4;
-      border-radius: 12px;
-      padding: 10px 12px;
-    }
-    .quick-pill span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
-    }
-    .quick-pill strong {
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 12px 0 18px;
       font-size: 14px;
     }
-    .details-body {
-      padding: 0 18px 18px;
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
-    dl {
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .spotlight-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 12px;
-      margin: 0;
+      grid-template-columns: repeat(5, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
     }
-    dl div {
+    .spotlight-card {
       background: #faf6ee;
-      border: 1px solid #efe5d4;
+      border: 1px solid #eadfcb;
+      border-top: 4px solid var(--accent);
       border-radius: 12px;
       padding: 10px 12px;
     }
-    dt {
-      margin-bottom: 4px;
+    .spotlight-date {
       font-size: 12px;
       color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      margin-bottom: 4px;
     }
-    dd { margin: 0; font-weight: 600; }
+    .spotlight-symbol {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .spotlight-line {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .spotlight-metric {
+      font-size: 12px;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    .spotlight-note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-top: 8px;
+    }
+    #chart {
+      width: 100%;
+      overflow-x: auto;
+      border-top: 1px solid #efe8db;
+      padding-top: 10px;
+    }
+    svg {
+      display: block;
+      height: 420px;
+    }
+    .axis-label {
+      fill: var(--muted);
+      font-size: 12px;
+    }
+    .tooltip {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(17, 24, 39, 0.94);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.45;
+      transform: translate(12px, 12px);
+      display: none;
+      white-space: pre-line;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 320px;
+    }
   </style>
 </head>
 <body>
-  <h1>Monitor Board</h1>
-  <div class="summary">watchlist_wait=2 | inactive_wait=2 | selected_now=1 | reference_only=1 | research_only=1</div>
-  <div class="grid">
-    <details class="card" style="--accent:#0f766e" open>
-      <summary class="card-summary">
-        <div class="top">
-          <div>
-            <div class="symbol">IWM</div>
-            <div class="line">baseline_threshold</div>
-          </div>
-          <div class="badge">selected_now</div>
-        </div>
-        <p class="note">Preferred line is currently selected.</p>
-        <div class="quick-grid">
-          <div class="quick-pill"><span>recent</span><strong>45</strong></div>
-          <div class="quick-pill"><span>latest</span><strong>2026-03-10</strong></div>
-          <div class="quick-pill"><span>selected</span><strong>yes</strong></div>
-        </div>
-      </summary>
-      <div class="details-body">
-        <dl>
-          <div><dt>lane</dt><dd>binary_operator</dd></div>
-          <div><dt>status</dt><dd>active</dd></div>
-          <div><dt>recent count</dt><dd>45</dd></div>
-          <div><dt>latest date</dt><dd>2026-03-10</dd></div>
-          <div><dt>latest value</dt><dd>0.473054</dd></div>
-          <div><dt>latest selected</dt><dd>yes</dd></div>
-          <div><dt>cutoff</dt><dd>0.450000</dd></div>
-          <div><dt>last selected</dt><dd>2026-03-10</dd></div>
-          <div><dt>days since last</dt><dd>0</dd></div>
-        </dl>
-      </div>
-    </details>
-    
-
-    <details class="card" style="--accent:#d97706" >
-      <summary class="card-summary">
-        <div class="top">
-          <div>
-            <div class="symbol">NVDA</div>
-            <div class="line">binary_top12_5</div>
-          </div>
-          <div class="badge">watchlist_wait</div>
-        </div>
-        <p class="note">Preferred line is valid but currently waiting below cutoff.</p>
-        <div class="quick-grid">
-          <div class="quick-pill"><span>recent</span><strong>6</strong></div>
-          <div class="quick-pill"><span>latest</span><strong>2026-03-17</strong></div>
-          <div class="quick-pill"><span>selected</span><strong>no</strong></div>
-        </div>
-      </summary>
-      <div class="details-body">
-        <dl>
-          <div><dt>lane</dt><dd>binary_watchlist</dd></div>
-          <div><dt>status</dt><dd>watchlist_ready</dd></div>
-          <div><dt>recent count</dt><dd>6</dd></div>
-          <div><dt>latest date</dt><dd>2026-03-17</dd></div>
-          <div><dt>latest value</dt><dd>0.492579</dd></div>
-          <div><dt>latest selected</dt><dd>no</dd></div>
-          <div><dt>cutoff</dt><dd>0.512625</dd></div>
-          <div><dt>last selected</dt><dd>2026-02-25</dd></div>
-          <div><dt>days since last</dt><dd>20</dd></div>
-        </dl>
-      </div>
-    </details>
-    
-
-    <details class="card" style="--accent:#d97706" >
-      <summary class="card-summary">
-        <div class="top">
-          <div>
-            <div class="symbol">XLE</div>
-            <div class="line">distance_to_252_high</div>
-          </div>
-          <div class="badge">watchlist_wait</div>
-        </div>
-        <p class="note">Preferred line is valid but currently waiting below cutoff.</p>
-        <div class="quick-grid">
-          <div class="quick-pill"><span>recent</span><strong>6</strong></div>
-          <div class="quick-pill"><span>latest</span><strong>2026-03-26</strong></div>
-          <div class="quick-pill"><span>selected</span><strong>no</strong></div>
-        </div>
-      </summary>
-      <div class="details-body">
-        <dl>
-          <div><dt>lane</dt><dd>regression_watchlist</dd></div>
-          <div><dt>status</dt><dd>watchlist_ready</dd></div>
-          <div><dt>recent count</dt><dd>6</dd></div>
-          <div><dt>latest date</dt><dd>2026-03-26</dd></div>
-          <div><dt>latest value</dt><dd>0.023583</dd></div>
-          <div><dt>latest selected</dt><dd>no</dd></div>
-          <div><dt>cutoff</dt><dd>-0.000094</dd></div>
-          <div><dt>last selected</dt><dd>2026-02-19</dd></div>
-          <div><dt>days since last</dt><dd>35</dd></div>
-        </dl>
-      </div>
-    </details>
-    
-
-    <details class="card" style="--accent:#64748b" >
-      <summary class="card-summary">
-        <div class="top">
-          <div>
-            <div class="symbol">QQQ</div>
-            <div class="line">distance_bottom5</div>
-          </div>
-          <div class="badge">inactive_wait</div>
-        </div>
-        <p class="note">Preferred line is inactive; continue monitoring without action.</p>
-        <div class="quick-grid">
-          <div class="quick-pill"><span>recent</span><strong>0</strong></div>
-          <div class="quick-pill"><span>latest</span><strong>2026-03-26</strong></div>
-          <div class="quick-pill"><span>selected</span><strong>no</strong></div>
-        </div>
-      </summary>
-      <div class="details-body">
-        <dl>
-          <div><dt>lane</dt><dd>regression_watchlist</dd></div>
-          <div><dt>status</dt><dd>watchlist_ready</dd></div>
-          <div><dt>recent count</dt><dd>0</dd></div>
-          <div><dt>latest date</dt><dd>2026-03-26</dd></div>
-          <div><dt>latest value</dt><dd>0.035252</dd></div>
-          <div><dt>latest selected</dt><dd>no</dd></div>
-          <div><dt>cutoff</dt><dd>-0.019215</dd></div>
-          <div><dt>last selected</dt><dd>n/a</dd></div>
-          <div><dt>days since last</dt><dd>n/a</dd></div>
-        </dl>
-      </div>
-    </details>
-    
-
-    <details class="card" style="--accent:#64748b" >
-      <summary class="card-summary">
-        <div class="top">
-          <div>
-            <div class="symbol">TSLA</div>
-            <div class="line">fallback_top15</div>
-          </div>
-          <div class="badge">inactive_wait</div>
-        </div>
-        <p class="note">Preferred line is inactive; continue monitoring without action.</p>
-        <div class="quick-grid">
-          <div class="quick-pill"><span>recent</span><strong>0</strong></div>
-          <div class="quick-pill"><span>latest</span><strong>2026-03-18</strong></div>
-          <div class="quick-pill"><span>selected</span><strong>no</strong></div>
-        </div>
-      </summary>
-      <div class="details-body">
-        <dl>
-          <div><dt>lane</dt><dd>binary_operator</dd></div>
-          <div><dt>status</dt><dd>preferred_overlay</dd></div>
-          <div><dt>recent count</dt><dd>0</dd></div>
-          <div><dt>latest date</dt><dd>2026-03-18</dd></div>
-          <div><dt>latest value</dt><dd>0.391317</dd></div>
-          <div><dt>latest selected</dt><dd>no</dd></div>
-          <div><dt>cutoff</dt><dd>0.619859</dd></div>
-          <div><dt>last selected</dt><dd>n/a</dd></div>
-          <div><dt>days since last</dt><dd>n/a</dd></div>
-        </dl>
-      </div>
-    </details>
-    
-
-    <details class="card" style="--accent:#2563eb" >
-      <summary class="card-summary">
-        <div class="top">
-          <div>
-            <div class="symbol">SPY</div>
-            <div class="line">baseline_top10</div>
-          </div>
-          <div class="badge">reference_only</div>
-        </div>
-        <p class="note">Keep as market/reference context only.</p>
-        <div class="quick-grid">
-          <div class="quick-pill"><span>recent</span><strong>0</strong></div>
-          <div class="quick-pill"><span>latest</span><strong>2026-03-17</strong></div>
-          <div class="quick-pill"><span>selected</span><strong>no</strong></div>
-        </div>
-      </summary>
-      <div class="details-body">
-        <dl>
-          <div><dt>lane</dt><dd>binary_operator</dd></div>
-          <div><dt>status</dt><dd>inactive</dd></div>
-          <div><dt>recent count</dt><dd>0</dd></div>
-          <div><dt>latest date</dt><dd>2026-03-17</dd></div>
-          <div><dt>latest value</dt><dd>0.318356</dd></div>
-          <div><dt>latest selected</dt><dd>no</dd></div>
-          <div><dt>cutoff</dt><dd>0.385763</dd></div>
-          <div><dt>last selected</dt><dd>n/a</dd></div>
-          <div><dt>days since last</dt><dd>n/a</dd></div>
-        </dl>
-      </div>
-    </details>
-    
-
-    <details class="card" style="--accent:#7c3aed" >
-      <summary class="card-summary">
-        <div class="top">
-          <div>
-            <div class="symbol">TLT</div>
-            <div class="line">atr_pct_20_bottom5</div>
-          </div>
-          <div class="badge">research_only</div>
-        </div>
-        <p class="note">Research-only line; no live operating action.</p>
-        <div class="quick-grid">
-          <div class="quick-pill"><span>recent</span><strong>0</strong></div>
-          <div class="quick-pill"><span>latest</span><strong>2026-03-26</strong></div>
-          <div class="quick-pill"><span>selected</span><strong>no</strong></div>
-        </div>
-      </summary>
-      <div class="details-body">
-        <dl>
-          <div><dt>lane</dt><dd>regression_watchlist</dd></div>
-          <div><dt>status</dt><dd>inactive</dd></div>
-          <div><dt>recent count</dt><dd>0</dd></div>
-          <div><dt>latest date</dt><dd>2026-03-26</dd></div>
-          <div><dt>latest value</dt><dd>0.008757</dd></div>
-          <div><dt>latest selected</dt><dd>no</dd></div>
-          <div><dt>cutoff</dt><dd>-0.010396</dd></div>
-          <div><dt>last selected</dt><dd>n/a</dd></div>
-          <div><dt>days since last</dt><dd>n/a</dd></div>
-        </dl>
-      </div>
-    </details>
+  <div class="card">
+    <h1>Monitor Board</h1>
+    <div class="summary">非 `SLV` 標的目前監控摘要。watchlist_wait=2 | inactive_wait=2 | selected_now=1 | reference_only=1 | research_only=1</div>
+    <div class="spotlight-grid">
+    <div class="spotlight-card" style="--accent:#0f766e">
+      <div class="spotlight-date">2026-03-10</div>
+      <div class="spotlight-symbol" style="color:#0f766e">IWM</div>
+      <div class="spotlight-line">baseline_threshold</div>
+      <div class="spotlight-metric">action=selected_now</div>
+      <div class="spotlight-metric">status=active</div>
+      <div class="spotlight-metric">recent=45</div>
+      <div class="spotlight-metric">latest=0.4731</div>
+      <div class="spotlight-metric">cutoff=0.4500</div>
+      <div class="spotlight-metric">last_selected=2026-03-10</div>
+      <div class="spotlight-metric">days_since_last=0</div>
+      <div class="spotlight-note">Preferred line is currently selected.</div>
     </div>
+    
+
+    <div class="spotlight-card" style="--accent:#d97706">
+      <div class="spotlight-date">2026-03-17</div>
+      <div class="spotlight-symbol" style="color:#d97706">NVDA</div>
+      <div class="spotlight-line">binary_top12_5</div>
+      <div class="spotlight-metric">action=watchlist_wait</div>
+      <div class="spotlight-metric">status=watchlist_ready</div>
+      <div class="spotlight-metric">recent=6</div>
+      <div class="spotlight-metric">latest=0.4926</div>
+      <div class="spotlight-metric">cutoff=0.5126</div>
+      <div class="spotlight-metric">last_selected=2026-02-25</div>
+      <div class="spotlight-metric">days_since_last=20</div>
+      <div class="spotlight-note">Preferred line is valid but currently waiting below cutoff.</div>
+    </div>
+    
+
+    <div class="spotlight-card" style="--accent:#d97706">
+      <div class="spotlight-date">2026-03-26</div>
+      <div class="spotlight-symbol" style="color:#d97706">XLE</div>
+      <div class="spotlight-line">distance_to_252_high</div>
+      <div class="spotlight-metric">action=watchlist_wait</div>
+      <div class="spotlight-metric">status=watchlist_ready</div>
+      <div class="spotlight-metric">recent=6</div>
+      <div class="spotlight-metric">latest=0.0236</div>
+      <div class="spotlight-metric">cutoff=-0.0001</div>
+      <div class="spotlight-metric">last_selected=2026-02-19</div>
+      <div class="spotlight-metric">days_since_last=35</div>
+      <div class="spotlight-note">Preferred line is valid but currently waiting below cutoff.</div>
+    </div>
+    
+
+    <div class="spotlight-card" style="--accent:#64748b">
+      <div class="spotlight-date">2026-03-26</div>
+      <div class="spotlight-symbol" style="color:#64748b">QQQ</div>
+      <div class="spotlight-line">distance_bottom5</div>
+      <div class="spotlight-metric">action=inactive_wait</div>
+      <div class="spotlight-metric">status=watchlist_ready</div>
+      <div class="spotlight-metric">recent=0</div>
+      <div class="spotlight-metric">latest=0.0353</div>
+      <div class="spotlight-metric">cutoff=-0.0192</div>
+      <div class="spotlight-metric">last_selected=n/a</div>
+      <div class="spotlight-metric">days_since_last=n/a</div>
+      <div class="spotlight-note">Preferred line is inactive; continue monitoring without action.</div>
+    </div>
+    
+
+    <div class="spotlight-card" style="--accent:#64748b">
+      <div class="spotlight-date">2026-03-18</div>
+      <div class="spotlight-symbol" style="color:#64748b">TSLA</div>
+      <div class="spotlight-line">fallback_top15</div>
+      <div class="spotlight-metric">action=inactive_wait</div>
+      <div class="spotlight-metric">status=preferred_overlay</div>
+      <div class="spotlight-metric">recent=0</div>
+      <div class="spotlight-metric">latest=0.3913</div>
+      <div class="spotlight-metric">cutoff=0.6199</div>
+      <div class="spotlight-metric">last_selected=n/a</div>
+      <div class="spotlight-metric">days_since_last=n/a</div>
+      <div class="spotlight-note">Preferred line is inactive; continue monitoring without action.</div>
+    </div>
+    </div>
+    <div class="legend"><span class="legend-item"><span class="swatch" style="background:#0f766e"></span>selected_now</span><span class="legend-item"><span class="swatch" style="background:#d97706"></span>watchlist_wait</span><span class="legend-item"><span class="swatch" style="background:#64748b"></span>inactive_wait</span><span class="legend-item"><span class="swatch" style="background:#2563eb"></span>reference_only</span><span class="legend-item"><span class="swatch" style="background:#7c3aed"></span>research_only</span></div>
+    <div id="chart"></div>
+  </div>
+  <div id="tooltip" class="tooltip"></div>
+  <script>
+    const rows = [{"symbol": "IWM", "action": "selected_now", "preferred_line": "baseline_threshold", "recent_selected_count": 45, "latest_date": "2026-03-10", "latest_value": 0.473054, "last_selected_date": "2026-03-10", "days_since_last_selected": 0, "action_note": "Preferred line is currently selected."}, {"symbol": "NVDA", "action": "watchlist_wait", "preferred_line": "binary_top12_5", "recent_selected_count": 6, "latest_date": "2026-03-17", "latest_value": 0.492579, "last_selected_date": "2026-02-25", "days_since_last_selected": 20, "action_note": "Preferred line is valid but currently waiting below cutoff."}, {"symbol": "XLE", "action": "watchlist_wait", "preferred_line": "distance_to_252_high", "recent_selected_count": 6, "latest_date": "2026-03-26", "latest_value": 0.0235827999059949, "last_selected_date": "2026-02-19", "days_since_last_selected": 35, "action_note": "Preferred line is valid but currently waiting below cutoff."}, {"symbol": "QQQ", "action": "inactive_wait", "preferred_line": "distance_bottom5", "recent_selected_count": 0, "latest_date": "2026-03-26", "latest_value": 0.0352518795722821, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Preferred line is inactive; continue monitoring without action."}, {"symbol": "TSLA", "action": "inactive_wait", "preferred_line": "fallback_top15", "recent_selected_count": 0, "latest_date": "2026-03-18", "latest_value": 0.391317, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Preferred line is inactive; continue monitoring without action."}, {"symbol": "SPY", "action": "reference_only", "preferred_line": "baseline_top10", "recent_selected_count": 0, "latest_date": "2026-03-17", "latest_value": 0.318356, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Keep as market/reference context only."}, {"symbol": "TLT", "action": "research_only", "preferred_line": "atr_pct_20_bottom5", "recent_selected_count": 0, "latest_date": "2026-03-26", "latest_value": 0.0087573525098017, "last_selected_date": "", "days_since_last_selected": null, "action_note": "Research-only line; no live operating action."}];
+    const colors = {
+      selected_now: "#0f766e",
+      watchlist_wait: "#d97706",
+      inactive_wait: "#64748b",
+      reference_only: "#2563eb",
+      research_only: "#7c3aed",
+    };
+    const chart = document.getElementById('chart');
+    const tooltip = document.getElementById('tooltip');
+    const width = Math.max(1200, rows.length * 120);
+    const height = 420;
+    const topPad = 40;
+    const leftPad = 56;
+    const rightPad = 24;
+    const bottomPad = 56;
+    const innerWidth = width - leftPad - rightPad;
+    const innerHeight = height - topPad - bottomPad;
+    const maxRecent = Math.max(...rows.map(r => r.recent_selected_count), 1);
+    const barWidth = innerWidth / rows.length * 0.72;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('width', String(width));
+    svg.setAttribute('height', String(height));
+
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', '0');
+    bg.setAttribute('y', '0');
+    bg.setAttribute('width', String(width));
+    bg.setAttribute('height', String(height));
+    bg.setAttribute('fill', '#fffdf8');
+    svg.appendChild(bg);
+
+    for (let i = 0; i < 5; i += 1) {
+      const y = topPad + (innerHeight / 4) * i;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', String(leftPad));
+      line.setAttribute('x2', String(width - rightPad));
+      line.setAttribute('y1', String(y));
+      line.setAttribute('y2', String(y));
+      line.setAttribute('stroke', '#d6d3d1');
+      line.setAttribute('stroke-width', '1');
+      line.setAttribute('stroke-dasharray', '3 5');
+      svg.appendChild(line);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', '8');
+      label.setAttribute('y', String(y + 4));
+      label.setAttribute('class', 'axis-label');
+      label.textContent = String(Math.round(maxRecent - (maxRecent / 4) * i));
+      svg.appendChild(label);
+    }
+
+    rows.forEach((row, index) => {
+      const slotWidth = innerWidth / rows.length;
+      const x = leftPad + index * slotWidth + (slotWidth - barWidth) / 2;
+      const barHeight = (row.recent_selected_count / maxRecent) * innerHeight;
+      const y = topPad + innerHeight - barHeight;
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', String(x));
+      rect.setAttribute('y', String(y));
+      rect.setAttribute('width', String(barWidth));
+      rect.setAttribute('height', String(Math.max(barHeight, 6)));
+      rect.setAttribute('rx', '6');
+      rect.setAttribute('fill', colors[row.action] || '#475569');
+      rect.setAttribute('opacity', row.action === 'inactive_wait' ? '0.55' : '0.95');
+      rect.addEventListener('mousemove', event => {
+        tooltip.style.display = 'block';
+        tooltip.style.left = (event.clientX + 14) + 'px';
+        tooltip.style.top = (event.clientY + 14) + 'px';
+        tooltip.innerHTML = `<strong>${row.symbol}</strong><br>action=${row.action}<br>line=${row.preferred_line}<br>recent=${row.recent_selected_count}<br>latest=${row.latest_date || 'n/a'}<br>last_selected=${row.last_selected_date || 'n/a'}<br>${row.action_note}`;
+      });
+      rect.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+      });
+      svg.appendChild(rect);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', String(x + barWidth / 2));
+      label.setAttribute('y', String(height - 24));
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('class', 'axis-label');
+      label.textContent = row.symbol;
+      svg.appendChild(label);
+    });
+
+    chart.appendChild(svg);
+  </script>
 </body>
 </html>
