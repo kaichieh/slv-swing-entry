@@ -23,6 +23,7 @@ DEFAULT_L2_REG = 1e-2
 @dataclass
 class BucketStat:
     split: str
+    direction: str
     top_pct: float
     count: int
     avg_return: float
@@ -107,12 +108,21 @@ def safe_corr(left: np.ndarray, right: np.ndarray) -> float:
     return float(np.corrcoef(left, right)[0, 1])
 
 
-def compute_bucket_stat(split: str, predictions: np.ndarray, realized_returns: np.ndarray, top_pct: float) -> BucketStat:
-    cutoff = float(np.quantile(predictions, 1.0 - top_pct / 100.0))
-    selected = predictions >= cutoff
+def compute_bucket_stat(
+    split: str, direction: str, predictions: np.ndarray, realized_returns: np.ndarray, top_pct: float
+) -> BucketStat:
+    if direction == "top":
+        cutoff = float(np.quantile(predictions, 1.0 - top_pct / 100.0))
+        selected = predictions >= cutoff
+    elif direction == "bottom":
+        cutoff = float(np.quantile(predictions, top_pct / 100.0))
+        selected = predictions <= cutoff
+    else:
+        raise ValueError(f"Unsupported direction: {direction}")
     chosen = realized_returns[selected]
     return BucketStat(
         split=split,
+        direction=direction,
         top_pct=top_pct,
         count=int(selected.sum()),
         avg_return=float(chosen.mean()) if len(chosen) else 0.0,
@@ -150,9 +160,16 @@ def main() -> None:
     valid_pred = predict(valid_x, weights)
     test_pred = predict(test_x, weights)
 
-    bucket_rows = [
-        asdict(compute_bucket_stat("validation", valid_pred, valid_y, top_pct)) for top_pct in get_top_pcts()
-    ] + [asdict(compute_bucket_stat("test", test_pred, test_y, top_pct)) for top_pct in get_top_pcts()]
+    bucket_rows = []
+    for split_name, predictions, realized_returns in (
+        ("validation", valid_pred, valid_y),
+        ("test", test_pred, test_y),
+    ):
+        for direction in ("top", "bottom"):
+            for top_pct in get_top_pcts():
+                bucket_rows.append(
+                    asdict(compute_bucket_stat(split_name, direction, predictions, realized_returns, top_pct))
+                )
 
     output = {
         "asset_key": ac.get_asset_key(),
