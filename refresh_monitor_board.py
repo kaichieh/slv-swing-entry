@@ -125,13 +125,17 @@ def render_today_card(row: pd.Series) -> str:
     last_date = "n/a" if pd.isna(row["last_selected_date"]) else str(row["last_selected_date"])
     days = "n/a" if pd.isna(row["days_since_last_selected"]) else str(int(float(row["days_since_last_selected"])))
     latest_date = str(row["display_latest_date"])
+    action = str(row["action"])
+    if action == "selected_now":
+        last_date = latest_date
+        days = "0"
     recent_count = int(row["recent_selected_count"])
     return f"""
     <a class="spotlight-card" href="{chart_href}" style="--accent:{color}">
       <div class="spotlight-date">{escape(latest_date)}</div>
       <div class="spotlight-symbol" style="color:{color}">{escape(str(row["symbol"]))}</div>
       <div class="spotlight-line">{escape(str(row["preferred_line"]))}</div>
-      <div class="spotlight-metric">today_status={escape(str(row["action"]))}</div>
+      <div class="spotlight-metric">today_status={escape(action)}</div>
       <div class="spotlight-metric">recent_selected={recent_count}/60</div>
       <div class="spotlight-metric">latest={latest}</div>
       <div class="spotlight-metric">cutoff={cutoff}</div>

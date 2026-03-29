@@ -16,7 +16,7 @@ import prepare as pr
 import train as tr
 
 OUTPUT_PATH = str(ac.get_regression_recent_output_path())
-DEFAULT_LOOKBACK = 60
+DEFAULT_LOOKBACK = 5 * 252
 DEFAULT_DIRECTION = "bottom"
 DEFAULT_BUCKET_PCT = 15.0
 
