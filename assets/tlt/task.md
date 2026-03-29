@@ -10,7 +10,7 @@
 
 ## Round 2 Label Sanity
 
-- [ ] Compare `drop-neutral` versus `keep-all binary`.
+- [x] Compare `drop-neutral` versus `keep-all binary`. Performance: `keep-all binary` reached `validation_f1=0.4269`, `validation_bal_acc=0.5000`, `test_f1=0.3617`, `test_bal_acc=0.5000`, `headline_score=0.4472`, and stayed fully all-positive on test. This confirms that neutral filtering is not what is breaking TLT; the binary family itself is the wrong formulation.
 - [x] Compare `60d +6%/-3%`, `60d +8%/-4%`, and `60d +4%/-2%`. Performance: `60d +4%/-2%` had the highest headline score at `0.4693`, but it stayed fully collapsed with `test_positive_rate=1.0000`. `60d +8%/-4%` was the only less-degenerate line, reducing `test_positive_rate` to `0.3439` and lifting `test_bal_acc` to `0.5277`, but its overall quality stayed weak at `headline_score=0.3855`.
 - [x] Compare `40d +6%/-3%` versus `60d +6%/-3%`. Performance: `40d +6%/-3%` was also weak, with `test_f1=0.2587`, `test_bal_acc=0.4649`, `headline_score=0.3673`.
 - [x] Review whether TLT produces a genuinely different signal family from equities. Performance: yes, but not in a good way under the current binary workflow. The line is much more label-sensitive than the equity assets, and the least-degenerate candidate is still too weak to justify a normal feature sweep.
@@ -59,6 +59,10 @@
 
 - [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.
 - [ ] Do not return TLT to the binary workflow unless a genuinely different label family is introduced.
+
+## Round 13 Bucket Density Check
+
+- [x] Compare `atr_pct_20` at `bottom 2.5% / 5% / 7.5%` to confirm the least-bad TLT watchlist density. Performance: `bottom 5%` remained the least-bad operating cutoff. `bottom 2.5%` was too sparse and still produced a negative middle fold, while `bottom 7.5%` over-loosened the late fold and fell back below the fold average. All three versions still had `0` selections in the latest `60` rows, so TLT remains research-only, but `bottom 5%` is still the right placeholder if work continues.
 
 ## Notes
 

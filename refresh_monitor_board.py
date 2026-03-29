@@ -7,7 +7,7 @@ import pandas as pd
 
 import asset_config as ac
 
-ASSET_KEYS = ["gld", "iwm", "spy", "tlt", "xle", "nvda", "qqq", "tsla"]
+ASSET_KEYS = ["gld", "slv", "iwm", "spy", "tlt", "xle", "nvda", "qqq", "tsla"]
 ACTION_PRIORITY = {
     "selected_now": 0,
     "watchlist_wait": 1,

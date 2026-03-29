@@ -63,6 +63,10 @@
 - [x] Refresh the active QQQ regression recent output and chart on the default `distance_to_252_high + bottom 5%` line. Performance: `assets/qqq/regression_recent.tsv` and `assets/qqq/regression_recent.html` are now re-aligned to that active watchlist rule. The latest saved row `2026-03-26` remained unselected with `predicted_return=0.0353` versus cutoff `-0.0192`, which matches the current no-watchlist conclusion.
 - [ ] Once a non-degenerate candidate appears, re-run threshold versus top-percentile rules and a 4-fold walk-forward check.
 
+## Round 13 Bucket Density Check
+
+- [x] Re-compare `distance_to_252_high` at `bottom 4% / 5% / 6%` before tightening the QQQ operating watchlist. Performance: `bottom 4%` was the strongest raw walk-forward bucket, with all three folds still above their fold averages and the highest average bucket return of the trio. But `bottom 4%` and `bottom 5%` both stayed at `0` selections across the latest `60` rows, so the tighter rule does not buy any live usefulness right now. The repo should therefore keep `distance_to_252_high + bottom 5%` as the default operating reference and treat `bottom 4%` as an optional higher-conviction side study rather than a new default.
+
 ## Round 10 Active Status Summary
 
 - [x] Save a one-file active status summary for the current QQQ watchlist candidates. Performance: `assets/qqq/active_status_summary.tsv` now keeps the active choice and side studies in one place. The repo still prefers `distance_to_252_high + bottom 5%` as the primary QQQ watchlist because it has the best robustness-first profile, while `distance_to_252_high + atr_pct_20 + bottom 5%` and `distance_to_252_high + bottom 3%` remain secondary. All three still had `0` recent selections through `2026-03-26`.

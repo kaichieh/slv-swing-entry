@@ -10,7 +10,7 @@
 
 ## Round 2 Label Sanity
 
-- [ ] Compare `drop-neutral` versus `keep-all binary`.
+- [x] Compare `drop-neutral` versus `keep-all binary`. Performance: `keep-all binary` landed at `validation_f1=0.3641`, `validation_bal_acc=0.5039`, `test_f1=0.4762`, `test_bal_acc=0.5000`, `headline_score=0.4611`, with `test_positive_rate=1.0000`. So XLE's blocker is not neutral filtering; it is the binary formulation itself.
 - [x] Compare `60d +10%/-5%`, `60d +12%/-6%`, and `60d +8%/-4%`. Performance: none of the nearby barriers fixed the collapse. `60d +8%/-4%` posted the best headline score at `0.5079`, but `test_positive_rate` was still `1.0000`; `60d +12%/-6%` also stayed fully degenerate with `headline_score=0.4952`.
 - [x] Compare `40d +10%/-5%` versus `60d +10%/-5%`. Performance: `40d +10%/-5%` did not help, with `test_f1=0.5191`, `test_bal_acc=0.5000`, `headline_score=0.4897`.
 - [x] Review whether XLE is more interpretable than broad equities under the current barrier workflow. Performance: not yet. XLE still behaves more like an all-positive commodity-beta classifier than a usable swing-entry line.
@@ -59,6 +59,10 @@
 
 - [ ] If XLE work continues, promote `distance_to_252_high + bottom 10%` into recent/rule-style monitoring and treat it as the leading operating candidate.
 - [ ] Keep XLE on a ranking-style workflow rather than retrying nearby binary barriers.
+
+## Round 13 Bucket Density Check
+
+- [x] Compare `distance_to_252_high` at `bottom 7.5% / 10% / 12.5%` before changing the active XLE watchlist cutoff. Performance: `bottom 10%` remained the cleanest active choice. `bottom 7.5%` looked a bit stronger on the early folds but lost late-regime excess return; `bottom 12.5%` improved the latest fold and matched the recent `60`-row activity at `6` selections, but it did so with a looser cutoff and no clear overall edge versus `bottom 10%`. This means XLE should keep `distance_to_252_high + bottom 10%` as the default operating line and treat `bottom 12.5%` only as a nearby side study.
 
 ## Notes
 

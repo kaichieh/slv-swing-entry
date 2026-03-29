@@ -207,6 +207,7 @@ def build_tsla(asset_dir: Path) -> pd.DataFrame:
 BUILDERS = {
     "gld": None,
     "iwm": build_iwm,
+    "slv": None,
     "spy": build_spy,
     "tlt": build_tlt,
     "xle": build_xle,
@@ -245,6 +246,38 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
 
 
 BUILDERS["gld"] = build_gld
+
+
+def build_slv(asset_dir: Path) -> pd.DataFrame:
+    latest_prediction_path = ac.get_latest_prediction_path("slv")
+    if not latest_prediction_path.exists():
+        raise FileNotFoundError(f"Missing SLV latest prediction file: {latest_prediction_path}")
+    payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+    rows, _meta = cs.build_chart_rows(60)
+    recent_selected_count = sum(1 for row in rows if str(row["signal"]) != "no_entry")
+    latest_row = rows[-1]
+    signal = str(payload["signal_summary"]["signal"])
+    return pd.DataFrame(
+        [
+            {
+                "line_id": "baseline_threshold",
+                "lane_type": "binary_operator",
+                "role": "research_primary",
+                "preferred": True,
+                "status": "active" if signal != "no_entry" else "inactive",
+                "recent_selected_count": recent_selected_count,
+                "latest_date": str(payload["latest_raw_date"]),
+                "latest_value": float(payload["signal_summary"]["predicted_probability"]),
+                "latest_selected": signal != "no_entry",
+                "cutoff": float(payload["signal_summary"]["decision_threshold"]),
+                "last_selected_date": str(latest_row["date"]) if signal != "no_entry" else "",
+                "usage_note": "Research-only SLV line. Keep the baseline signal as context while the operating rule remains unadopted.",
+            }
+        ]
+    )
+
+
+BUILDERS["slv"] = build_slv
 
 
 def main() -> None:

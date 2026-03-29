@@ -563,3 +563,10 @@
 
 - [ ] 若要繼續做 exit，改成更實用的風控定義再試一次，例如未來 `60d` 最大回撤是否超過 `-7%`，而不是對稱的 `-8% before +4%` barrier。Performance:
 - [ ] 若要繼續做 exit，先統計最近 10 年與最近 5 年的 exit label 分布，確認是不是近年多頭 regime 讓對稱 exit target 幾乎失去樣本。Performance:
+
+---
+
+# 第 29 輪研究任務
+## binary 主線決策
+
+- [x] 正式決定是否把「live 模型」與「adopted trading rule」分開管理。Performance: 正式分開管理。`ret_60 + sma_gap_60` 仍保留為 GLD 的 live model，因為它的 `headline_score=0.6784` 仍是目前最穩的主線；但實際採用的交易規則改以 `ret_60 + sma_gap_60 + rolling_vol_60` 的 `top 20%` 作為 adopted trading rule，因為它在 test `avg_return=10.54%`, `hit_rate=77.78%`、walk-forward `avg_return=4.82%`、最近 5 年 `avg_return=5.99%`, `max_drawdown=-11.22%` 都明顯優於同模型 threshold。這代表 GLD 之後應明確分成「模型分數參考」與「實際採用規則」兩層，而不是再試圖把兩者硬壓成同一條 live 線。
