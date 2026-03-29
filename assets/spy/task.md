@@ -28,9 +28,13 @@
 
 - [x] Save a recent operator output for the only SPY side candidate worth keeping. Performance: `assets/spy/operator_recent.tsv` showed that `rolling_vol_60 + top_10pct` stayed inactive through the latest saved stretch. On `2026-03-17`, `predicted_probability=0.3895` versus cutoff `0.4522`, so the side candidate still did not produce a current selection. That reinforces the idea that SPY should remain a reference asset, not an active operating line.
 
+## Round 6 Operating Compare
+
+- [x] Compare the two remaining SPY operator-style side lines under walk-forward trading. Performance: `assets/spy/operator_walkforward_compare.tsv` showed almost no separation between the plain `10/-5 + top_10pct` line and the `rolling_vol_60 + top_10pct` extension. The plain line reached `trade_count=24`, `hit_rate=58.33%`, `avg_return=4.12%`, while the volatility extension reached `24`, `58.33%`, and `4.01%`. The plain line also had the slightly better worst-fold excess return. This means SPY now has no meaningful reason to prefer the extra feature, and should stay a market reference rather than a research priority.
+
 ## Next Round
 
-- [ ] If SPY work continues, treat `rolling_vol_60 + top_10pct` as the only operator-style side candidate worth keeping.
+- [ ] If SPY work continues at all, keep only the simpler `10/-5 + top_10pct` side line for reference and stop extending it.
 - [ ] Otherwise keep SPY as the repo's market reference and stop adding nearby SPY features for now.
 
 ## Notes

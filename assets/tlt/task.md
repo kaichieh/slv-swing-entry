@@ -27,6 +27,10 @@
 
 - [x] Test whether one extra context feature can improve the TLT regression line. Performance: `assets/tlt/regression_candidate_compare.tsv` compared `atr_pct_20` against `atr_pct_20 + distance_to_252_high`. The extension changed the sign of the ranking but not for the better: at both `5%` and `10%`, the combined line preferred the `top` bucket, yet still produced negative test returns at `-0.94%` and `-0.38%`. The plain `atr_pct_20` line remained better, with `bottom 5% test_avg_return=0.73%` and `bottom 10% test_avg_return=0.29%`.
 
+## Round 6 Regression Family Compare
+
+- [x] Compare the current volatility-style TLT ranking line against a genuinely different price-action family. Performance: `assets/tlt/regression_family_walkforward.tsv` and `assets/tlt/regression_family_recent.tsv` compared `atr_pct_20` against `ret_60 + sma_gap_60` on the `bottom 5%` bucket. The result was decisive: `atr_pct_20` kept a positive `avg_bucket_return=0.59%` with `min_fold_excess_return=-0.31%`, while the price-action family fell to `avg_bucket_return=-0.81%` and `min_fold_excess_return=-1.50%`. The recent rows for the price-action family also stayed entirely inactive through `2026-03-26`. So TLT should stay on the volatility-style regression track, not pivot to a broad trend family.
+
 ## Next Round
 
 - [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.

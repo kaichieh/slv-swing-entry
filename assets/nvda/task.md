@@ -43,6 +43,10 @@
 - [x] Formalize the strongest NVDA regression candidate under recent and walk-forward outputs. Performance: `assets/nvda/regression_summary.tsv`, `assets/nvda/regression_recent.tsv`, and `assets/nvda/regression_walkforward.tsv` confirmed that `ret_60 + sma_gap_60 + atr_pct_20` is the best ranking-style side study on the `top 10%` bucket. It kept `test_top10_avg_return=27.21%` versus overall `16.53%`, and the first two walk-forward folds were actually strong at `20.37%` and `25.59%`, but the late fold still lost sign on correlation with `test_corr=-0.0339`. So the regression path is now a real side study, but still not persuasive enough to replace the current binary watchlist line.
 - [x] Tighten the binary watchlist overlay compare around the current NVDA combo. Performance: `assets/nvda/operator_bucket_sensitivity.tsv` showed that `top_12_5pct` still deserves to be the active overlay. `top_10pct` reduced drawdown to `-7.66%`, but `top_12_5pct` improved the trade profile to `selected_count=11`, `hit_rate=81.82%`, and `avg_return=19.14%`, ahead of `top_10pct` at `14.67%`. `top_17.5pct` and `top_20pct` kept high average returns too, but with much larger drawdowns near `-31%`.
 
+## Round 6 Lane Compare
+
+- [x] Compare the active binary watchlist overlay against the ranking side study on the latest dates. Performance: `assets/nvda/regression_operator_recent.tsv` confirmed that the regression lane is still too far from live usefulness. Even by `2026-03-26`, the ranking candidate's `predicted_return=0.0632` stayed far below the active `top 10%` cutoff at `0.1552`, so it never entered the bucket. That keeps the binary `top_12_5pct` overlay as the only practical NVDA watchlist lane for now.
+
 ## Next Round
 
 - [x] Run a clean dedicated `rolling_vol_60` pass for NVDA. Performance: the dedicated train path confirmed `rolling_vol_60` is viable but not best-in-class, and `ret_60 + sma_gap_60 + rolling_vol_60` only reached `validation_f1=0.7009`, `validation_bal_acc=0.5509`, `test_f1=0.6463`, `test_bal_acc=0.5204`, `headline_score=0.6099`.

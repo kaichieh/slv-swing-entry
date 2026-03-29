@@ -27,9 +27,13 @@
 
 - [x] Compare the current XLE ranking candidate against nearby alternatives. Performance: `assets/xle/regression_candidate_compare.tsv` kept `ret_60 + sma_gap_60` in front overall. `distance_to_252_high` had a flashy `top 5% test_avg_return=5.09%`, but its `bottom 10%` line only reached `5.40%` with weaker hit rate than the incumbent. `atr_pct_20` was similar but slightly weaker. The current best XLE interpretation remains `ret_60 + sma_gap_60` through the `bottom 10%` bucket at `5.72%` average return and `65.69%` hit rate.
 
+## Round 6 Walk-Forward Compare
+
+- [x] Compare the two most plausible XLE ranking candidates directly under walk-forward. Performance: `assets/xle/regression_walkforward_compare.tsv` showed that `distance_to_252_high` is now the more stable operating choice even though it trailed slightly on the static full-sample table. It reached `avg_bucket_return=5.84%`, `avg_hit_rate=65.45%`, and crucially kept `min_fold_excess_return=+0.49%`, while `ret_60 + sma_gap_60` fell to `min_fold_excess_return=-1.24%`. That means XLE now has a split: the old combo still looks good on the static split, but `distance_to_252_high` is the cleaner walk-forward candidate.
+
 ## Next Round
 
-- [ ] If XLE work continues, compare `ret_60 + sma_gap_60` directly against `distance_to_252_high` in a dedicated ranking walk-forward table before any operating adoption.
+- [ ] If XLE work continues, promote `distance_to_252_high + bottom 10%` into recent/rule-style monitoring and treat it as the leading operating candidate.
 - [ ] Keep XLE on a ranking-style workflow rather than retrying nearby binary barriers.
 
 ## Notes

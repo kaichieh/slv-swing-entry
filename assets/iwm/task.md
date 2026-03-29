@@ -28,10 +28,14 @@
 
 - [x] Save live-like recent operator outputs for the active IWM threshold line and the `rs_vs_benchmark_60` sidecar. Performance: `assets/iwm/operator_recent.tsv` showed that the relative-strength sidecar was actually the more active line into the latest dates. By `2026-03-10`, `rs_vs_benchmark_60` was still selected with `predicted_probability=0.4601` versus `threshold=0.4360`, while the baseline was quieter. This does not change the adoption decision, but it makes the sidecar useful as a tactical overlay when IWM is outperforming SPY.
 
+## Round 6 Operating Compare
+
+- [x] Compare the baseline threshold line against a stricter relative-strength overlay under walk-forward trading. Performance: `assets/iwm/operator_walkforward_compare.tsv` showed that the default baseline threshold still wins on robustness. It reached `trade_count=41`, `hit_rate=53.66%`, `avg_return=2.19%`, and kept fold excess returns in a narrow `-0.23%` to `+0.60%` band. The `rs_vs_benchmark_60 + top_20pct` overlay was more selective, but weaker overall with `trade_count=30`, `hit_rate=46.67%`, `avg_return=1.81%`, and a much worse worst-fold excess at `-2.25%`. So the sidecar remains tactical only; it should not replace the baseline operating line.
+
 ## Next Round
 
-- [ ] If more IWM work continues, compare baseline threshold against `rs_vs_benchmark_60` under a stricter walk-forward trading overlay instead of adding more nearby features.
 - [ ] If an operator-only choice is needed, document when to prefer the sidecar over the baseline threshold line.
+- [ ] If more IWM work continues, focus on documenting the baseline-versus-sidecar use case rather than adding more model variants.
 
 ## Notes
 
