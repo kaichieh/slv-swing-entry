@@ -49,28 +49,39 @@ def render_card(row: pd.Series) -> str:
     cutoff = "n/a" if pd.isna(row["cutoff"]) else f"{float(row['cutoff']):.6f}"
     last_date = "n/a" if pd.isna(row["last_selected_date"]) else str(row["last_selected_date"])
     days = "n/a" if pd.isna(row["days_since_last_selected"]) else str(int(float(row["days_since_last_selected"])))
+    recent_count = int(row["recent_selected_count"])
+    latest_selected = "yes" if bool(row["latest_selected"]) else "no"
     return f"""
-    <section class="card" style="--accent:{color}">
-      <div class="top">
-        <div>
-          <div class="symbol">{escape(str(row["symbol"]))}</div>
-          <div class="line">{escape(str(row["preferred_line"]))}</div>
+    <details class="card" style="--accent:{color}" {"open" if str(row["action"]) == "selected_now" else ""}>
+      <summary class="card-summary">
+        <div class="top">
+          <div>
+            <div class="symbol">{escape(str(row["symbol"]))}</div>
+            <div class="line">{escape(str(row["preferred_line"]))}</div>
+          </div>
+          <div class="badge">{escape(str(row["action"]))}</div>
         </div>
-        <div class="badge">{escape(str(row["action"]))}</div>
+        <p class="note">{escape(str(row["action_note"]))}</p>
+        <div class="quick-grid">
+          <div class="quick-pill"><span>recent</span><strong>{recent_count}</strong></div>
+          <div class="quick-pill"><span>latest</span><strong>{escape(str(row["latest_date"]))}</strong></div>
+          <div class="quick-pill"><span>selected</span><strong>{latest_selected}</strong></div>
+        </div>
+      </summary>
+      <div class="details-body">
+        <dl>
+          <div><dt>lane</dt><dd>{escape(str(row["lane_type"]))}</dd></div>
+          <div><dt>status</dt><dd>{escape(str(row["status"]))}</dd></div>
+          <div><dt>recent count</dt><dd>{recent_count}</dd></div>
+          <div><dt>latest date</dt><dd>{escape(str(row["latest_date"]))}</dd></div>
+          <div><dt>latest value</dt><dd>{latest}</dd></div>
+          <div><dt>latest selected</dt><dd>{latest_selected}</dd></div>
+          <div><dt>cutoff</dt><dd>{cutoff}</dd></div>
+          <div><dt>last selected</dt><dd>{escape(last_date)}</dd></div>
+          <div><dt>days since last</dt><dd>{days}</dd></div>
+        </dl>
       </div>
-      <p class="note">{escape(str(row["action_note"]))}</p>
-      <dl>
-        <div><dt>lane</dt><dd>{escape(str(row["lane_type"]))}</dd></div>
-        <div><dt>status</dt><dd>{escape(str(row["status"]))}</dd></div>
-        <div><dt>recent count</dt><dd>{int(row["recent_selected_count"])}</dd></div>
-        <div><dt>latest date</dt><dd>{escape(str(row["latest_date"]))}</dd></div>
-        <div><dt>latest value</dt><dd>{latest}</dd></div>
-        <div><dt>latest selected</dt><dd>{"yes" if bool(row["latest_selected"]) else "no"}</dd></div>
-        <div><dt>cutoff</dt><dd>{cutoff}</dd></div>
-        <div><dt>last selected</dt><dd>{escape(last_date)}</dd></div>
-        <div><dt>days since last</dt><dd>{days}</dd></div>
-      </dl>
-    </section>
+    </details>
     """
 
 
@@ -111,9 +122,14 @@ def build_html(board: pd.DataFrame) -> str:
       border: 1px solid var(--line);
       border-top: 5px solid var(--accent);
       border-radius: 18px;
-      padding: 18px;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
     }}
+    .card-summary {{
+      list-style: none;
+      cursor: pointer;
+      padding: 18px;
+    }}
+    .card-summary::-webkit-details-marker {{ display: none; }}
     .top {{
       display: flex;
       justify-content: space-between;
@@ -132,6 +148,32 @@ def build_html(board: pd.DataFrame) -> str:
       white-space: nowrap;
     }}
     .note {{ color: var(--muted); line-height: 1.5; min-height: 44px; }}
+    .quick-grid {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }}
+    .quick-pill {{
+      background: #faf6ee;
+      border: 1px solid #efe5d4;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }}
+    .quick-pill span {{
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }}
+    .quick-pill strong {{
+      font-size: 14px;
+    }}
+    .details-body {{
+      padding: 0 18px 18px;
+    }}
     dl {{
       display: grid;
       grid-template-columns: 1fr 1fr;
