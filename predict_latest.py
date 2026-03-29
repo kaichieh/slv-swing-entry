@@ -12,7 +12,7 @@ import numpy as np
 
 import asset_config as ac
 import train as tr
-from prepare import add_price_features, download_asset_prices
+from prepare import add_features, download_asset_prices
 
 DEFAULT_LIVE_EXTRA_FEATURES = ()
 WEAK_BULLISH_QUANTILE = 0.70
@@ -244,7 +244,7 @@ def build_rule_rationale(probability: float, threshold: float, rule_summary: dic
 def main() -> None:
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
     raw_prices = download_asset_prices()
-    live_features = add_price_features(raw_prices)
+    live_features = add_features(raw_prices)
     splits = tr.load_splits()
     feature_names = build_feature_names()
     weights, threshold = fit_model(splits, feature_names)

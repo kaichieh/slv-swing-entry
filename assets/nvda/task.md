@@ -2,43 +2,44 @@
 
 ## Round 1 Baseline
 
-- [ ] 跑 `AR_ASSET=nvda python prepare.py`，確認資料日期區間、rows、split 與 positive rate。Performance:
-- [ ] 跑 `AR_ASSET=nvda python train.py`，建立第一版 baseline metrics，記錄 `validation_f1`、`validation_bal_acc`、`test_f1`、`test_bal_acc`、`threshold`、`headline_score`。Performance:
-- [ ] 跑 `AR_ASSET=nvda python predict_latest.py`，記錄最新 `signal`、`raw_model_signal`、`predicted_probability`、`top_20pct_reference`。Performance:
-- [ ] 跑 `AR_ASSET=nvda python chart_signals.py`，確認圖表、買點過濾與 tooltip 敘述正常。Performance:
-- [ ] 把 baseline 結果補進 `assets/nvda/results.tsv`。Performance:
+- [x] Run `AR_ASSET=nvda python prepare.py` and confirm dataset shape. Performance: `rows=6391`, `train/validation/test=4473/958/960`, `positive_rate=0.4360`, `date_range=2000-01-20 -> 2026-03-25`, label config `60d +12%/-6% drop-neutral`.
+- [x] Run `AR_ASSET=nvda python train.py` and capture baseline metrics. Performance: `validation_f1=0.6607`, `validation_bal_acc=0.5353`, `test_f1=0.6347`, `test_bal_acc=0.5121`, `threshold=0.402`, `headline_score=0.5932`, `promotion_gate=fail`.
+- [x] Run `AR_ASSET=nvda python predict_latest.py` for the baseline live snapshot. Performance: `latest_date=2026-03-27`, `signal=weak_bullish`, `predicted_probability=0.4310`, `decision_threshold=0.4020`, `top_20pct_reference=false`.
+- [x] Run `AR_ASSET=nvda python chart_signals.py` and confirm chart output. Performance: `bars_rendered=1260`, `latest_date=2026-03-27`, `output=.cache/nvda-swing-entry/signal_chart.html`.
+- [x] Write the baseline result into `assets/nvda/results.tsv`. Performance: baseline row recorded.
 
 ## Round 2 Label Sanity
 
-- [ ] 比較 `drop-neutral` 與 `keep-all binary`，確認高波動單股 NVDA 是否需要保留 neutral 區間。Performance:
-- [ ] 比較 `60d +12%/-6%`、`60d +10%/-5%`、`60d +15%/-8%` 三組 barrier，確認 NVDA 的 target 寬度。Performance:
-- [ ] 比較 `40d +12%/-6%` 與 `60d +12%/-6%`，確認 NVDA 是否比較適合短一點的 swing horizon。Performance:
-- [ ] 檢查 validation/test future return 與 label balance，避免測到的 improvement 其實只是 AI 熱潮 regime 偏差。Performance:
+- [x] Compare `drop-neutral` with `keep-all binary`. Performance: `keep-all binary` landed at `validation_f1=0.6578`, `validation_bal_acc=0.5172`, `test_f1=0.6280`, `test_bal_acc=0.5156`, `headline_score=0.5892`, so it did not beat the default baseline.
+- [x] Compare `60d +12%/-6%`, `60d +10%/-5%`, and `60d +15%/-8%`. Performance: `60d +10%/-5%` collapsed into near-all-positive predictions with `test_positive_rate=1.0000` and `test_bal_acc=0.5000`; `60d +15%/-8%` was the best label sweep result with `validation_f1=0.7030`, `validation_bal_acc=0.5542`, `test_f1=0.6496`, `test_bal_acc=0.5217`, `headline_score=0.6124`.
+- [x] Compare `40d +12%/-6%` versus `60d +12%/-6%`. Performance: `40d +12%/-6%` reached `validation_f1=0.6515`, `validation_bal_acc=0.5349`, `test_f1=0.6293`, `test_bal_acc=0.5048`, which was weaker than the default 60-day horizon.
+- [x] Review label balance and regime drift across the sweep. Performance: the main failure mode was not low `f1`; it was overly high predicted positive rate. The cleanest label so far is still `60d +15%/-8%`, but even that stays below the promotion gate on `test_bal_acc`.
 
-## Round 3 Feature Sweep
+## Round 3 Feature Sweep On `60d +15%/-8%`
 
-- [ ] 單獨測 `ret_60`，確認 NVDA 是否極度偏向 momentum。Performance:
-- [ ] 單獨測 `sma_gap_60`，確認中期均線乖離是否比報酬特徵更穩。Performance:
-- [ ] 單獨測 `rolling_vol_60`，確認高 beta 股票是否適合波動率特徵。Performance:
-- [ ] 單獨測 `atr_pct_20`，確認 normalized volatility 是否優於 raw 波動特徵。Performance:
-- [ ] 單獨測 `distance_to_252_high`，檢查高位強勢延續對 NVDA 的解釋力。Performance:
-- [ ] 單獨測 `close_location_20` 或 `up_day_ratio_20`，確認短線位置與節奏對買點判斷是否有幫助。Performance:
+- [x] Test `ret_60`. Performance: `validation_f1=0.7034`, `validation_bal_acc=0.5527`, `test_f1=0.6480`, `test_bal_acc=0.5195`, `headline_score=0.6114`; essentially flat versus the `15/-8` baseline.
+- [x] Test `sma_gap_60`. Performance: `validation_f1=0.7027`, `validation_bal_acc=0.5489`, `test_f1=0.6486`, `test_bal_acc=0.5185`, `headline_score=0.6107`; no real lift.
+- [ ] Test `rolling_vol_60`. Performance: not yet run through the live training path; `research_batch.py` generated a degenerate near-all-positive result, so this still needs a cleaner dedicated pass.
+- [x] Test `atr_pct_20`. Performance: `validation_f1=0.7056`, `validation_bal_acc=0.5724`, `test_f1=0.6455`, `test_bal_acc=0.5264`, `headline_score=0.6145`; best single add-on so far by balance and headline score.
+- [x] Test `distance_to_252_high`. Performance: `validation_f1=0.7013`, `validation_bal_acc=0.5494`, `test_f1=0.6485`, `test_bal_acc=0.5206`, `headline_score=0.6111`; weaker than `atr_pct_20`.
+- [x] Test `close_location_20` and `up_day_ratio_20`. Performance: `close_location_20` reached `headline_score=0.6114`; `up_day_ratio_20` reached `headline_score=0.6085`; both trailed `atr_pct_20`.
 
 ## Round 4 Combo And Rule
 
-- [ ] 比較 `ret_60 + sma_gap_60` 與單一 feature，確認 NVDA 主線該走純 momentum 還是 momentum + mean reversion 混合。Performance:
-- [ ] 比較 `ret_60 + sma_gap_60 + rolling_vol_60` 與 `ret_60 + sma_gap_60 + atr_pct_20`，挑一個更穩的第三特徵。Performance:
-- [ ] 測 `neg_weight=1.10/1.15/1.20/1.30`，觀察高波動單股是否需要更強負樣本權重。Performance:
-- [ ] 比較 `threshold rule` 與 `top 10% / 15% / 20%`，確認 NVDA live 是否更適合少量高 conviction 訊號。Performance:
-- [ ] 補跑 4-fold walk-forward，檢查候選模型在不同市場階段是否還站得住。Performance:
+- [x] Compare `ret_60 + sma_gap_60` against single-feature candidates. Performance: `validation_f1=0.7029`, `validation_bal_acc=0.5529`, `test_f1=0.6475`, `test_bal_acc=0.5184`, `headline_score=0.6110`; still weaker than `atr_pct_20`.
+- [x] Compare `ret_60 + sma_gap_60 + atr_pct_20` against simpler candidates. Performance: `validation_f1=0.7081`, `validation_bal_acc=0.5810`, `test_f1=0.6478`, `test_bal_acc=0.5378`, `headline_score=0.6202`; this is the strongest NVDA candidate from this round.
+- [x] Test `neg_weight=1.10/1.15/1.20/1.30` on `atr_pct_20`. Performance: the scan stayed tightly clustered; best was `neg_weight=1.30` with `validation_f1=0.7061`, `validation_bal_acc=0.5722`, `test_f1=0.6471`, `test_bal_acc=0.5276`, `headline_score=0.6156`, still behind the 3-feature combo.
+- [x] Run a first threshold versus top-percentile rule comparison. Performance: `research_batch.py` showed stronger forward returns for top-percentile rules such as `top_17.5pct avg_return=15.57%` and `top_20pct avg_return=16.05%`, but the combo model inside that batch collapsed toward near-all-positive predictions, so this rule work is directional only and not yet ready to adopt.
+- [x] Run a first walk-forward check. Performance: the same `research_batch.py` pass produced combo walk-forward folds around `test_bal_acc=0.4997/0.5000/0.5000`, which confirms the current rule pipeline is still unstable for NVDA and needs a cleaner follow-up pass.
 
 ## Round 5 Live And Review
 
-- [ ] 用最佳 NVDA 候選模型重跑 live chart，人工檢查最近 30 天強訊號是不是大多落在可接受買點，而不是噴出後追價。Performance:
-- [ ] 抽查最近 `strong_bullish` / `very_strong_bullish` 樣本，確認 chart 文案有把「過熱、超賣、回檔、量能」說清楚。Performance:
-- [ ] 把 adopted candidate、被淘汰候選與下一輪假設寫回 `assets/nvda/results.tsv` 與 `assets/nvda/task.md`。Performance:
+- [x] Run live prediction for the best current candidate `60d +15%/-8% + ret_60+sma_gap_60+atr_pct_20`. Performance: `latest_date=2026-03-17`, `signal=weak_bullish`, `predicted_probability=0.4926`, `decision_threshold=0.4660`, `top_20pct_reference=false`, `buy_point_ok=true`.
+- [x] Regenerate the candidate chart after fixing the live feature path. Performance: `predict_latest.py` and `chart_signals.py` now use `add_features()` instead of only `add_price_features()`, so live candidates that depend on `atr_pct_20` and other context features no longer break.
+- [ ] Decide whether to adopt `60d +15%/-8% + ret_60+sma_gap_60+atr_pct_20` as the active NVDA default. Performance: it is the best candidate so far, but it still misses the promotion gate because `test_bal_acc=0.5378 < 0.54`.
 
-## Notes
+## Next Round
 
-- NVDA 容易受單一大趨勢驅動，先特別留意 barrier 是否太緊，避免把正常波動誤標成失敗。
-- 如果 `distance_to_252_high` 很強，下一輪可以再加做 `above_200dma` 或相對 QQQ 的 cross-asset 特徵。
+- [ ] Run a clean dedicated `rolling_vol_60` pass for NVDA, because the current `research_batch.py` path behaved too degenerately to trust.
+- [ ] Re-run threshold versus `top 15% / 17.5% / 20%` on the winning 3-feature combo with a non-degenerate scoring path.
+- [ ] If NVDA still behaves like a trend continuation model, add `above_200dma_flag` or a relative-strength feature versus `QQQ`.
