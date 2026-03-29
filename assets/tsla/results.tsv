@@ -10,5 +10,5 @@ uncommitted	0.4340	0.2785	0.5012	0.5476	0.3827	0.5072	0.5081	fail	candidate	atr_
 uncommitted	0.5101	0.6040	0.6475	0.5499	0.6336	0.6266	0.5747	pass	candidate	distance_to_252_high was the first TSLA feature that broke the near-all-positive pattern
 uncommitted	0.5103	0.6112	0.6485	0.5502	0.6282	0.6242	0.5743	pass	candidate	ret_60 plus distance_to_252_high stayed strong but did not beat the best combo
 uncommitted	0.5063	0.6438	0.6488	0.5124	0.6462	0.6162	0.5560	pass	candidate	sma_gap_60 plus distance_to_252_high improved balance but weakened test f1
-uncommitted	0.4989	0.6040	0.6375	0.5714	0.6480	0.6440	0.5853	pass	candidate	ret_60 plus sma_gap_60 plus distance_to_252_high is the strongest TSLA candidate so far
+uncommitted	0.4989	0.6040	0.6375	0.5714	0.6480	0.6440	0.5853	pass	adopted	ret_60 plus sma_gap_60 plus distance_to_252_high is the adopted TSLA line after passing the gate and producing a sane live no-entry reading
 uncommitted	0.5101	0.6040	0.6475	0.5511	0.6354	0.6280	0.5756	pass	candidate	neg_weight 1.10 on distance_to_252_high improved little and still trailed the 3-feature combo

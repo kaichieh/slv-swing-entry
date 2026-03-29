@@ -31,13 +31,17 @@
 - [x] Test `ret_60 + sma_gap_60 + distance_to_252_high`. Performance: `validation_f1=0.4989`, `validation_bal_acc=0.6375`, `test_f1=0.5714`, `test_bal_acc=0.6440`, `headline_score=0.5853`, `promotion_gate=pass`; this is the strongest TSLA candidate so far.
 - [x] Test `neg_weight=1.10/1.20` on the distance model. Performance: `neg_weight=1.10` gave `validation_f1=0.5101`, `validation_bal_acc=0.6475`, `test_f1=0.5511`, `test_bal_acc=0.6280`, `headline_score=0.5756`, `promotion_gate=pass`; the gain was tiny and still below the 3-feature combo.
 
+## Round 5 Live Review
+
+- [x] Re-run live prediction and chart for the adopted TSLA candidate `60d +15%/-8% + ret_60 + sma_gap_60 + distance_to_252_high`. Performance: `latest_date=2026-03-18`, `signal=no_entry`, `predicted_probability=0.4136`, `decision_threshold=0.5080`, `top_20pct_reference=false`, `buy_point_ok=true`, `output=.cache/tsla-swing-entry/signal_chart.html`; the adopted line no longer behaves like an always-long model.
+
 ## Next Round
 
-- [ ] Re-run live prediction and chart for the adopted TSLA candidate `60d +15%/-8% + ret_60 + sma_gap_60 + distance_to_252_high`.
 - [ ] Compare threshold versus top-percentile rules on the winning TSLA combo, because TSLA may benefit from a smaller set of higher-conviction entries.
 - [ ] Add a 4-fold walk-forward check to confirm the TSLA combo is not only exploiting one market regime.
+- [ ] If the combo stays stable under walk-forward, promote it from adopted candidate to documented default operating line in the TSLA notes.
 
 ## Notes
 
 - TSLA is no longer purely label-limited; `distance_to_252_high` unlocked a meaningful separation signal.
-- The current best TSLA path is `60d +15%/-8% + ret_60 + sma_gap_60 + distance_to_252_high`.
+- The current adopted TSLA path is `60d +15%/-8% + ret_60 + sma_gap_60 + distance_to_252_high`.
