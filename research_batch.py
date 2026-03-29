@@ -141,7 +141,8 @@ def build_labeled_frame(
         labels = np.where(np.isnan(labels), 0.0, labels)
     df[pr.TARGET_COLUMN] = labels
     df[FUTURE_RETURN_COLUMN] = realized_returns
-    needed = pr.FEATURE_COLUMNS + pr.EXPERIMENTAL_FEATURE_COLUMNS + [FUTURE_RETURN_COLUMN]
+    selectable_experimental = [name for name in pr.EXPERIMENTAL_FEATURE_COLUMNS if name in df.columns]
+    needed = pr.FEATURE_COLUMNS + selectable_experimental + [FUTURE_RETURN_COLUMN]
     if label_mode != "keep-all-binary":
         needed.append(pr.TARGET_COLUMN)
     df = df.replace([np.inf, -np.inf], np.nan)
