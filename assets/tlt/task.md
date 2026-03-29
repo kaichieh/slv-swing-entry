@@ -23,9 +23,13 @@
 
 - [x] Formalize the first TLT ranking path with saved summary, recent, and walk-forward outputs using `atr_pct_20`. Performance: `assets/tlt/regression_summary.tsv` showed that the least-bad operating choice is `bottom 5%`, with `test_avg_return=0.73%` against an overall `test_avg_return=-0.93%`, while the `top` buckets stayed clearly negative. `assets/tlt/regression_recent.tsv` showed the latest saved row on `2026-03-26` was not selected. `assets/tlt/regression_walkforward.tsv` was mixed but still directionally interesting: fold 1 reached `test_bucket_avg_return=1.48%` versus `test_avg_return=0.46%`, fold 2 stayed weak at `-0.18%`, and fold 3 recovered to `0.48%` while the full fold average was `-1.65%`. This keeps TLT on a research-only regression track.
 
+## Round 5 Regression Candidate Compare
+
+- [x] Test whether one extra context feature can improve the TLT regression line. Performance: `assets/tlt/regression_candidate_compare.tsv` compared `atr_pct_20` against `atr_pct_20 + distance_to_252_high`. The extension changed the sign of the ranking but not for the better: at both `5%` and `10%`, the combined line preferred the `top` bucket, yet still produced negative test returns at `-0.94%` and `-0.38%`. The plain `atr_pct_20` line remained better, with `bottom 5% test_avg_return=0.73%` and `bottom 10% test_avg_return=0.29%`.
+
 ## Next Round
 
-- [ ] If TLT work continues, compare `atr_pct_20` against one more ranking feature set such as `atr_pct_20 + distance_to_252_high` before any live chart work.
+- [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.
 - [ ] Do not return TLT to the binary workflow unless a genuinely different label family is introduced.
 
 ## Notes

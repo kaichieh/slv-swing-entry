@@ -1,0 +1,9 @@
+model_name	bucket_pct	validation_corr	test_corr	validation_top_avg_return	validation_bottom_avg_return	test_top_avg_return	test_bottom_avg_return	test_top_hit_rate	test_bottom_hit_rate	preferred_direction
+distance_only	3.0	-0.405099	-0.104676	0.049291	0.28926	0.060096	0.12554	0.7	0.9	bottom
+distance_only	5.0	-0.405099	-0.104676	0.009933	0.232352	0.057348	0.08221	0.7	0.82	bottom
+distance_only	7.5	-0.405099	-0.104676	0.004799	0.182185	0.061824	0.068245	0.702703	0.810811	bottom
+distance_only	10.0	-0.405099	-0.104676	0.002165	0.163857	0.051158	0.061259	0.676768	0.767677	bottom
+distance_plus_atr	3.0	-0.415652	-0.12255	0.005124	0.288155	0.060885	0.163035	0.5	0.9	bottom
+distance_plus_atr	5.0	-0.415652	-0.12255	0.023292	0.188421	0.05523	0.120833	0.52	0.88	bottom
+distance_plus_atr	7.5	-0.415652	-0.12255	0.0184	0.155994	0.060027	0.09835	0.608108	0.864865	bottom
+distance_plus_atr	10.0	-0.415652	-0.12255	0.00964	0.145142	0.062248	0.077414	0.656566	0.79798	bottom

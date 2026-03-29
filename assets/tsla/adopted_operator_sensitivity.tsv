@@ -1,0 +1,6 @@
+model_name	rule_name	threshold_or_cutoff	selected_count	predicted_positive_rate	precision	recall	hit_rate	avg_return	max_drawdown_compound
+model	top_10pct	0.5899	4	0.1011	0.4464	0.1208	1.0	0.1642	0.0
+model	top_12_5pct	0.5824	4	0.1264	0.4429	0.1498	1.0	0.1356	0.0
+model	top_15pct	0.5739	4	0.1498	0.4458	0.1787	1.0	0.129	0.0
+model	top_17_5pct	0.5655	5	0.1751	0.4639	0.2174	0.8	0.0918	0.0
+model	top_20pct	0.5598	6	0.2004	0.4865	0.2609	0.8333	0.1259	0.0

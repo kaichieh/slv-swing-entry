@@ -24,10 +24,14 @@
 - [x] Compare threshold versus top-percentile operating rules on the default baseline and the `rs_vs_benchmark_60` side candidate. Performance: threshold remained the only broadly usable operator for both lines, with `avg_return=3.70%` on the baseline and `3.61%` on the relative-strength candidate. The best percentile overlay was `top_20pct`, which reached `avg_return=4.63%`, but it only produced `10` non-overlapping trades and did not clearly improve the operating case.
 - [x] Add 4-fold walk-forward validation on the baseline and the `rs_vs_benchmark_60` side candidate. Performance: the first two folds still collapsed toward always-long behavior for both lines, but fold 3 was informative. The relative-strength side candidate reached `test_f1=0.6160`, `test_bal_acc=0.5813`, and `test_positive_rate=0.7872`, ahead of the baseline at `0.4591 / 0.5251 / 0.4383`. That keeps the baseline as the active IWM default, while `rs_vs_benchmark_60` becomes the only sidecar still worth keeping.
 
+## Round 5 Recent Operator Output
+
+- [x] Save live-like recent operator outputs for the active IWM threshold line and the `rs_vs_benchmark_60` sidecar. Performance: `assets/iwm/operator_recent.tsv` showed that the relative-strength sidecar was actually the more active line into the latest dates. By `2026-03-10`, `rs_vs_benchmark_60` was still selected with `predicted_probability=0.4601` versus `threshold=0.4360`, while the baseline was quieter. This does not change the adoption decision, but it makes the sidecar useful as a tactical overlay when IWM is outperforming SPY.
+
 ## Next Round
 
-- [ ] If IWM goes live as-is, save recent operator output for the baseline threshold line and the `rs_vs_benchmark_60` sidecar.
 - [ ] If more IWM work continues, compare baseline threshold against `rs_vs_benchmark_60` under a stricter walk-forward trading overlay instead of adding more nearby features.
+- [ ] If an operator-only choice is needed, document when to prefer the sidecar over the baseline threshold line.
 
 ## Notes
 

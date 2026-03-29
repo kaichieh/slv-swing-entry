@@ -1,0 +1,7 @@
+model_name	bucket_pct	validation_corr	test_corr	validation_top_avg_return	validation_bottom_avg_return	test_top_avg_return	test_bottom_avg_return	test_top_hit_rate	test_bottom_hit_rate	preferred_direction
+ret_60_plus_sma_gap_60	5.0	0.034427	-0.059901	0.157315	0.134221	0.069309	0.057756	0.843137	0.666667	top
+ret_60_plus_sma_gap_60	10.0	0.034427	-0.059901	0.139958	0.115104	0.053896	0.057181	0.696078	0.656863	bottom
+distance_to_252_high	5.0	-0.011704	0.008901	0.176759	0.117982	0.050906	0.005439	0.76	0.44	top
+distance_to_252_high	10.0	-0.011704	0.008901	0.114535	0.091733	0.044339	0.053962	0.67	0.57	bottom
+atr_pct_20	5.0	0.034434	-0.016869	0.166683	0.109777	0.063941	0.043308	0.826923	0.519231	top
+atr_pct_20	10.0	0.034434	-0.016869	0.127128	0.06624	0.04025	0.043738	0.699029	0.533981	bottom

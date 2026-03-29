@@ -23,6 +23,10 @@
 
 - [x] Formalize the first XLE ranking path with saved summary, recent, and walk-forward outputs on `ret_60 + sma_gap_60`. Performance: `assets/xle/regression_summary.tsv` confirmed that both `top` and `bottom` buckets can beat the full test average, but `bottom 10%` remained the cleanest operating choice at `test_avg_return=5.72%` versus the overall `3.30%`, with `65.69%` hit rate. `assets/xle/regression_recent.tsv` showed the latest saved row on `2026-03-26` was not selected. `assets/xle/regression_walkforward.tsv` stayed mixed but materially better than TLT: fold 1 was still weak at `-1.14%`, while folds 2 and 3 reached `8.15%` and `6.16%` test bucket returns. That keeps XLE on a credible ranking-style path without yet supporting adoption.
 
+## Round 5 Regression Candidate Compare
+
+- [x] Compare the current XLE ranking candidate against nearby alternatives. Performance: `assets/xle/regression_candidate_compare.tsv` kept `ret_60 + sma_gap_60` in front overall. `distance_to_252_high` had a flashy `top 5% test_avg_return=5.09%`, but its `bottom 10%` line only reached `5.40%` with weaker hit rate than the incumbent. `atr_pct_20` was similar but slightly weaker. The current best XLE interpretation remains `ret_60 + sma_gap_60` through the `bottom 10%` bucket at `5.72%` average return and `65.69%` hit rate.
+
 ## Next Round
 
 - [ ] If XLE work continues, compare `ret_60 + sma_gap_60` directly against `distance_to_252_high` in a dedicated ranking walk-forward table before any operating adoption.

@@ -1,0 +1,5 @@
+model_name	bucket_pct	validation_corr	test_corr	validation_top_avg_return	validation_bottom_avg_return	test_top_avg_return	test_bottom_avg_return	test_top_hit_rate	test_bottom_hit_rate	preferred_direction
+atr_pct_20	5.0	0.072406	-0.095478	-0.022409	-0.012309	-0.026637	0.007271	0.2	0.4	bottom
+atr_pct_20	10.0	0.072406	-0.095478	0.003184	-0.01871	-0.02026	0.002917	0.3	0.477778	bottom
+atr_pct_20_plus_distance_to_252_high	5.0	0.0638	0.0667	0.005059	-0.007919	-0.009351	-0.02017	0.395349	0.302326	top
+atr_pct_20_plus_distance_to_252_high	10.0	0.0638	0.0667	0.016138	-0.009606	-0.003834	-0.017489	0.44186	0.372093	top
