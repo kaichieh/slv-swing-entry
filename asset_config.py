@@ -141,5 +141,9 @@ def get_regression_recent_output_path(asset_key: str | None = None) -> Path:
     return get_asset_dir(asset_key) / "regression_recent.tsv"
 
 
+def get_regression_recent_chart_path(asset_key: str | None = None) -> Path:
+    return get_asset_dir(asset_key) / "regression_recent.html"
+
+
 def stooq_url(symbol: str) -> str:
     return f"https://stooq.com/q/d/l/?s={symbol.lower()}.us&i=d"
