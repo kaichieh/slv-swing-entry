@@ -36,10 +36,10 @@
 
 - [x] Run live prediction for the best current candidate `60d +15%/-8% + ret_60+sma_gap_60+atr_pct_20`. Performance: `latest_date=2026-03-17`, `signal=weak_bullish`, `predicted_probability=0.4926`, `decision_threshold=0.4660`, `top_20pct_reference=false`, `buy_point_ok=true`.
 - [x] Regenerate the candidate chart after fixing the live feature path. Performance: `predict_latest.py` and `chart_signals.py` now use `add_features()` instead of only `add_price_features()`, so live candidates that depend on `atr_pct_20` and other context features no longer break.
-- [ ] Decide whether to adopt `60d +15%/-8% + ret_60+sma_gap_60+atr_pct_20` as the active NVDA default. Performance: it is the best candidate so far, but it still misses the promotion gate because `test_bal_acc=0.5378 < 0.54`.
+- [ ] Decide whether to adopt `60d +15%/-8% + ret_60+sma_gap_60+atr_pct_20` as the active NVDA default. Performance: it is still the best candidate so far, but the clean rule rerun did not rescue it. Threshold kept the strongest walk-forward trade profile with `trade_count=54`, `hit_rate=0.7593`, `avg_return=14.53%`, while `top_15pct/top_17.5pct/top_20pct` all reduced recall and average return; base classification still misses the promotion gate because `test_bal_acc=0.5378 < 0.54`.
 
 ## Next Round
 
 - [x] Run a clean dedicated `rolling_vol_60` pass for NVDA. Performance: the dedicated train path confirmed `rolling_vol_60` is viable but not best-in-class, and `ret_60 + sma_gap_60 + rolling_vol_60` only reached `validation_f1=0.7009`, `validation_bal_acc=0.5509`, `test_f1=0.6463`, `test_bal_acc=0.5204`, `headline_score=0.6099`.
-- [ ] Re-run threshold versus `top 15% / 17.5% / 20%` on the winning 3-feature combo with a non-degenerate scoring path.
+- [x] Re-run threshold versus `top 15% / 17.5% / 20%` on the winning 3-feature combo with a non-degenerate scoring path. Performance: the clean rerun on `ret_60 + sma_gap_60 + atr_pct_20` showed threshold still leading in forward results with `trade_count=54`, `hit_rate=0.7593`, `avg_return=14.53%`; `top_15pct` reached `trade_count=41`, `avg_return=13.03%`, `top_17.5pct` reached `trade_count=43`, `avg_return=13.10%`, and `top_20pct` reached `trade_count=43`, `avg_return=13.40%`. The percentile rules did improve precision into the `0.58-0.60` range, but they did not improve the overall case enough to promote the model.
 - [ ] If NVDA still behaves like a trend continuation model, add `above_200dma_flag` or a relative-strength feature versus `QQQ`.
