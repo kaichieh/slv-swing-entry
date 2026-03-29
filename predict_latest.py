@@ -131,24 +131,24 @@ def assess_buy_point(snapshot: dict[str, float]) -> tuple[bool, list[str], list[
     sma_gap_20 = float(snapshot.get("sma_gap_20", 0.0))
 
     if drawdown_20 <= -0.08:
-        passes.append("recent pullback is deep enough for a buy-point style setup")
+        passes.append("近 20 日回檔夠深，開始接近可觀察的買點區")
     elif drawdown_20 >= -0.03:
-        warnings.append("recent pullback is shallow")
+        warnings.append("近 20 日回檔仍偏淺，較像追價不是撿回檔")
 
     if rsi_14 <= 45:
-        passes.append("RSI is no longer hot")
+        passes.append("14 日 RSI 已降溫，沒有過熱追價感")
     elif rsi_14 >= 60:
-        warnings.append("RSI is still elevated")
+        warnings.append("14 日 RSI 仍偏高，短線有點過熱")
 
     if ret_20 <= 0.02:
-        passes.append("20-day momentum is not overly stretched")
+        passes.append("近 20 日動能沒有過度拉伸")
     elif ret_20 >= 0.08:
-        warnings.append("20-day momentum is already stretched")
+        warnings.append("近 20 日漲幅已偏大，容易落在追價區")
 
     if sma_gap_20 <= 0.01:
-        passes.append("price is not far above the 20-day average")
+        passes.append("價格沒有明顯乖離 20 日均線")
     elif sma_gap_20 >= 0.05:
-        warnings.append("price is extended above the 20-day average")
+        warnings.append("價格明顯高於 20 日均線，乖離偏大")
 
     return len(warnings) == 0, passes, warnings
 
@@ -198,41 +198,47 @@ def build_model_rationale(snapshot: dict[str, float]) -> list[str]:
     ret_60 = float(snapshot.get("ret_60", 0.0))
 
     if rsi_14 < 20:
-        reasons.append("14-day RSI is deeply oversold")
+        reasons.append("14 日 RSI 很低，已經有明顯超賣味道")
     elif rsi_14 < 30:
-        reasons.append("14-day RSI is on the weak side")
+        reasons.append("14 日 RSI 偏弱，開始接近超賣區")
+    elif rsi_14 > 70:
+        reasons.append("14 日 RSI 偏高，短線有過熱跡象")
 
     if drawdown_20 <= -0.15:
-        reasons.append("20-day drawdown is very deep")
+        reasons.append("近 20 日跌幅很深，屬於急跌後區間")
     elif drawdown_20 <= -0.10:
-        reasons.append("20-day drawdown shows a meaningful pullback")
+        reasons.append("近 20 日已有一段像樣回檔")
+    elif drawdown_20 >= -0.03:
+        reasons.append("近 20 日幾乎沒什麼回檔，位置偏高")
 
     if volume_vs_20 >= 1.0:
-        reasons.append("volume is far above the 20-day average")
+        reasons.append("量能明顯高於 20 日均量，資金參與偏強")
     elif volume_vs_20 >= 0.2:
-        reasons.append("volume is modestly above the 20-day average")
+        reasons.append("量能略高於 20 日均量")
 
     if sma_gap_60 <= -0.08:
-        reasons.append("price is well below the 60-day average")
+        reasons.append("價格明顯低於 60 日均線，屬於跌深區")
     elif sma_gap_60 <= -0.04:
-        reasons.append("price is below the 60-day average")
+        reasons.append("價格落在 60 日均線下方")
+    elif sma_gap_60 >= 0.08:
+        reasons.append("價格遠高於 60 日均線，較像高位延續")
 
     if ret_60 >= 0.03:
-        reasons.append("60-day return is still positive")
+        reasons.append("近 60 日報酬仍為正，趨勢面還沒轉弱")
     elif ret_60 <= -0.03:
-        reasons.append("60-day return is negative after a recent decline")
+        reasons.append("近 60 日報酬偏弱，較像跌深後反彈型態")
 
     if not reasons:
-        reasons.append("the baseline features are mixed rather than clearly favorable")
+        reasons.append("目前特徵偏中性，沒有特別明確的超賣或強勢優勢")
     return reasons
 
 
 def build_rule_rationale(probability: float, threshold: float, rule_summary: dict[str, object]) -> str:
     if probability < threshold:
-        return "model score is still below the entry threshold"
+        return "模型分數低於 threshold，規則上偏向先不進場"
     if bool(rule_summary["selected"]):
-        return "model score is above threshold and also inside the historical top-20% range"
-    return "model score is above threshold but not yet inside the historical top-20% range"
+        return "模型分數不只高於 threshold，也進入歷史前 20% 強訊號區"
+    return "模型分數已高於 threshold，但還沒進入歷史前 20% 強訊號區"
 
 
 def main() -> None:
@@ -264,7 +270,7 @@ def main() -> None:
     output = {
         "signal_summary": {
             "signal": signal,
-            "verdict": "Model favors a medium-term entry" if bullish else "Model does not favor a medium-term entry",
+            "verdict": "模型偏向中期進場" if bullish else "模型目前不偏向中期進場",
             "predicted_label": predicted_label,
             "predicted_probability": round(probability, 4),
             "decision_threshold": round(float(threshold), 4),
@@ -273,7 +279,7 @@ def main() -> None:
         },
         "model_signal_summary": {
             "signal": raw_signal,
-            "verdict": "Model favors a medium-term entry" if bullish else "Model does not favor a medium-term entry",
+            "verdict": "模型偏向中期進場" if bullish else "模型目前不偏向中期進場",
             "predicted_label": predicted_label,
             "predicted_probability": round(probability, 4),
             "decision_threshold": round(float(threshold), 4),

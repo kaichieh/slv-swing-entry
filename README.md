@@ -1,6 +1,6 @@
 # Multi-Asset Swing Entry
 
-This repo now uses one shared framework for multiple assets instead of one repo per ticker.
+This repo uses one shared framework for multiple assets instead of one repo per ticker.
 
 ## Assets
 
@@ -17,15 +17,17 @@ Each asset has its own folder:
 - `assets/<asset>/ideas.md`
 - `assets/<asset>/program.md`
 
+Research outputs generated for a specific asset should also live inside `assets/<asset>/`.
+
 ## Shared Scripts
 
-- [prepare.py](/C:/Users/Jay/OneDrive/文件/codex/slv-swing-entry/prepare.py)
-- [train.py](/C:/Users/Jay/OneDrive/文件/codex/slv-swing-entry/train.py)
-- [predict_latest.py](/C:/Users/Jay/OneDrive/文件/codex/slv-swing-entry/predict_latest.py)
-- [chart_signals.py](/C:/Users/Jay/OneDrive/文件/codex/slv-swing-entry/chart_signals.py)
-- [research_batch.py](/C:/Users/Jay/OneDrive/文件/codex/slv-swing-entry/research_batch.py)
-- [research_exit_round1.py](/C:/Users/Jay/OneDrive/文件/codex/slv-swing-entry/research_exit_round1.py)
-- [score_results.py](/C:/Users/Jay/OneDrive/文件/codex/slv-swing-entry/score_results.py)
+- `prepare.py`
+- `train.py`
+- `predict_latest.py`
+- `chart_signals.py`
+- `research_batch.py`
+- `research_exit_round1.py`
+- `score_results.py`
 
 ## How To Run
 

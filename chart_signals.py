@@ -123,11 +123,11 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
         <div class="recent-card">
           <div class="recent-date">{escape(str(row["date"]))}</div>
           <div class="recent-signal" style="color:{escape(SIGNAL_COLORS.get(str(row["signal"]), '#1f2937'))}">{escape(str(row["signal"]))}</div>
-          <div class="recent-metric">model={escape(str(row["raw_model_signal"]))}</div>
+          <div class="recent-metric">模型原始訊號={escape(str(row["raw_model_signal"]))}</div>
           <div class="recent-metric">p={escape(f'{row["probability"]:.4f}')}</div>
           <div class="recent-metric">gap={escape(f'{row["confidence_gap"]:.4f}')}</div>
           <div class="recent-metric">top20={'yes' if row["top20_selected"] else 'no'}</div>
-          <div class="recent-metric">buy_point={'yes' if row["buy_point_ok"] else 'no'}</div>
+          <div class="recent-metric">買點過濾={'通過' if row["buy_point_ok"] else '未通過'}</div>
           <div class="recent-metric">{escape(str(row["rule_rationale"]))}</div>
           <div class="recent-metric">close={escape(f'{row["close"]:.2f}')}</div>
         </div>
@@ -253,6 +253,7 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
       display: none;
       white-space: pre-line;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 360px;
     }}
   </style>
 </head>
@@ -260,9 +261,9 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
   <div class="wrap">
     <div class="card">
       <h1>{escape(title)}</h1>
-      <div class="sub">下方是價格直條圖，顏色代表經過買點過濾後的 signal。最新資料日: {escape(str(meta["latest_date"]))}，lookback: {escape(str(meta["lookback_days"]))} bars。</div>
+      <div class="sub">最近視窗內的收盤價直條圖，顏色代表模型訊號強弱；白框代表通過買點過濾。最新資料日: {escape(str(meta["latest_date"]))}，回看區間: {escape(str(meta["lookback_days"]))} 根 bars。</div>
       <div class="recent-panel">
-        <div class="recent-summary">最近 5 天中，`bullish` 以上共有 <strong>{bullish_like_count}</strong> 天，落在歷史 `top 20%` 規則內共有 <strong>{top20_count}</strong> 天。卡片會同時顯示原始模型訊號與買點過濾後的結果。</div>
+        <div class="recent-summary">最近 5 天中，`bullish` 以上共有 <strong>{bullish_like_count}</strong> 天；進入歷史 `top 20%` 強訊號區共有 <strong>{top20_count}</strong> 天。滑鼠移到柱子上可以看到像超賣、回檔、乖離、量能這些描述。</div>
         <div class="recent-grid">{recent_cards}</div>
       </div>
       <div class="legend">{color_legend}</div>
@@ -345,7 +346,7 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
         tooltip.style.left = `${{event.clientX}}px`;
         tooltip.style.top = `${{event.clientY}}px`;
         tooltip.textContent =
-          `${{row.buy_point_ok ? 'buy_point entry' : 'not a buy point'}}\\n${{row.date}}\\nclose=${{row.close}}\\nfiltered_signal=${{row.signal}}\\nraw_model_signal=${{row.raw_model_signal}}\\np=${{row.probability}}\\ngap=${{row.confidence_gap}}\\nwarning=${{row.buy_point_warnings || 'none'}}\\ntop20=${{row.top20_selected}}\\npercentile=${{row.percentile_rank}}\\nret_20=${{row.ret_20}}\\nret_60=${{row.ret_60}}\\ndrawdown_20=${{row.drawdown_20}}\\nsma_gap_20=${{row.sma_gap_20}}\\nrsi_14=${{row.rsi_14}}`;
+          `${{row.buy_point_ok ? '可觀察買點' : '暫時不是買點'}}\\n${{row.date}}\\nclose=${{row.close}}\\nsignal=${{row.signal}}\\nmodel_signal=${{row.raw_model_signal}}\\np=${{row.probability}}\\ngap=${{row.confidence_gap}}\\ntop20=${{row.top20_selected ? 'yes' : 'no'}}\\n買點提醒=${{row.buy_point_warnings || '無明顯追價警訊'}}\\n模型描述=${{row.model_rationale}}\\n規則描述=${{row.rule_rationale}}\\nret_20=${{row.ret_20}}\\nret_60=${{row.ret_60}}\\ndrawdown_20=${{row.drawdown_20}}\\nsma_gap_20=${{row.sma_gap_20}}\\nrsi_14=${{row.rsi_14}}`;
       }});
       rect.addEventListener('mouseleave', () => {{
         tooltip.style.display = 'none';
