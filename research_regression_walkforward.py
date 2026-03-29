@@ -80,6 +80,12 @@ def main() -> None:
         rows.append(
             {
                 "fold": fold_name,
+                "train_start": train["date"].iloc[0].strftime("%Y-%m-%d"),
+                "train_end": train["date"].iloc[-1].strftime("%Y-%m-%d"),
+                "validation_start": validation["date"].iloc[0].strftime("%Y-%m-%d"),
+                "validation_end": validation["date"].iloc[-1].strftime("%Y-%m-%d"),
+                "test_start": test["date"].iloc[0].strftime("%Y-%m-%d"),
+                "test_end": test["date"].iloc[-1].strftime("%Y-%m-%d"),
                 "train_rows": len(train),
                 "validation_rows": len(validation),
                 "test_rows": len(test),
