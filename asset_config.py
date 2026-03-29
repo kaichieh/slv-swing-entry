@@ -165,5 +165,13 @@ def get_monitor_snapshot_path(asset_key: str | None = None) -> Path:
     return get_asset_dir(asset_key) / "monitor_snapshot.tsv"
 
 
+def get_monitor_board_path() -> Path:
+    return REPO_DIR / "monitor_board.tsv"
+
+
+def get_monitor_board_chart_path() -> Path:
+    return REPO_DIR / "monitor_board.html"
+
+
 def stooq_url(symbol: str) -> str:
     return f"https://stooq.com/q/d/l/?s={symbol.lower()}.us&i=d"
