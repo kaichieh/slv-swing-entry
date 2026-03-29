@@ -51,6 +51,10 @@
 ## Round 8 Overlay Preference
 
 - [x] Add a direct historical preference summary across the remaining TSLA overlays. Performance: `assets/tsla/operator_preference_summary.tsv` made the trade-off explicit. The fallback `top 15%` overlay still has the best average return at `17.60%`, ahead of adopted `top 10%` at `16.42%` and adopted `top 20%` at `12.59%`, while all three had `0` recent selections. That keeps the fallback overlay as the most sensible conservative preference even after the adopted-line `top 10%` tightening pass.
+
+## Round 9 Usage Summary
+
+- [x] Save a compact usage summary for the remaining TSLA overlays. Performance: `assets/tsla/operator_usage_summary.tsv` showed that both the adopted `top 10%` and fallback `top 15%` overlays remained inactive in the latest `60` rows, with no selections after the current no-entry stretch. That keeps the historical preference intact: fallback `top 15%` remains the operator choice, but there is still no live pressure to act.
 - [ ] If the combo stays stable under walk-forward, promote it from adopted candidate to documented default operating line in the TSLA notes. Performance: blocked for now because the current walk-forward pass is still too regime-sensitive.
 
 ## Notes

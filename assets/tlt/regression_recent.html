@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>TLT Regression Recent Ranking</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f4ed; color: #1f2937; margin: 0; padding: 24px; }
+    .summary { margin-bottom: 18px; }
+    .summary h1 { margin: 0 0 8px; font-size: 28px; }
+    .summary p { margin: 4px 0; }
+    .legend { display: flex; gap: 18px; margin: 12px 0 20px; }
+    .legend span::before { content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 8px; border-radius: 3px; vertical-align: -2px; }
+    .yes::before { background: #0f766e; }
+    .no::before { background: #cbd5e1; }
+    svg { width: 100%; height: 520px; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08); }
+    .tooltip { position: fixed; pointer-events: none; background: rgba(15, 23, 42, 0.92); color: white; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; display: none; max-width: 240px; }
+  </style>
+</head>
+<body>
+  <div class="summary">
+    <h1>TLT Regression Recent Ranking</h1>
+    <p>Latest 2026-03-26 | pred=0.0088 | selected=no</p>
+    <p>Selected rows in current window: 0 / 60</p>
+  </div>
+  <div class="legend">
+    <span class="yes">selected</span>
+    <span class="no">not selected</span>
+  </div>
+  <svg id="chart" viewBox="0 0 1200 520" preserveAspectRatio="none"></svg>
+  <div id="tooltip" class="tooltip"></div>
+  <script>
+    const rows = [{"date": "2025-12-30", "close": 87.86, "predicted_return": 0.0124, "future_return_60": -0.0253, "prediction_percentile": 0.8084, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2025-12-31", "close": 87.16, "predicted_return": 0.0155, "future_return_60": -0.0174, "prediction_percentile": 0.9051, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-02", "close": 87.03, "predicted_return": 0.0111, "future_return_60": -0.016, "prediction_percentile": 0.7573, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-05", "close": 87.46, "predicted_return": 0.0153, "future_return_60": -0.0208, "prediction_percentile": 0.8978, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-06", "close": 87.28, "predicted_return": 0.0117, "future_return_60": -0.0188, "prediction_percentile": 0.7831, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-07", "close": 87.79, "predicted_return": 0.0137, "future_return_60": -0.0245, "prediction_percentile": 0.8517, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-08", "close": 87.35, "predicted_return": 0.0155, "future_return_60": -0.0196, "prediction_percentile": 0.9079, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-09", "close": 87.93, "predicted_return": 0.0138, "future_return_60": -0.026, "prediction_percentile": 0.8551, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-12", "close": 87.67, "predicted_return": 0.0164, "future_return_60": -0.0232, "prediction_percentile": 0.932, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-13", "close": 87.82, "predicted_return": 0.0146, "future_return_60": -0.0248, "prediction_percentile": 0.8792, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-14", "close": 88.33, "predicted_return": 0.0136, "future_return_60": -0.0305, "prediction_percentile": 0.8483, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-15", "close": 88.31, "predicted_return": 0.0114, "future_return_60": -0.0302, "prediction_percentile": 0.7708, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-16", "close": 87.8, "predicted_return": 0.0151, "future_return_60": -0.0246, "prediction_percentile": 0.8938, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-20", "close": 86.65, "predicted_return": 0.0171, "future_return_60": -0.0117, "prediction_percentile": 0.9455, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-21", "close": 87.31, "predicted_return": 0.0202, "future_return_60": -0.0191, "prediction_percentile": 0.9787, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-22", "close": 87.69, "predicted_return": 0.0176, "future_return_60": -0.0234, "prediction_percentile": 0.9545, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-23", "close": 87.93, "predicted_return": 0.0184, "future_return_60": -0.026, "prediction_percentile": 0.964, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-26", "close": 88.35, "predicted_return": 0.0152, "future_return_60": -0.0307, "prediction_percentile": 0.8955, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-27", "close": 87.8, "predicted_return": 0.0197, "future_return_60": -0.0246, "prediction_percentile": 0.973, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-28", "close": 87.6, "predicted_return": 0.0174, "future_return_60": -0.0224, "prediction_percentile": 0.9506, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-29", "close": 87.62, "predicted_return": 0.0163, "future_return_60": -0.0226, "prediction_percentile": 0.9292, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-01-30", "close": 87.13, "predicted_return": 0.0165, "future_return_60": -0.0171, "prediction_percentile": 0.9371, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-02", "close": 86.55, "predicted_return": 0.0156, "future_return_60": -0.0105, "prediction_percentile": 0.9112, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-03", "close": 86.76, "predicted_return": 0.0129, "future_return_60": -0.0129, "prediction_percentile": 0.8258, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-04", "close": 86.54, "predicted_return": 0.0114, "future_return_60": -0.0104, "prediction_percentile": 0.773, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-05", "close": 87.48, "predicted_return": 0.0143, "future_return_60": -0.021, "prediction_percentile": 0.8713, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-06", "close": 87.54, "predicted_return": 0.0132, "future_return_60": -0.0217, "prediction_percentile": 0.8382, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-09", "close": 87.52, "predicted_return": 0.0161, "future_return_60": -0.0215, "prediction_percentile": 0.923, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-10", "close": 88.53, "predicted_return": 0.0118, "future_return_60": -0.0326, "prediction_percentile": 0.7888, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-11", "close": 88.06, "predicted_return": 0.02, "future_return_60": -0.0275, "prediction_percentile": 0.9764, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-12", "close": 89.23, "predicted_return": 0.0139, "future_return_60": -0.0402, "prediction_percentile": 0.8579, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-13", "close": 89.72, "predicted_return": 0.0038, "future_return_60": -0.0455, "prediction_percentile": 0.377, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-17", "close": 89.87, "predicted_return": 0.0071, "future_return_60": -0.0471, "prediction_percentile": 0.5646, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-18", "close": 89.53, "predicted_return": 0.0094, "future_return_60": -0.0434, "prediction_percentile": 0.6713, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-19", "close": 89.62, "predicted_return": 0.0104, "future_return_60": -0.0444, "prediction_percentile": 0.7242, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-20", "close": 89.41, "predicted_return": 0.0084, "future_return_60": -0.0422, "prediction_percentile": 0.6208, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-23", "close": 89.74, "predicted_return": 0.0106, "future_return_60": -0.0457, "prediction_percentile": 0.7365, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-24", "close": 89.9, "predicted_return": 0.009, "future_return_60": -0.0474, "prediction_percentile": 0.6528, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-25", "close": 89.91, "predicted_return": 0.0092, "future_return_60": -0.0475, "prediction_percentile": 0.6635, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-26", "close": 90.27, "predicted_return": 0.0035, "future_return_60": -0.0513, "prediction_percentile": 0.3629, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-02-27", "close": 90.82, "predicted_return": -0.0061, "future_return_60": -0.057, "prediction_percentile": 0.0949, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-02", "close": 89.61, "predicted_return": 0.0042, "future_return_60": -0.0443, "prediction_percentile": 0.3989, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-03", "close": 89.43, "predicted_return": 0.0066, "future_return_60": -0.0424, "prediction_percentile": 0.5303, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-04", "close": 89.15, "predicted_return": 0.0054, "future_return_60": -0.0394, "prediction_percentile": 0.4562, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-05", "close": 88.79, "predicted_return": 0.0066, "future_return_60": -0.0355, "prediction_percentile": 0.5292, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-06", "close": 88.46, "predicted_return": 0.0113, "future_return_60": -0.0319, "prediction_percentile": 0.7685, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-09", "close": 89.23, "predicted_return": 0.0102, "future_return_60": -0.0402, "prediction_percentile": 0.7062, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-10", "close": 88.28, "predicted_return": 0.0122, "future_return_60": -0.0299, "prediction_percentile": 0.8011, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-11", "close": 87.14, "predicted_return": 0.0141, "future_return_60": -0.0172, "prediction_percentile": 0.8657, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-12", "close": 86.97, "predicted_return": 0.0125, "future_return_60": -0.0153, "prediction_percentile": 0.8124, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-13", "close": 86.54, "predicted_return": 0.0136, "future_return_60": -0.0104, "prediction_percentile": 0.8472, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-16", "close": 87.21, "predicted_return": 0.0098, "future_return_60": -0.018, "prediction_percentile": 0.691, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-17", "close": 87.45, "predicted_return": 0.011, "future_return_60": -0.0207, "prediction_percentile": 0.7522, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-18", "close": 86.96, "predicted_return": 0.0098, "future_return_60": -0.0152, "prediction_percentile": 0.6916, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-19", "close": 87.49, "predicted_return": 0.0086, "future_return_60": -0.0211, "prediction_percentile": 0.6343, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-20", "close": 85.83, "predicted_return": 0.0129, "future_return_60": -0.0022, "prediction_percentile": 0.8247, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-23", "close": 86.39, "predicted_return": 0.0107, "future_return_60": -0.0087, "prediction_percentile": 0.7393, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-24", "close": 86.01, "predicted_return": 0.009, "future_return_60": -0.0043, "prediction_percentile": 0.6494, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-25", "close": 86.84, "predicted_return": 0.0052, "future_return_60": -0.0138, "prediction_percentile": 0.4478, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}, {"date": "2026-03-26", "close": 86.11, "predicted_return": 0.0088, "future_return_60": -0.0055, "prediction_percentile": 0.6388, "bucket_direction": "bottom", "bucket_pct": 5.0, "bucket_cutoff": -0.0104, "selected": false}];
+    const svg = document.getElementById('chart');
+    const tooltip = document.getElementById('tooltip');
+    const width = 1200;
+    const height = 520;
+    const pad = { left: 70, right: 30, top: 30, bottom: 60 };
+    const innerW = width - pad.left - pad.right;
+    const innerH = height - pad.top - pad.bottom;
+
+    const closes = rows.map(r => r.close);
+    const preds = rows.map(r => r.predicted_return);
+    const minClose = Math.min(...closes);
+    const maxClose = Math.max(...closes);
+    const minPred = Math.min(...preds);
+    const maxPred = Math.max(...preds);
+
+    const x = i => pad.left + (i / Math.max(rows.length - 1, 1)) * innerW;
+    const yClose = v => pad.top + (1 - (v - minClose) / Math.max(maxClose - minClose, 1e-6)) * (innerH * 0.62);
+    const yPred = v => pad.top + innerH * 0.72 + (1 - (v - minPred) / Math.max(maxPred - minPred, 1e-6)) * (innerH * 0.22);
+
+    let closePath = "";
+    let predPath = "";
+    rows.forEach((row, i) => {
+      closePath += (i === 0 ? "M" : "L") + x(i) + "," + yClose(row.close) + " ";
+      predPath += (i === 0 ? "M" : "L") + x(i) + "," + yPred(row.predicted_return) + " ";
+    });
+
+    svg.innerHTML = `
+      <path d="${closePath}" fill="none" stroke="#64748b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="${predPath}" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5 4" stroke-linecap="round"></path>
+      <line x1="${pad.left}" y1="${pad.top + innerH * 0.72}" x2="${width - pad.right}" y2="${pad.top + innerH * 0.72}" stroke="#e5e7eb" stroke-width="1.5"></line>
+    `;
+
+    rows.forEach((row, i) => {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", x(i));
+      circle.setAttribute("cy", yClose(row.close));
+      circle.setAttribute("r", row.selected ? 6 : 4);
+      circle.setAttribute("fill", row.selected ? "#0f766e" : "#cbd5e1");
+      circle.setAttribute("stroke", row.selected ? "#ffffff" : "none");
+      circle.setAttribute("stroke-width", row.selected ? "2" : "0");
+      circle.addEventListener("mousemove", event => {
+        tooltip.style.display = "block";
+        tooltip.style.left = (event.clientX + 14) + "px";
+        tooltip.style.top = (event.clientY + 14) + "px";
+        tooltip.innerHTML = `
+          <strong>${row.date}</strong><br>
+          close=${row.close}<br>
+          predicted_return=${row.predicted_return}<br>
+          percentile=${row.prediction_percentile}<br>
+          selected=${row.selected ? 'yes' : 'no'}<br>
+          bucket=${row.bucket_direction} ${row.bucket_pct}%
+        `;
+      });
+      circle.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
+      svg.appendChild(circle);
+    });
+  </script>
+</body>
+</html>

@@ -40,6 +40,10 @@
 
 - [x] Measure how often the baseline and IWM sidecar actually disagree. Performance: `assets/iwm/operator_overlap_summary.tsv` and `assets/iwm/operator_overlap_recent.tsv` showed the two lines are almost identical in practice. In the latest `60` rows they agreed on `59` out of `60` dates, with `44` rows selected by both, `15` selected by neither, and only `1` row selected by the baseline alone. There were `0` rows where the sidecar fired without the baseline. That means the sidecar is useful as explanatory context, but it is not generating a distinct operating stream.
 
+## Round 9 Usage Summary
+
+- [x] Save a compact usage summary for the surviving IWM operator lines. Performance: `assets/iwm/operator_usage_summary.tsv` confirmed that the baseline threshold and sidecar threshold are both currently active, with `45` and `44` selections in the latest `60` rows and both still selected on `2026-03-10`. This makes the practical guidance very simple: use the baseline as the default line, and read the sidecar as confirmation rather than as a second signal stream.
+
 ## Next Round
 
 - [ ] If an operator-only choice is needed, document when to prefer the sidecar over the baseline threshold line.

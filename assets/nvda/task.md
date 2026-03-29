@@ -55,6 +55,10 @@
 
 - [x] Confirm whether the current binary watchlist should tighten further to `top 10%`. Performance: `assets/nvda/operator_preference_summary.tsv` showed that `top_12.5pct` still dominates `top_10pct` on the current binary combo. It kept the same `6` recent selections and the same last-selected date `2026-02-25`, but improved the historical profile to `hit_rate=81.82%` and `avg_return=19.14%`, versus `70.00%` and `14.67%` for `top_10pct`. That leaves the active NVDA operating overlay unchanged.
 
+## Round 9 Usage Summary
+
+- [x] Save a compact usage summary for the surviving NVDA operator overlays. Performance: `assets/nvda/operator_usage_summary.tsv` confirmed that `top_12.5pct` and `top_10pct` have the same recent activity profile, both with `6` selections in the latest `60` rows and last active on `2026-02-25`, but `top_12.5pct` still has the better historical trade profile. This keeps the active NVDA operator choice unchanged while making the recent behavior easier to review.
+
 ## Next Round
 
 - [x] Run a clean dedicated `rolling_vol_60` pass for NVDA. Performance: the dedicated train path confirmed `rolling_vol_60` is viable but not best-in-class, and `ret_60 + sma_gap_60 + rolling_vol_60` only reached `validation_f1=0.7009`, `validation_bal_acc=0.5509`, `test_f1=0.6463`, `test_bal_acc=0.5204`, `headline_score=0.6099`.

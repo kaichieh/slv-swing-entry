@@ -40,6 +40,10 @@
 
 - [x] Confirm whether the two remaining SPY side lines at least fire on different dates. Performance: `assets/spy/operator_overlap_summary.tsv` and `assets/spy/operator_overlap_recent.tsv` showed they do not provide a useful diversified watchlist either. Across the latest `60` rows, both lines selected the same `5` rows, the plain line had only `1` unique row, the volatility extension had only `1` unique row, and `53` rows were selected by neither. That removes most of the remaining case for keeping two separate SPY side lines alive.
 
+## Round 9 Usage Summary
+
+- [x] Save a compact usage summary for the remaining SPY side lines. Performance: `assets/spy/operator_usage_summary.tsv` confirmed that neither line is active right now. Both `baseline_top10` and `rolling_vol_top10` had `0` selections in the latest `60` rows and were still below cutoff on `2026-03-17`. That means SPY should now be treated as fully reference-only unless a new formulation appears later.
+
 ## Next Round
 
 - [ ] If SPY work continues at all, keep only the simpler `10/-5 + top_10pct` side line for reference and stop extending it.

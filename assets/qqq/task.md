@@ -57,6 +57,10 @@
 ## Round 8 Operating Preference
 
 - [x] Add walk-forward-aware operating preference output for the QQQ watchlist candidates. Performance: `assets/qqq/operating_preference_summary.tsv` confirmed that all three watchlist variants still selected `0` of the latest `60` rows, so the choice is entirely about robustness, not live activity. The active `distance_to_252_high + bottom 5%` line kept `min_fold_excess_return=+2.56%`, ahead of `distance_to_252_high + atr_pct_20 + bottom 5%` at `+1.30%`. The tighter `bottom 3%` version shared the same active-feature line but remains too sparse to justify as the default operating choice.
+
+## Round 9 Active Output Refresh
+
+- [x] Refresh the active QQQ regression recent output and chart on the default `distance_to_252_high + bottom 5%` line. Performance: `assets/qqq/regression_recent.tsv` and `assets/qqq/regression_recent.html` are now re-aligned to that active watchlist rule. The latest saved row `2026-03-26` remained unselected with `predicted_return=0.0353` versus cutoff `-0.0192`, which matches the current no-watchlist conclusion.
 - [ ] Once a non-degenerate candidate appears, re-run threshold versus top-percentile rules and a 4-fold walk-forward check.
 
 ## Notes

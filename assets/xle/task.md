@@ -39,6 +39,10 @@
 
 - [x] Save a direct operating preference summary for the two XLE candidates. Performance: `assets/xle/regression_operating_preference.tsv` tightened the same conclusion with walk-forward context included. `distance_to_252_high + bottom 10%` kept `recent_selected_count=6`, `last_selected_date=2026-02-19`, and a positive `min_fold_excess_return=+0.49%`, while `ret_60 + sma_gap_60 + bottom 10%` stayed at `0` recent selections and `-1.24%` worst-fold excess. This means the repo can now treat the distance-based line as the clear XLE operating preference, not just a tentative alternative.
 
+## Round 9 Active Output Refresh
+
+- [x] Refresh the active XLE regression recent output and chart on `distance_to_252_high + bottom 10%`. Performance: `assets/xle/regression_recent.tsv` and `assets/xle/regression_recent.html` are now aligned to the active distance-based line. The latest saved row `2026-03-26` was not selected, but the recent window still contained `6` selections and last fired on `2026-02-19`, which is enough to justify treating it as the current XLE operating watchlist.
+
 ## Next Round
 
 - [ ] If XLE work continues, promote `distance_to_252_high + bottom 10%` into recent/rule-style monitoring and treat it as the leading operating candidate.

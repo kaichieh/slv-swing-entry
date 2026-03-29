@@ -39,6 +39,10 @@
 
 - [x] Add one more genuinely different TLT family to settle the ranking track. Performance: `assets/tlt/regression_family_decision.tsv` added `close_location_20` to the decision compare. It also failed to produce any recent selections and had the weakest robustness with `min_fold_excess_return=-2.13%`, worse than both `atr_pct_20` and `drawdown_20`. That closes the tiebreak cleanly: `atr_pct_20` is still the only TLT family worth carrying forward.
 
+## Round 9 Active Output Refresh
+
+- [x] Refresh the active TLT regression recent output and chart on the surviving `atr_pct_20 + bottom 5%` line. Performance: `assets/tlt/regression_recent.tsv` and `assets/tlt/regression_recent.html` are now aligned to that active line. The latest saved row `2026-03-26` remained unselected, with `predicted_return=0.0088` versus cutoff `-0.0104`. This does not change the research conclusion, but it makes the active TLT line explicit for future review.
+
 ## Next Round
 
 - [ ] If TLT work continues, compare `atr_pct_20` against a genuinely different ranking family rather than another nearby context extension.
