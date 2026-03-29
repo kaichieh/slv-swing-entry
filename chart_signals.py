@@ -117,6 +117,16 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
 
 def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
     title = f"{ac.get_asset_symbol()} Live Signal Chart"
+    default_mode = str(ac.load_asset_config().get("default_chart_signal_mode", "raw")).strip().lower()
+    if default_mode not in {"raw", "execution"}:
+        default_mode = "raw"
+    execution_button_class = "mode-button active" if default_mode == "execution" else "mode-button"
+    raw_button_class = "mode-button active" if default_mode == "raw" else "mode-button"
+    mode_note = (
+        "Current view: execution signal after buy-point overlay."
+        if default_mode == "execution"
+        else "Current view: raw model signal before buy-point overlay."
+    )
     payload = json.dumps({"rows": rows, "meta": meta}, ensure_ascii=False)
     color_legend = "".join(
         f'<span class="legend-item"><span class="swatch" style="background:{escape(color)}"></span>{escape(name)}</span>'
@@ -293,15 +303,15 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
   <div class="wrap">
     <div class="card">
       <h1>{escape(title)}</h1>
-      <div class="sub">最近視窗內的收盤價直條圖。預設顯示 execution signal，也可以切到 raw model signal 看原始模型強度。最新資料日: {escape(str(meta["latest_date"]))}，回看區間: {escape(str(meta["lookback_days"]))} 根 bars。</div>
+      <div class="sub">最近視窗內的收盤價直條圖。可在 execution signal 與 raw model signal 之間切換。最新資料日: {escape(str(meta["latest_date"]))}，回看區間: {escape(str(meta["lookback_days"]))} 根 bars。</div>
       <div class="recent-panel">
         <div class="recent-summary">最近 5 天中，`bullish` 以上共有 <strong>{bullish_like_count}</strong> 天；進入歷史 `top 20%` 強訊號區共有 <strong>{top20_count}</strong> 天。卡片先看 execution signal，但也會直接顯示 raw model signal。</div>
         <div class="recent-grid">{recent_cards}</div>
       </div>
       <div class="mode-bar">
-        <button id="modeExecution" class="mode-button" type="button">execution signal</button>
-        <button id="modeRaw" class="mode-button active" type="button">raw model signal</button>
-        <div id="modeNote" class="mode-note">Current view: raw model signal before buy-point overlay.</div>
+        <button id="modeExecution" class="{execution_button_class}" type="button">execution signal</button>
+        <button id="modeRaw" class="{raw_button_class}" type="button">raw model signal</button>
+        <div id="modeNote" class="mode-note">{escape(mode_note)}</div>
       </div>
       <div class="legend">{color_legend}</div>
       <div id="chart"></div>
@@ -330,7 +340,7 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
     const minClose = Math.min(...closes);
     const maxClose = Math.max(...closes);
     const closeRange = Math.max(maxClose - minClose, 1);
-    let currentMode = 'raw';
+    let currentMode = {json.dumps(default_mode)};
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', `0 0 ${{width}} ${{height}}`);
