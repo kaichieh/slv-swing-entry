@@ -37,9 +37,9 @@
 
 ## Next Round
 
-- [ ] Compare threshold versus top-percentile rules on the winning TSLA combo, because TSLA may benefit from a smaller set of higher-conviction entries.
-- [ ] Add a 4-fold walk-forward check to confirm the TSLA combo is not only exploiting one market regime.
-- [ ] If the combo stays stable under walk-forward, promote it from adopted candidate to documented default operating line in the TSLA notes.
+- [x] Compare threshold versus top-percentile rules on the winning TSLA combo, because TSLA may benefit from a smaller set of higher-conviction entries. Performance: the clean rerun on `ret_60 + sma_gap_60 + distance_to_252_high` showed that threshold remains the best pure classifier rule, but the higher-conviction percentile rules improved forward trade quality. `threshold` reached `trade_count=33`, `hit_rate=60.61%`, `avg_return=13.41%`; `top_10pct` cut the sample to `16` trades and reached `hit_rate=75.00%`, `avg_return=19.63%`; `top_15pct` reached `20` trades with `avg_return=19.45%`; `top_20pct` was the strongest forward-return rule with `trade_count=21`, `hit_rate=66.67%`, `avg_return=22.90%`.
+- [x] Add a 4-fold walk-forward check to confirm the TSLA combo is not only exploiting one market regime. Performance: the walk-forward rerun was not clean enough to promote the line. Fold 1 gave `test_f1=0.6520`, but `test_bal_acc=0.5000` with `test_positive_rate=1.0000`; fold 2 dropped to `test_bal_acc=0.4477`; fold 3 again collapsed to `test_positive_rate=1.0000`. This means the adopted TSLA line is still useful in the full-sample split, but it has not yet proven stable under rolling retraining.
+- [ ] If the combo stays stable under walk-forward, promote it from adopted candidate to documented default operating line in the TSLA notes. Performance: blocked for now because the current walk-forward pass is still too regime-sensitive.
 
 ## Notes
 

@@ -1,0 +1,5 @@
+model_name	rule_name	threshold_or_cutoff	selected_count	predicted_positive_rate	precision	recall	hit_rate	avg_return	max_drawdown_compound
+ret_60_plus_sma_gap_60_plus_distance_to_252_high	threshold	0.508	7	0.4477	0.5242	0.628	0.7143	0.1493	-0.2202
+ret_60_plus_sma_gap_60_plus_distance_to_252_high	top_10pct	0.5899	4	0.1011	0.4464	0.1208	1.0	0.1642	0.0
+ret_60_plus_sma_gap_60_plus_distance_to_252_high	top_15pct	0.5739	4	0.1498	0.4458	0.1787	1.0	0.129	0.0
+ret_60_plus_sma_gap_60_plus_distance_to_252_high	top_20pct	0.5598	6	0.2004	0.4865	0.2609	0.8333	0.1259	0.0
