@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-atr_pct_20_bottom5	regression_watchlist	research_primary	True	inactive	54	2026-03-27	0.0165187488239558	False	-0.0103959988152717	2025-05-02	Research-only volatility-style ranking line. Do not treat as a live operator yet.
+atr_pct_20_bottom5	regression_watchlist	research_primary	True	inactive	192	2026-03-30	0.0096874960079257	False	-0.0008951396349074	2026-02-27	Research-only volatility-style ranking line. Do not treat as a live operator yet.

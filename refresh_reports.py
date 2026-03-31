@@ -29,6 +29,7 @@ def run_step(script_name: str, asset_key: str | None = None) -> None:
 
 
 def refresh_asset(asset_key: str) -> None:
+    run_step("prepare.py", asset_key)
     if ac.uses_regression_chart(asset_key):
         run_step("research_regression_recent.py", asset_key)
         run_step("research_regression_recent_chart.py", asset_key)
@@ -44,7 +45,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "assets",
         nargs="*",
-        help="Optional asset keys. Default: all assets except SLV.",
+        help="Optional asset keys. Default: all assets.",
     )
     return parser.parse_args()
 
@@ -53,7 +54,7 @@ def main() -> None:
     args = parse_args()
     asset_keys = [asset.strip().lower() for asset in args.assets if asset.strip()]
     if not asset_keys:
-        asset_keys = [key for key in ac.ASSET_DEFAULTS if key != "slv"]
+        asset_keys = list(ac.ASSET_DEFAULTS)
 
     unknown = [key for key in asset_keys if key not in ac.ASSET_DEFAULTS]
     if unknown:

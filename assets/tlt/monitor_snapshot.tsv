@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-tlt	TLT	atr_pct_20_bottom5	regression_watchlist	research_primary	inactive	research_only	54	2026-03-27	0.0165187488239558	False	-0.0103959988152717	2025-05-02	329	Research-only line; no live operating action.
+tlt	TLT	atr_pct_20_bottom5	regression_watchlist	research_primary	inactive	research_only	192	2026-03-30	0.0096874960079257	False	-0.0008951396349074	2026-02-27	31	Research-only line; no live operating action.

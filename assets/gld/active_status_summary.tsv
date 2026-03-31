@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-ret_60_sma_gap_60_live	binary_operator	primary	True	active	14	2026-03-27	0.4901	True	0.465	2026-03-27	Current GLD live line uses ret_60 + sma_gap_60 style extras; top-20% remains a reference rule rather than the default operator.
+ret_60_sma_gap_60_live	binary_operator	primary	True	inactive	13	2026-03-31	0.4438	False	0.465		Current GLD live line uses ret_60 + sma_gap_60 style extras; top-20% remains a reference rule rather than the default operator.
