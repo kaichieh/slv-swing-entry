@@ -17,6 +17,15 @@ ACTION_PRIORITY = {
 }
 
 
+def safe_text(value: object, fallback: str = "unknown") -> str:
+    if value is None or pd.isna(value):
+        return fallback
+    text = str(value).strip()
+    if not text or text.lower() == "nan":
+        return fallback
+    return text
+
+
 def load_board() -> pd.DataFrame:
     frames: list[pd.DataFrame] = []
     for key in ASSET_KEYS:
@@ -160,12 +169,26 @@ def render_role_card(row: pd.Series) -> str:
     """
 
 
+def render_triage_card(row: pd.Series) -> str:
+    chart_href = escape(str(row["chart_href"]))
+    return f"""
+    <a class="triage-card" href="{chart_href}">
+      <div class="triage-symbol">{escape(str(row["symbol"]))}</div>
+      <div class="triage-lane">{escape(safe_text(row.get("research_lane", "unknown")))}</div>
+      <div class="triage-state">viability={escape(safe_text(row.get("viability", "unknown")))}</div>
+      <div class="triage-state">adoption={escape(safe_text(row.get("adoption_state", "unknown")))}</div>
+      <div class="triage-note">{escape(str(row["action_note"]))}</div>
+    </a>
+    """
+
+
 def build_html(board: pd.DataFrame) -> str:
     counts = board["action"].value_counts().to_dict()
     summary = " | ".join(f"{key}={value}" for key, value in counts.items())
     today_board = board.loc[board["action"].isin(["selected_now", "watchlist_wait", "inactive_wait"])].copy()
     today_cards = "\n".join(render_today_card(row) for _, row in today_board.iterrows())
     role_cards = "\n".join(render_role_card(row) for _, row in board.iterrows())
+    triage_cards = "\n".join(render_triage_card(row) for _, row in board.iterrows())
     today_legend = "".join(
         [
             '<span class="legend-item"><span class="swatch" style="background:#9ca3af"></span>no_entry</span>',
@@ -323,6 +346,37 @@ def build_html(board: pd.DataFrame) -> str:
       color: var(--muted);
       line-height: 1.45;
     }}
+    .triage-card {{
+      display: block;
+      text-decoration: none;
+      background: #f8f4ec;
+      border: 1px solid #eadfcb;
+      border-radius: 12px;
+      padding: 12px;
+    }}
+    .triage-symbol {{
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }}
+    .triage-lane {{
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }}
+    .triage-state {{
+      font-size: 12px;
+      color: var(--ink);
+      line-height: 1.45;
+    }}
+    .triage-note {{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-top: 8px;
+    }}
   </style>
 </head>
 <body>
@@ -343,6 +397,12 @@ def build_html(board: pd.DataFrame) -> str:
         <div class="section-sub">Structural role in the basket. This section answers whether an asset is a primary line, a reference context line, or still research-only.</div>
         <div class="legend">{role_legend}</div>
         <div class="role-grid">{role_cards}</div>
+      </div>
+
+      <div class="section">
+        <h2>Research Triage</h2>
+        <div class="section-sub">Use this section to decide where new research effort belongs.</div>
+        <div class="role-grid">{triage_cards}</div>
       </div>
     </div>
   </div>

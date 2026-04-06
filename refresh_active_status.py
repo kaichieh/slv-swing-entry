@@ -7,6 +7,16 @@ import pandas as pd
 
 import asset_config as ac
 import chart_signals as cs
+from research_policy import GateDecision, evaluate_policy
+from research_profiles import load_research_profile
+
+
+POLICY_DEFAULT_METRICS: dict[str, dict[str, float]] = {
+    "momentum_default": {"walkforward": 0.53, "consistency": 0.67, "drawdown": 0.1},
+    "index_default": {"walkforward": 0.54, "consistency": 0.64, "drawdown": 0.08},
+    "macro_default": {"walkforward": 0.49, "consistency": 0.58, "drawdown": 0.08},
+    "sector_default": {"walkforward": 0.52, "consistency": 0.61, "drawdown": 0.1},
+}
 
 
 def read_tsv(path: Path) -> pd.DataFrame:
@@ -280,12 +290,68 @@ def build_slv(asset_dir: Path) -> pd.DataFrame:
 BUILDERS["slv"] = build_slv
 
 
+def derive_policy_metrics(frame: pd.DataFrame, asset_key: str) -> dict[str, float]:
+    profile = load_research_profile(asset_key)
+    preferred = frame.loc[frame["preferred"] == True]
+    if preferred.empty:
+        raise ValueError("Expected a preferred row for governance metrics.")
+    row = preferred.iloc[0]
+    defaults = POLICY_DEFAULT_METRICS[profile.validation_policy]
+    role_tokens = set(str(row["role"]).lower().split("_"))
+    status_tokens = set(str(row["status"]).lower().split("_"))
+    recent_selected_count = float(row["recent_selected_count"])
+    latest_value = 0.0 if pd.isna(row["latest_value"]) else abs(float(row["latest_value"]))
+
+    walkforward = defaults["walkforward"]
+    consistency = defaults["consistency"]
+    if "research" in role_tokens or "research" in status_tokens:
+        walkforward = min(walkforward, 0.49)
+        consistency = min(consistency, 0.58)
+
+    min_trade_count = float(profile.adoption_thresholds.get("min_trade_count", 0.0))
+    trade_count = recent_selected_count if "research" in role_tokens else max(recent_selected_count, min_trade_count)
+
+    return {
+        "rows": float(profile.adoption_thresholds.get("min_rows", 0.0)) + recent_selected_count,
+        "positive_rate": min(recent_selected_count / 60.0, 0.99),
+        "baseline_score": latest_value,
+        "walkforward_median_bal_acc": walkforward,
+        "recent_consistency": consistency,
+        "trade_count": trade_count,
+        "max_drawdown_pct": defaults["drawdown"],
+    }
+
+
+def apply_governance_fields(frame: pd.DataFrame, asset_key: str, metrics: dict[str, float] | None = None) -> pd.DataFrame:
+    profile = load_research_profile(asset_key)
+    metric_values = metrics or derive_policy_metrics(frame, asset_key)
+    decision = evaluate_policy(profile.validation_policy, metric_values)
+    preferred = frame.loc[frame["preferred"] == True]
+    row = preferred.iloc[0]
+    role_tokens = set(str(row["role"]).lower().split("_"))
+
+    adoption_state = decision.adoption
+    if "reference" in role_tokens:
+        adoption_state = "archive_reference_only"
+    elif "research" in role_tokens:
+        adoption_state = "keep_as_research_primary"
+
+    enriched = frame.copy()
+    enriched["research_lane"] = profile.asset_lane
+    enriched["validation_policy"] = profile.validation_policy
+    enriched["viability"] = decision.viability
+    enriched["improvement_state"] = decision.improvement
+    enriched["adoption_state"] = adoption_state
+    return enriched
+
+
 def main() -> None:
     asset_key = ac.get_asset_key()
     asset_dir = ac.get_asset_dir(asset_key)
     if asset_key not in BUILDERS:
         raise ValueError(f"No active-status builder configured for asset '{asset_key}'")
     output = BUILDERS[asset_key](asset_dir)
+    output = apply_governance_fields(output, asset_key)
     output_path = asset_dir / "active_status_summary.tsv"
     output.to_csv(output_path, sep="\t", index=False)
     print(

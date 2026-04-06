@@ -63,6 +63,7 @@ def main() -> None:
     for asset_key in asset_keys:
         refresh_asset(asset_key)
 
+    run_step("refresh_research_registry.py")
     run_step("refresh_monitor_board.py")
 
     print(

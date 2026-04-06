@@ -99,3 +99,17 @@ Then it rebuilds:
 - Binary charts and regression charts both use a longer recent-history window now.
 - Asset charts auto-scroll to the right on load so the newest bars are visible first.
 - `monitor_board.html` is the main dashboard; use the asset chart pages for detailed context.
+
+## Research Governance
+
+Each asset now carries a `research_profile.json` that defines its lane, validation policy, and adoption thresholds.
+
+The refresh workflow now rebuilds:
+
+- asset charts and latest reports
+- active-status summaries
+- monitor snapshots
+- `monitor_registry.tsv`
+- `monitor_board.html`
+
+Use the `Research Triage` section of `monitor_board.html` to decide whether an asset is viable, research-only, or ready for adoption.

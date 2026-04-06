@@ -80,6 +80,11 @@ def build_snapshot() -> pd.DataFrame:
                 "last_selected_date": "" if last_selected_date is None else last_selected_date.strftime("%Y-%m-%d"),
                 "days_since_last_selected": days_since_last,
                 "action_note": action_note,
+                "research_lane": str(row.get("research_lane", "")),
+                "validation_policy": str(row.get("validation_policy", "")),
+                "viability": str(row.get("viability", "")),
+                "improvement_state": str(row.get("improvement_state", "")),
+                "adoption_state": str(row.get("adoption_state", "")),
             }
         ]
     )
