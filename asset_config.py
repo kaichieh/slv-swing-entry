@@ -129,6 +129,10 @@ def get_program_path(asset_key: str | None = None) -> Path:
     return get_asset_dir(asset_key) / "program.md"
 
 
+def get_research_profile_path(asset_key: str | None = None) -> Path:
+    return get_asset_dir(asset_key) / "research_profile.json"
+
+
 def get_backtest_output_path(asset_key: str | None = None) -> Path:
     return get_asset_dir(asset_key) / "backtest_comparison.tsv"
 

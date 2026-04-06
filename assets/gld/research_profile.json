@@ -1,0 +1,13 @@
+{
+  "asset_key": "gld",
+  "asset_lane": "macro_defensive_commodity",
+  "label_families": ["breakout_60d", "mean_reversion_60d", "volatility_bucket"],
+  "default_feature_pool": ["ret_60", "sma_gap_60", "atr_pct_20"],
+  "validation_policy": "macro_default",
+  "reference_baseline": "ret_60_sma_gap_60_live",
+  "adoption_thresholds": {
+    "min_rows": 1500,
+    "min_trade_count": 12,
+    "max_drawdown_pct": 0.12
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "asset_key": "iwm",
+  "asset_lane": "broad_index_risk_on",
+  "label_families": ["regime_aware_60d", "pullback_60d", "relative_strength"],
+  "default_feature_pool": ["ret_60", "sma_gap_60", "relative_strength_qqq"],
+  "validation_policy": "index_default",
+  "reference_baseline": "baseline_threshold",
+  "adoption_thresholds": {
+    "min_rows": 1800,
+    "min_trade_count": 14,
+    "max_drawdown_pct": 0.1
+  }
+}

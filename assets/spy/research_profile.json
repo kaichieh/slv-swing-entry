@@ -1,0 +1,13 @@
+{
+  "asset_key": "spy",
+  "asset_lane": "broad_index_risk_on",
+  "label_families": ["regime_aware_60d", "pullback_60d", "reference_context"],
+  "default_feature_pool": ["ret_60", "sma_gap_60", "rolling_vol_60"],
+  "validation_policy": "index_default",
+  "reference_baseline": "baseline_top10",
+  "adoption_thresholds": {
+    "min_rows": 1800,
+    "min_trade_count": 14,
+    "max_drawdown_pct": 0.1
+  }
+}

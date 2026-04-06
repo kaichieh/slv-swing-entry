@@ -1,0 +1,13 @@
+{
+  "asset_key": "nvda",
+  "asset_lane": "momentum_single_name",
+  "label_families": ["breakout_60d", "continuation_60d", "execution_overlay"],
+  "default_feature_pool": ["ret_60", "sma_gap_60", "rolling_vol_60"],
+  "validation_policy": "momentum_default",
+  "reference_baseline": "binary_top12_5",
+  "adoption_thresholds": {
+    "min_rows": 1200,
+    "min_trade_count": 10,
+    "max_drawdown_pct": 0.15
+  }
+}

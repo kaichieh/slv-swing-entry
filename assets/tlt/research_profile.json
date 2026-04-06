@@ -1,0 +1,13 @@
+{
+  "asset_key": "tlt",
+  "asset_lane": "macro_defensive_commodity",
+  "label_families": ["breakout_60d", "mean_reversion_60d", "volatility_bucket"],
+  "default_feature_pool": ["ret_60", "atr_pct_20", "distance_to_252_high"],
+  "validation_policy": "macro_default",
+  "reference_baseline": "atr_pct_20_bottom5",
+  "adoption_thresholds": {
+    "min_rows": 1500,
+    "min_trade_count": 12,
+    "max_drawdown_pct": 0.12
+  }
+}
