@@ -1,0 +1,5 @@
+model_name	rule_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	threshold_or_cutoff	test_selected_count	test_hit_rate	test_avg_return	test_max_drawdown_compound	forward_trade_count	forward_hit_rate	forward_avg_return
+rolling_vol_60	top_20pct	0.5841	0.5279	0.8165	0.5979	0.4943	9	0.7778	0.1112	-0.0213	30	0.6667	0.0517
+context_stack	top_7_5pct	0.5919	0.5451	0.8147	0.6154	0.5006	7	0.8571	0.1061	-0.016	23	0.6957	0.0487
+context_stack	threshold	0.5919	0.5451	0.8147	0.6154	0.461	11	0.7273	0.0943	-0.0622	36	0.5556	0.0413
+rolling_vol_60	threshold	0.5841	0.5279	0.8165	0.5979	0.471	11	0.7273	0.0901	-0.0622	36	0.6389	0.0415

@@ -69,6 +69,10 @@
 
 - [x] Save a preferred-line monitor snapshot for day-to-day use. Performance: `assets/tsla/monitor_snapshot.tsv` now reduces the TSLA operator choice to a single current stance row. The preferred line remains `fallback_top15`, but the action is `inactive_wait` because the conservative overlay still has `0` recent selections and no current live trigger.
 
+## Round 13 Context Stack Check
+
+- [x] Test whether the new context indicators can clean up TSLA without giving up too much core quality. Performance: on the existing `60d +15%/-8%` label, the stack `ret_60 + sma_gap_60 + distance_to_252_high + trend_quality_20 + percent_up_days_20 + distance_from_60d_low` reached `validation_f1=0.4930`, `validation_bal_acc=0.6445`, `test_f1=0.5188`, and `test_bal_acc=0.5980`. It did improve balance versus the raw baseline-style lines, but it still lost too much test `f1` versus the adopted combo `ret_60 + sma_gap_60 + distance_to_252_high`, so TSLA did not get a real replacement candidate from the new indicator family.
+
 ## Notes
 
 - TSLA is no longer purely label-limited; `distance_to_252_high` unlocked a meaningful separation signal.

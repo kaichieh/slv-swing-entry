@@ -13,13 +13,13 @@ import numpy as np
 import asset_config as ac
 import train as tr
 from predict_latest import (
-    RULE_TOP_PCT,
     apply_buy_point_overlay,
     build_feature_names,
     build_model_rationale,
     build_rule_rationale,
     classify_signal,
     fit_model,
+    get_rule_top_pct,
     score_latest_row,
     summarize_rule,
 )
@@ -66,6 +66,7 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
     feature_names = build_feature_names()
     weights, threshold = fit_model(splits, feature_names)
     history_probabilities = build_history_probabilities(weights, splits, feature_names)
+    rule_top_pct = get_rule_top_pct()
 
     train_frame = splits["train"].frame
     scored = live_features.dropna(subset=feature_names).copy()
@@ -78,7 +79,7 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
         probability = float(tr.sigmoid(vector @ weights)[0])
         raw_signal, band_info = classify_signal(probability, float(threshold), history_probabilities)
         signal, buy_point_summary = apply_buy_point_overlay(raw_signal, snapshot)
-        rule_info = summarize_rule(probability, history_probabilities, RULE_TOP_PCT)
+        rule_info = summarize_rule(probability, history_probabilities, rule_top_pct)
         rationale_text = " | ".join(build_model_rationale(snapshot))
         rule_text = build_rule_rationale(probability, float(threshold), rule_info)
         rows.append(
@@ -92,8 +93,9 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
                 "probability": round(probability, 4),
                 "threshold": round(float(threshold), 4),
                 "confidence_gap": band_info["confidence_gap"],
-                "top20_selected": bool(rule_info["selected"]),
-                "top20_cutoff": round(float(rule_info["cutoff"]), 4),
+                "rule_selected": bool(rule_info["selected"]),
+                "rule_cutoff": round(float(rule_info["cutoff"]), 4),
+                "rule_name": str(rule_info["rule_name"]),
                 "percentile_rank": round(float(rule_info["percentile_rank"]), 4),
                 "model_rationale": rationale_text,
                 "rule_rationale": rule_text,
@@ -111,6 +113,7 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
         "latest_date": rows[-1]["date"] if rows else None,
         "lookback_days": lookback_days,
         "signal_colors": SIGNAL_COLORS,
+        "rule_top_pct": rule_top_pct,
     }
     return rows, meta
 
@@ -134,7 +137,7 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
     )
     recent_rows = rows[-5:]
     bullish_like_count = sum(1 for row in recent_rows if row["signal"] in {"bullish", "strong_bullish", "very_strong_bullish"})
-    top20_count = sum(1 for row in recent_rows if row["top20_selected"])
+    rule_count = sum(1 for row in recent_rows if row["rule_selected"])
     recent_cards = "".join(
         f"""
         <div class="recent-card">
@@ -143,7 +146,7 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
           <div class="recent-metric">raw_model_signal={escape(str(row["raw_model_signal"]))}</div>
           <div class="recent-metric">p={escape(f'{row["probability"]:.4f}')}</div>
           <div class="recent-metric">gap={escape(f'{row["confidence_gap"]:.4f}')}</div>
-          <div class="recent-metric">top20={'yes' if row["top20_selected"] else 'no'}</div>
+          <div class="recent-metric">{escape(str(row["rule_name"]))}={'yes' if row["rule_selected"] else 'no'}</div>
           <div class="recent-metric">buy_point={'pass' if row["buy_point_ok"] else 'blocked'}</div>
           <div class="recent-metric">{escape(str(row["rule_rationale"]))}</div>
           <div class="recent-metric">close={escape(f'{row["close"]:.2f}')}</div>
@@ -305,7 +308,7 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
       <h1>{escape(title)}</h1>
       <div class="sub">最近視窗內的收盤價直條圖。可在 execution signal 與 raw model signal 之間切換。最新資料日: {escape(str(meta["latest_date"]))}，回看區間: {escape(str(meta["lookback_days"]))} 根 bars。</div>
       <div class="recent-panel">
-        <div class="recent-summary">最近 5 天中，`bullish` 以上共有 <strong>{bullish_like_count}</strong> 天；進入歷史 `top 20%` 強訊號區共有 <strong>{top20_count}</strong> 天。卡片先看 execution signal，但也會直接顯示 raw model signal。</div>
+        <div class="recent-summary">最近 5 天中，`bullish` 以上共有 <strong>{bullish_like_count}</strong> 天；進入歷史 `top {meta["rule_top_pct"]:g}%` 強訊號區共有 <strong>{rule_count}</strong> 天。卡片先看 execution signal，但也會直接顯示 raw model signal。</div>
         <div class="recent-grid">{recent_cards}</div>
       </div>
       <div class="mode-bar">
@@ -403,7 +406,7 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
           tooltip.style.left = `${{event.clientX}}px`;
           tooltip.style.top = `${{event.clientY}}px`;
           tooltip.textContent =
-            `${{row.buy_point_ok ? 'buy_point pass' : 'buy_point blocked'}}\\n${{row.date}}\\nclose=${{row.close}}\\nsignal=${{row.signal}}\\nmodel_signal=${{row.raw_model_signal}}\\nchart_mode=${{mode}}\\np=${{row.probability}}\\ngap=${{row.confidence_gap}}\\ntop20=${{row.top20_selected ? 'yes' : 'no'}}\\nbuy_point_note=${{row.buy_point_warnings || 'clean'}}\\nmodel_reason=${{row.model_rationale}}\\nrule_reason=${{row.rule_rationale}}\\nret_20=${{row.ret_20}}\\nret_60=${{row.ret_60}}\\ndrawdown_20=${{row.drawdown_20}}\\nsma_gap_20=${{row.sma_gap_20}}\\nrsi_14=${{row.rsi_14}}`;
+            `${{row.buy_point_ok ? 'buy_point pass' : 'buy_point blocked'}}\\n${{row.date}}\\nclose=${{row.close}}\\nsignal=${{row.signal}}\\nmodel_signal=${{row.raw_model_signal}}\\nchart_mode=${{mode}}\\np=${{row.probability}}\\ngap=${{row.confidence_gap}}\\n${{row.rule_name}}=${{row.rule_selected ? 'yes' : 'no'}}\\nbuy_point_note=${{row.buy_point_warnings || 'clean'}}\\nmodel_reason=${{row.model_rationale}}\\nrule_reason=${{row.rule_rationale}}\\nret_20=${{row.ret_20}}\\nret_60=${{row.ret_60}}\\ndrawdown_20=${{row.drawdown_20}}\\nsma_gap_20=${{row.sma_gap_20}}\\nrsi_14=${{row.rsi_14}}`;
         }});
         rect.addEventListener('mouseleave', () => {{
           tooltip.style.display = 'none';

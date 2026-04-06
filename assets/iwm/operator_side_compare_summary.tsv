@@ -1,0 +1,2 @@
+baseline_selected_count	side_selected_count	both_selected_count	baseline_only_count	side_only_count	latest_date	baseline_latest_selected	side_latest_selected	baseline_latest_probability	side_latest_probability	side_cutoff
+41	0	0	41	0	2026-03-25	True	False	0.4873	0.478	0.49

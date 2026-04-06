@@ -322,21 +322,15 @@ def train_model(
 
 
 def select_threshold_with_steps(probabilities: np.ndarray, labels: np.ndarray, threshold_steps: int) -> float:
-    best_threshold = 0.5
-    best_f1 = -1.0
-    best_bal_acc = -1.0
-    for threshold in np.linspace(tr.THRESHOLD_MIN, tr.THRESHOLD_MAX, threshold_steps):
-        tp, tn, fp, fn, _ = tr.classification_stats(probabilities, labels, float(threshold))
-        precision = tp / max(tp + fp, 1.0)
-        recall = tp / max(tp + fn, 1.0)
-        specificity = tn / max(tn + fp, 1.0)
-        f1 = 2 * precision * recall / max(precision + recall, 1e-8)
-        bal_acc = 0.5 * (recall + specificity)
-        if f1 > best_f1 or (abs(f1 - best_f1) < 1e-8 and bal_acc > best_bal_acc):
-            best_threshold = float(threshold)
-            best_f1 = f1
-            best_bal_acc = bal_acc
-    return best_threshold
+    thresholds = np.linspace(tr.THRESHOLD_MIN, tr.THRESHOLD_MAX, threshold_steps)
+    return tr.select_threshold_from_grid(
+        probabilities,
+        labels,
+        thresholds,
+        target_positive_rate=tr.get_env_optional_float("AR_THRESHOLD_TARGET_POSITIVE_RATE"),
+        positive_rate_penalty=tr.get_env_float("AR_THRESHOLD_POSITIVE_RATE_PENALTY", 0.0),
+        max_positive_rate=tr.get_env_float("AR_THRESHOLD_MAX_POSITIVE_RATE", 1.0),
+    )
 
 
 def longest_streak(returns: np.ndarray, positive: bool) -> int:

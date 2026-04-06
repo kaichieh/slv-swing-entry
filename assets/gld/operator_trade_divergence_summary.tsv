@@ -1,0 +1,4 @@
+selection_state	count	avg_future_return_60	hit_rate	last_date
+both	40	0.082	0.925	2026-03-23
+context_only	8	0.1297	1.0	2024-07-09
+rv_only	86	0.0864	0.8721	2026-03-26

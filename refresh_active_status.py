@@ -224,11 +224,22 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
     payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
     rows, _meta = cs.build_chart_rows(60)
     recent_selected_count = sum(1 for row in rows if str(row["signal"]) != "no_entry")
-    latest_row = rows[-1]
+    selected_dates = [str(row["date"]) for row in rows if str(row["signal"]) != "no_entry"]
+    live_extra_features = tuple(str(name) for name in payload.get("model_extra_features", []) if str(name).strip())
+    reference_rule = str(payload.get("model_summary", {}).get("reference_percentile_rule", "top_20pct"))
+    if len(live_extra_features) > 2:
+        line_id = "context_stack_live"
+        feature_note = "context-stack extras"
+    elif live_extra_features:
+        line_id = "_".join(live_extra_features) + "_live"
+        feature_note = " + ".join(live_extra_features)
+    else:
+        line_id = "gld_live_threshold_overlay"
+        feature_note = "configured live extras"
     return pd.DataFrame(
         [
             {
-                "line_id": "ret_60_sma_gap_60_live",
+                "line_id": line_id,
                 "lane_type": "binary_operator",
                 "role": "primary",
                 "preferred": True,
@@ -238,8 +249,8 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
                 "latest_value": float(payload["signal_summary"]["predicted_probability"]),
                 "latest_selected": bool(payload["signal_summary"]["predicted_label"]),
                 "cutoff": float(payload["signal_summary"]["decision_threshold"]),
-                "last_selected_date": str(latest_row["date"]) if bool(payload["signal_summary"]["predicted_label"]) else "",
-                "usage_note": "Current GLD live line uses ret_60 + sma_gap_60 style extras; top-20% remains a reference rule rather than the default operator.",
+                "last_selected_date": selected_dates[-1] if selected_dates else "",
+                "usage_note": f"Current GLD live line uses {feature_note} with the threshold-plus-buy-point overlay; {reference_rule} remains the reference rule.",
             }
         ]
     )

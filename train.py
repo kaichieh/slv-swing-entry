@@ -53,6 +53,13 @@ def get_env_int(name: str, default: int) -> int:
     return int(value) if value is not None else default
 
 
+def get_env_optional_float(name: str) -> float | None:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return None
+    return float(value)
+
+
 def get_env_csv(name: str, default: tuple[str, ...] = ()) -> tuple[str, ...]:
     value = os.getenv(name)
     if value is None or not value.strip():
@@ -144,25 +151,63 @@ def classification_stats(probabilities: np.ndarray, labels: np.ndarray, threshol
     return tp, tn, fp, fn, predictions
 
 
-def select_threshold(probabilities: np.ndarray, labels: np.ndarray) -> float:
-    threshold_min = get_env_float("AR_THRESHOLD_MIN", THRESHOLD_MIN)
-    threshold_max = get_env_float("AR_THRESHOLD_MAX", THRESHOLD_MAX)
-    threshold_steps = get_env_int("AR_THRESHOLD_STEPS", THRESHOLD_STEPS)
+def select_threshold_from_grid(
+    probabilities: np.ndarray,
+    labels: np.ndarray,
+    thresholds: np.ndarray,
+    target_positive_rate: float | None = None,
+    positive_rate_penalty: float = 0.0,
+    max_positive_rate: float = 1.0,
+) -> float:
     best_threshold = 0.5
-    best_f1 = -1.0
+    best_score = -1.0
     best_bal_acc = -1.0
-    for threshold in np.linspace(threshold_min, threshold_max, threshold_steps):
+    fallback_threshold = 0.5
+    fallback_score = -1.0
+    fallback_bal_acc = -1.0
+    for threshold in thresholds:
         tp, tn, fp, fn, _ = classification_stats(probabilities, labels, float(threshold))
         precision = tp / max(tp + fp, 1.0)
         recall = tp / max(tp + fn, 1.0)
         specificity = tn / max(tn + fp, 1.0)
         f1 = 2 * precision * recall / max(precision + recall, 1e-8)
         bal_acc = 0.5 * (recall + specificity)
-        if f1 > best_f1 or (abs(f1 - best_f1) < 1e-8 and bal_acc > best_bal_acc):
+        _, _, _, _, predictions = classification_stats(probabilities, labels, float(threshold))
+        positive_rate = float(predictions.mean())
+        score = f1
+        if target_positive_rate is not None and positive_rate_penalty > 0.0:
+            score -= positive_rate_penalty * abs(positive_rate - target_positive_rate)
+        if score > fallback_score or (abs(score - fallback_score) < 1e-8 and bal_acc > fallback_bal_acc):
+            fallback_threshold = float(threshold)
+            fallback_score = score
+            fallback_bal_acc = bal_acc
+        if positive_rate > max_positive_rate:
+            continue
+        if score > best_score or (abs(score - best_score) < 1e-8 and bal_acc > best_bal_acc):
             best_threshold = float(threshold)
-            best_f1 = f1
+            best_score = score
             best_bal_acc = bal_acc
+    if best_score < 0.0:
+        return fallback_threshold
     return best_threshold
+
+
+def select_threshold(probabilities: np.ndarray, labels: np.ndarray) -> float:
+    threshold_min = get_env_float("AR_THRESHOLD_MIN", THRESHOLD_MIN)
+    threshold_max = get_env_float("AR_THRESHOLD_MAX", THRESHOLD_MAX)
+    threshold_steps = get_env_int("AR_THRESHOLD_STEPS", THRESHOLD_STEPS)
+    target_positive_rate = get_env_optional_float("AR_THRESHOLD_TARGET_POSITIVE_RATE")
+    positive_rate_penalty = get_env_float("AR_THRESHOLD_POSITIVE_RATE_PENALTY", 0.0)
+    max_positive_rate = get_env_float("AR_THRESHOLD_MAX_POSITIVE_RATE", 1.0)
+    thresholds = np.linspace(threshold_min, threshold_max, threshold_steps)
+    return select_threshold_from_grid(
+        probabilities,
+        labels,
+        thresholds,
+        target_positive_rate=target_positive_rate,
+        positive_rate_penalty=positive_rate_penalty,
+        max_positive_rate=max_positive_rate,
+    )
 
 
 def compute_metrics(logits: np.ndarray, labels: np.ndarray, realized_returns: np.ndarray, threshold: float) -> Metrics:

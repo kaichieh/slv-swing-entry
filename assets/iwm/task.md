@@ -56,14 +56,42 @@
 
 - [x] Save a preferred-line monitor snapshot for day-to-day use. Performance: `assets/iwm/monitor_snapshot.tsv` now compresses the current IWM stance into a single row. The preferred line remains `baseline_threshold`, the latest row on `2026-03-10` is still selected, and the asset action is therefore `selected_now`. This is the clearest sign in the non-SLV set that is still live-like right now.
 
+## Round 13 Indicator Expansion
+
+- [x] Test a broader indicator stack built around relative strength, trend quality, compression, and recovery features. Performance: the best stack so far used `ret_20_vs_benchmark`, `price_ratio_benchmark_z_20`, `trend_quality_20`, `percent_up_days_20`, `bollinger_bandwidth_20`, `distance_from_60d_low`, and `atr_pct_20_percentile`. It reached `validation_f1=0.5475`, `validation_bal_acc=0.6149`, `test_f1=0.5726`, `test_bal_acc=0.5865`, and `headline_score=0.5804`, which is the first feature expansion to beat the validated baseline headline score `0.5730`. The result is not yet validated, but it is the clearest sign so far that IWM can improve through a structured feature stack rather than a single sidecar add-on.
+
+## Round 14 Candidate Validation
+
+- [x] Validate the new IWM indicator stack with rule comparison and 4-fold walk-forward checks before replacing the baseline. Performance: the stack kept a usable threshold rule with `trade_count=41`, `hit_rate=63.41%`, and `avg_return=1.82%`, while the percentile rules were less convincing. But the walk-forward test still broke too hard in the early folds, with `test_bal_acc=0.4491 / 0.5009 / 0.5393` and `test_positive_rate=0.9217 / 0.9987 / 0.4432`. So the stack is a genuine static-split breakthrough, but not yet a validated replacement for the existing IWM baseline.
+
+## Round 15 Rule Stabilization Check
+
+- [x] Scan tighter fixed thresholds and percentile rules on the new IWM context stack before giving up on it. Performance: no operating rule rescued the stability problem. `fixed_0.49` was the cleanest selective rule with `selected_count=7`, `hit_rate=71.43%`, `avg_return=3.80%`, and `forward_avg_return=2.96%`, while `fixed_0.50` was too sparse at only `10` forward trades. Percentile rules such as `top_10pct` and `top_12_5pct` looked decent on the static test split, but they still failed to beat the threshold line cleanly on forward trading. This means the current IWM context stack still lacks a convincing operating-layer breakthrough even though the raw model score improved.
+
+## Round 16 Anti-Overprediction Controls
+
+- [x] Add explicit threshold controls for overprediction and test them on the IWM context stack. Performance: the repo now supports a `max_positive_rate` cap and a target positive-rate penalty during threshold selection, with regression tests covering both behaviors. On IWM, though, the controls did not produce a real breakthrough. The cleanest threshold-policy variant was only `target_0.60_penalty_0.5`, which kept static split quality respectable at `validation_f1=0.5467`, `validation_bal_acc=0.6179`, `test_f1=0.5489`, and `test_bal_acc=0.5726`, but walk-forward still broke in fold 1 and fold 2 at `test_bal_acc=0.3631 / 0.5000`. Adding `neg_weight` on top did not fix the issue either: even `neg_weight=1.15` plus caps still left fold 2 near all-long behavior.
+
+## Round 17 Structural Gating Check
+
+- [x] Test simple regime and selectivity gates on top of the IWM context-stack score instead of changing the base model again. Performance: no gate combo became a true replacement line, but the exercise did produce one useful clue. `fixed_0.49 + above_200dma + ret_20_vs_benchmark > 0` was the least unstable walk-forward variant, with fold balanced accuracy at `0.5025 / 0.5522 / 0.4978` and only `8` total non-overlapping trades. That is too sparse and still too weak in the third fold to count as a breakthrough, but it does suggest the next IWM path is a second-stage selective operator gated by market regime and relative strength rather than more threshold tuning on the raw model.
+
+## Round 18 Second-Stage Operator Refinement
+
+- [x] Refine the structural gating idea into a simpler second-stage operator and compare it against the more restrictive regime gate. Performance: the cleaner variant turned out to be `fixed_0.49 + ret_20_vs_benchmark > 0` without the extra `above_200dma` filter. It kept all three walk-forward folds close to neutral-or-better on balanced accuracy at `0.5025 / 0.5931 / 0.4994`, improved average fold return to roughly `5.80%`, and raised total non-overlapping trades to `12`. That is still too sparse to replace the validated IWM baseline, and the static split remained weak at only `4` test trades with `bal_acc=0.4948`, but it is a cleaner selective side candidate than the previous `above_200dma + rs` version.
+
+## Round 19 Live-Like Sidecar Check
+
+- [x] Compare the new `fixed_0.49 + ret_20_vs_benchmark > 0` side operator directly against the validated baseline over recent live-like rows. Performance: the result was decisive. `assets/iwm/operator_side_compare_summary.tsv` and `assets/iwm/operator_recent_side_compare.tsv` showed that over the latest `60` saved rows through `2026-03-25`, the baseline still selected `41` times while the new side operator selected `0` times. Across the full saved test window, the side operator only fired on `14` dates, ending on `2025-04-04`. That means the new line is not a practical live sidecar right now; it is better understood as a sparse historical selective-study lane.
+
 ## Next Round
 
-- [ ] If an operator-only choice is needed, document when to prefer the sidecar over the baseline threshold line.
-- [ ] If more IWM work continues, focus on documenting the baseline-versus-sidecar use case rather than adding more model variants.
+- [ ] If IWM work continues, stop trying to operationalize the sparse side operator as a current live lane and instead treat it as a historical regime-study reference.
+- [ ] If an operating-layer follow-up is needed, keep `fixed_0.49` plus relative strength only as a template for future two-stage research rather than as an immediate deployment candidate.
 
 ## Notes
 
 - IWM is the repo's intended small-cap cycle line, so relative performance versus SPY matters.
 - IWM immediately looks like the strongest of the new macro basket, so the next round should focus on validation and simplification rather than rescue work.
 - Because the baseline already passed, the next IWM round should move to feature and rule validation rather than more label tuning.
-- The first feature sweep suggests `rs_vs_benchmark_60` is the only IWM add-on clearly worth keeping around for later validation, but the broad baseline still has the cleaner full-sample case.
+- The earlier single-feature sweep suggested `rs_vs_benchmark_60` was the only IWM add-on clearly worth keeping, but the new multi-feature stack has now overtaken the baseline on headline score and deserves its own validation round.

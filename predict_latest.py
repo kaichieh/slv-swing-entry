@@ -38,6 +38,17 @@ def build_feature_names() -> list[str]:
     return [name for name in feature_names if name not in drop_features]
 
 
+def get_rule_top_pct() -> float:
+    configured = ac.load_asset_config().get("live_reference_top_pct")
+    if configured is None:
+        return RULE_TOP_PCT
+    try:
+        value = float(configured)
+    except (TypeError, ValueError):
+        return RULE_TOP_PCT
+    return value if 0.0 < value < 100.0 else RULE_TOP_PCT
+
+
 def fit_model(splits: dict[str, object], feature_names: list[str]) -> tuple[np.ndarray, float]:
     train_x = splits["train"].frame[feature_names].to_numpy(dtype=np.float32)
     validation_x = splits["validation"].frame[feature_names].to_numpy(dtype=np.float32)
@@ -241,11 +252,17 @@ def build_model_rationale(snapshot: dict[str, float]) -> list[str]:
 
 
 def build_rule_rationale(probability: float, threshold: float, rule_summary: dict[str, object]) -> str:
+    rule_name = str(rule_summary.get("rule_name", "top_20pct_reference"))
+    top_pct_text = "20"
+    prefix = "top_"
+    suffix = "pct_reference"
+    if rule_name.startswith(prefix) and rule_name.endswith(suffix):
+        top_pct_text = rule_name[len(prefix) : -len(suffix)].replace("_", ".")
     if probability < threshold:
         return "模型分數低於 threshold，規則上偏向先不進場"
     if bool(rule_summary["selected"]):
-        return "模型分數不只高於 threshold，也進入歷史前 20% 強訊號區"
-    return "模型分數已高於 threshold，但還沒進入歷史前 20% 強訊號區"
+        return f"模型分數不只高於 threshold，也進入歷史前 {top_pct_text}% 強訊號區"
+    return f"模型分數已高於 threshold，但還沒進入歷史前 {top_pct_text}% 強訊號區"
 
 
 def main() -> None:
@@ -269,7 +286,8 @@ def main() -> None:
     historical_probabilities = np.concatenate([validation_probs, test_probs])
     raw_signal, band_info = classify_signal(probability, float(threshold), historical_probabilities)
     signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot)
-    rule_summary = summarize_rule(probability, historical_probabilities)
+    rule_top_pct = get_rule_top_pct()
+    rule_summary = summarize_rule(probability, historical_probabilities, rule_top_pct)
     model_rationale = build_model_rationale(raw_snapshot)
     rule_rationale = build_rule_rationale(probability, float(threshold), rule_summary)
     bullish = predicted_label == 1
@@ -311,7 +329,7 @@ def main() -> None:
             "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
             "default_interactions": ["drawdown_20:volume_vs_20"],
             "live_decision_rule": "threshold_plus_buy_point_overlay",
-            "reference_percentile_rule": f"top_{RULE_TOP_PCT:g}pct",
+            "reference_percentile_rule": f"top_{rule_top_pct:g}pct",
         },
         "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
         "latest_feature_snapshot": {

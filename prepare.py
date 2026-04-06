@@ -60,6 +60,7 @@ FEATURE_COLUMNS = [
 
 EXPERIMENTAL_FEATURE_COLUMNS = [
     "ret_60",
+    "ret_120",
     "rolling_vol_60",
     "drawdown_60",
     "volatility_20",
@@ -75,7 +76,21 @@ EXPERIMENTAL_FEATURE_COLUMNS = [
     "up_day_ratio_20",
     "above_200dma_flag",
     "atr_pct_20",
+    "atr_pct_20_percentile",
     "rs_vs_benchmark_60",
+    "ret_20_vs_benchmark",
+    "ret_60_vs_benchmark",
+    "price_ratio_benchmark_z_20",
+    "price_ratio_benchmark_z_60",
+    "slope_20",
+    "slope_60",
+    "trend_quality_20",
+    "percent_up_days_20",
+    "percent_up_days_60",
+    "bollinger_bandwidth_20",
+    "vol_ratio_20_120",
+    "distance_from_60d_low",
+    "distance_from_120d_low",
 ]
 
 
@@ -269,15 +284,24 @@ def download_slv_prices() -> pd.DataFrame:
 def add_relative_strength_features(frame: pd.DataFrame, benchmark_symbol: str) -> pd.DataFrame:
     if not benchmark_symbol:
         return frame
-    benchmark = add_price_features(download_benchmark_prices(benchmark_symbol))[["date", "ret_20", "ret_60"]].rename(
+    benchmark = add_price_features(download_benchmark_prices(benchmark_symbol))[
+        ["date", "close", "ret_20", "ret_60", "ret_120"]
+    ].rename(
         columns={
+            "close": "benchmark_close",
             "ret_20": "benchmark_ret_20",
             "ret_60": "benchmark_ret_60",
+            "ret_120": "benchmark_ret_120",
         }
     )
     df = frame.merge(benchmark, on="date", how="left")
+    ratio = df["close"] / df["benchmark_close"]
+    df["ret_20_vs_benchmark"] = df["ret_20"] - df["benchmark_ret_20"]
+    df["ret_60_vs_benchmark"] = df["ret_60"] - df["benchmark_ret_60"]
     df["rs_vs_benchmark_60"] = df["ret_60"] - df["benchmark_ret_60"]
-    return df.drop(columns=["benchmark_ret_20", "benchmark_ret_60"])
+    df["price_ratio_benchmark_z_20"] = (ratio - ratio.rolling(20).mean()) / (ratio.rolling(20).std() + 1e-10)
+    df["price_ratio_benchmark_z_60"] = (ratio - ratio.rolling(60).mean()) / (ratio.rolling(60).std() + 1e-10)
+    return df.drop(columns=["benchmark_close", "benchmark_ret_20", "benchmark_ret_60", "benchmark_ret_120"])
 
 
 def add_context_features(frame: pd.DataFrame) -> pd.DataFrame:
@@ -288,14 +312,27 @@ def add_context_features(frame: pd.DataFrame) -> pd.DataFrame:
     eps = 1e-6
 
     df["rolling_vol_60"] = df["ret_1"].rolling(60).std()
+    df["slope_20"] = np.log(close).diff().rolling(20).mean()
+    df["slope_60"] = np.log(close).diff().rolling(60).mean()
     rolling_high_252 = close.rolling(252).max()
     rolling_high_20 = high.rolling(20).max()
     rolling_low_20 = low.rolling(20).min()
+    rolling_low_60 = low.rolling(60).min()
+    rolling_low_120 = low.rolling(120).min()
 
     df["distance_to_252_high"] = close / rolling_high_252 - 1.0
     df["close_location_20"] = (close - rolling_low_20) / (rolling_high_20 - rolling_low_20 + eps)
     df["up_day_ratio_20"] = (df["ret_1"] > 0).astype(float).rolling(20).mean()
+    df["percent_up_days_20"] = (df["ret_1"] > 0).astype(float).rolling(20).mean()
+    df["percent_up_days_60"] = (df["ret_1"] > 0).astype(float).rolling(60).mean()
     df["above_200dma_flag"] = (close > close.rolling(200).mean()).astype(float)
+    df["trend_quality_20"] = df["slope_20"] / (df["volatility_20"] + eps)
+    sma_20 = close.rolling(20).mean()
+    std_20 = close.rolling(20).std()
+    df["bollinger_bandwidth_20"] = ((sma_20 + 2.0 * std_20) - (sma_20 - 2.0 * std_20)) / (sma_20 + eps)
+    df["vol_ratio_20_120"] = df["volatility_20"] / (df["ret_1"].rolling(120).std() + eps)
+    df["distance_from_60d_low"] = close / rolling_low_60 - 1.0
+    df["distance_from_120d_low"] = close / rolling_low_120 - 1.0
 
     true_range = pd.concat(
         [
@@ -306,6 +343,7 @@ def add_context_features(frame: pd.DataFrame) -> pd.DataFrame:
         axis=1,
     ).max(axis=1)
     df["atr_pct_20"] = true_range.rolling(20).mean() / close
+    df["atr_pct_20_percentile"] = df["atr_pct_20"].rolling(252).rank(pct=True)
     return df
 
 
@@ -369,6 +407,7 @@ def add_price_features(frame: pd.DataFrame) -> pd.DataFrame:
     df["ret_10"] = close.pct_change(10)
     df["ret_20"] = close.pct_change(20)
     df["ret_60"] = close.pct_change(60)
+    df["ret_120"] = close.pct_change(120)
 
     df["sma_gap_5"] = close / close.rolling(5).mean() - 1.0
     df["sma_gap_10"] = close / close.rolling(10).mean() - 1.0
