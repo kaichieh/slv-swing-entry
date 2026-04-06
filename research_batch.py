@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import asdict, dataclass
+import importlib
 
 import numpy as np
 import pandas as pd
@@ -33,6 +34,13 @@ HEADLINE_SCORE_WEIGHTS = {
 }
 VALIDATION_BAL_ACC_GATE = 0.52
 TEST_BAL_ACC_GATE = 0.54
+
+try:
+    _XGBOOST_MODULE = importlib.import_module("xgboost")
+    _XGBOOST_IMPORT_ERROR: Exception | None = None
+except Exception as exc:  # pragma: no cover - exercised through require_xgboost tests
+    _XGBOOST_MODULE = None
+    _XGBOOST_IMPORT_ERROR = exc
 
 
 @dataclass
@@ -75,6 +83,22 @@ class BacktestResult:
     longest_win_streak: int
     longest_loss_streak: int
     threshold_or_cutoff: float
+
+
+def require_xgboost():
+    global _XGBOOST_MODULE, _XGBOOST_IMPORT_ERROR
+    if _XGBOOST_MODULE is not None:
+        return _XGBOOST_MODULE
+    try:
+        _XGBOOST_MODULE = importlib.import_module("xgboost")
+        _XGBOOST_IMPORT_ERROR = None
+        return _XGBOOST_MODULE
+    except Exception as exc:  # pragma: no cover - exercised through require_xgboost tests
+        _XGBOOST_IMPORT_ERROR = exc
+    message = "xgboost is required for XGBoost research runs. Install the 'xgboost' package first."
+    if _XGBOOST_IMPORT_ERROR is not None:
+        raise ModuleNotFoundError(message) from _XGBOOST_IMPORT_ERROR
+    raise ModuleNotFoundError(message)
 
 
 def classify_probs_by_rule(probabilities: np.ndarray, threshold: float, rule_name: str) -> tuple[np.ndarray, float]:
@@ -222,6 +246,19 @@ def prepare_feature_matrices(
     )
 
 
+def prepare_tree_feature_matrices(
+    splits: dict[str, pd.DataFrame], feature_names: list[str]
+) -> tuple[dict[str, pd.DataFrame], dict[str, np.ndarray]]:
+    clean_splits: dict[str, pd.DataFrame] = {}
+    for split_name, frame in splits.items():
+        clean_splits[split_name] = frame.dropna(subset=feature_names + [pr.TARGET_COLUMN, FUTURE_RETURN_COLUMN]).reset_index(drop=True)
+    matrices = {
+        split_name: clean_splits[split_name][feature_names].to_numpy(dtype=np.float32)
+        for split_name in ("train", "validation", "test")
+    }
+    return clean_splits, matrices
+
+
 def train_model(
     frame: pd.DataFrame,
     name: str,
@@ -316,6 +353,108 @@ def train_model(
         "clean_splits": clean_splits,
         "test_probabilities": tr.sigmoid(test_logits),
         "validation_probabilities": tr.sigmoid(validation_logits),
+        "neg_weight": neg_weight,
+    }
+    return result, artifacts
+
+
+def train_xgboost_model(
+    frame: pd.DataFrame,
+    name: str,
+    extra_features: tuple[str, ...] = (),
+    drop_features: tuple[str, ...] = (),
+    neg_weight: float | None = None,
+    n_estimators: int = 200,
+    max_depth: int = 3,
+    learning_rate: float = 0.05,
+) -> tuple[ModelResult, dict[str, object]]:
+    xgb = require_xgboost()
+    feature_names = get_feature_names(extra_features, drop_features)
+    splits = split_frame(frame)
+    clean_splits, matrices = prepare_tree_feature_matrices(splits, feature_names)
+    train_x = matrices["train"]
+    validation_x = matrices["validation"]
+    test_x = matrices["test"]
+    train_y = clean_splits["train"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    validation_y = clean_splits["validation"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    test_y = clean_splits["test"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+
+    neg_weight = tr.NEG_WEIGHT if neg_weight is None else neg_weight
+    sample_weights = np.where(train_y == 1.0, tr.POS_WEIGHT, neg_weight).astype(np.float32)
+    if hasattr(xgb, "DMatrix") and hasattr(xgb, "train"):
+        train_matrix = xgb.DMatrix(train_x, label=train_y, weight=sample_weights)
+        validation_matrix = xgb.DMatrix(validation_x, label=validation_y)
+        test_matrix = xgb.DMatrix(test_x, label=test_y)
+        model = xgb.train(
+            {
+                "objective": "binary:logistic",
+                "eval_metric": "logloss",
+                "max_depth": max_depth,
+                "eta": learning_rate,
+                "subsample": 1.0,
+                "colsample_bytree": 1.0,
+                "lambda": 1.0,
+                "seed": tr.SEED,
+            },
+            train_matrix,
+            num_boost_round=n_estimators,
+        )
+        validation_probabilities = np.asarray(model.predict(validation_matrix), dtype=np.float32)
+        test_probabilities = np.asarray(model.predict(test_matrix), dtype=np.float32)
+    else:
+        model = xgb.XGBClassifier(
+            objective="binary:logistic",
+            eval_metric="logloss",
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            learning_rate=learning_rate,
+            subsample=1.0,
+            colsample_bytree=1.0,
+            reg_lambda=1.0,
+            random_state=tr.SEED,
+        )
+        model.fit(train_x, train_y, sample_weight=sample_weights)
+        validation_probabilities = np.asarray(model.predict_proba(validation_x)[:, 1], dtype=np.float32)
+        test_probabilities = np.asarray(model.predict_proba(test_x)[:, 1], dtype=np.float32)
+    threshold = select_threshold_with_steps(validation_probabilities, validation_y, tr.THRESHOLD_STEPS)
+    validation_logits = np.log(validation_probabilities / np.clip(1.0 - validation_probabilities, 1e-6, None))
+    test_logits = np.log(test_probabilities / np.clip(1.0 - test_probabilities, 1e-6, None))
+    validation_metrics = tr.compute_metrics(
+        validation_logits,
+        validation_y,
+        clean_splits["validation"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32),
+        threshold,
+    )
+    test_metrics = tr.compute_metrics(
+        test_logits,
+        test_y,
+        clean_splits["test"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32),
+        threshold,
+    )
+    result = ModelResult(
+        name=name,
+        feature_names=feature_names,
+        threshold=threshold,
+        validation_f1=validation_metrics.f1,
+        validation_accuracy=validation_metrics.accuracy,
+        validation_bal_acc=validation_metrics.balanced_accuracy,
+        validation_positive_rate=validation_metrics.positive_rate,
+        test_f1=test_metrics.f1,
+        test_accuracy=test_metrics.accuracy,
+        test_bal_acc=test_metrics.balanced_accuracy,
+        test_positive_rate=test_metrics.positive_rate,
+        test_avg_return=test_metrics.avg_realized_return,
+        validation_rows=len(clean_splits["validation"]),
+        test_rows=len(clean_splits["test"]),
+    )
+    artifacts = {
+        "model_family": "xgboost",
+        "feature_names": feature_names,
+        "model": model,
+        "threshold": threshold,
+        "clean_splits": clean_splits,
+        "validation_probabilities": validation_probabilities,
+        "test_probabilities": test_probabilities,
         "neg_weight": neg_weight,
     }
     return result, artifacts

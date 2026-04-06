@@ -1,0 +1,5 @@
+model_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	cutoff	test_hit_rate	test_avg_return	test_max_drawdown_compound	forward_trade_count	forward_hit_rate	forward_avg_return	captures_2026_03_24	captures_2026_03_26
+context_full_top_7_5pct	0.5919	0.5451	0.8147	0.6154	0.5006	0.8571	0.1061	-0.016	23	0.6957	0.0487	False	False
+context_no_trend_top_7_5pct	0.5922	0.5444	0.813	0.6104	0.501	0.8571	0.1084	-0.016	23	0.6957	0.0437	False	False
+context_no_atr_top_7_5pct	0.5895	0.5417	0.8118	0.6145	0.5029	0.8333	0.1179	-0.016	22	0.6818	0.0453	True	False
+context_no_trend_no_atr_top_7_5pct	0.5903	0.5398	0.8179	0.6097	0.503	0.8333	0.1078	-0.016	22	0.6818	0.04	True	False
