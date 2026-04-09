@@ -1,0 +1,11 @@
+asset	round2_model	role	round2_score	headline_score	test_bal_acc	walkforward_avg_test_bal_acc	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected	status
+GLD	ret_60_plus_sma_gap_60_plus_rolling_vol_60_plus_neg_weight_1_15	headline	0.9939	0.6767	0.6005	0.5393	top_20pct	0.1104	9	4	False	watching
+SMH	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_up_day_ratio_20	headline	0.9222	0.5694	0.5	0.5028	top_10pct	0.142	12	16	False	watching
+ETHE	sma_gap_60_plus_rolling_return_120	headline	0.919	0.5407	0.5093	0.5091	fixed_0.49	0.2106	3	4	False	watching
+FXB	sma_gap_120	headline	0.8831	0.6602	0.826	0.5791	top_17_5pct	0.0341	3	2	False	watching
+PEP	above_200dma_flag_plus_distance_to_252_high	headline	0.8747	0.5884	0.6148	0.5452	fixed_0.47	0.0328	18	3	False	watching
+XLP	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_sma_gap_120_plus_neg_weight_1_15	headline	0.8739	0.6241	0.6737	0.6103	top_10pct	0.0417	5	0	False	inactive
+META	ret_60_plus_rolling_return_120_plus_up_day_ratio_20	headline	0.8501	0.5667	0.5017	0.4782	fixed_0.49	0.1049	7	10	False	watching
+IJH	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_neg_weight_1_15	headline	0.8375	0.561	0.5788	0.5325	fixed_0.49	0.0968	4	0	False	inactive
+VT	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60	headline	0.8201	0.5303	0.6337	0.6059	top_10pct	0.088	4	0	False	inactive
+RSP	close_location_20_plus_above_200dma_flag	headline	0.8089	0.5691	0.6113	0.5279	top_10pct	0.0515	6	0	False	inactive

@@ -1,0 +1,7 @@
+model_name	rule_name	role	operator_score	selected_count	hit_rate	avg_return	cutoff
+close_location_20	top_10pct	headline	6.3086	7	0.7143	0.0453	0.3945
+close_location_20	top_12_5pct	headline	5.6886	7	0.7143	0.0391	0.391
+close_location_20	top_15pct	headline	3.9299999999999997	8	0.5	0.0253	0.3871
+close_location_20	top_17_5pct	headline	3.8899999999999997	8	0.5	0.0249	0.3845
+close_location_20	top_20pct	headline	2.44	8	0.5	0.0104	0.3827
+close_location_20	threshold	headline	2.02	10	0.5	0.0052	0.342

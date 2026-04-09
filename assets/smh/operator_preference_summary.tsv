@@ -1,0 +1,17 @@
+model_name	rule_name	role	operator_score	selected_count	hit_rate	avg_return	cutoff
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	fixed_0.49	operator	16.6734	12	0.9167	0.1424	0.49
+ret_60_plus_all_regime_features	top_10pct	headline	15.7834	12	0.9167	0.1335	0.5007
+ret_60_plus_all_regime_features	top_12_5pct	headline	14.7334	12	0.9167	0.123	0.5007
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_10pct	operator	14.4134	12	0.9167	0.1198	0.4883
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_20pct	operator	13.8862	13	0.9231	0.1139	0.4829
+ret_60_plus_all_regime_features	top_15pct	headline	13.603399999999999	12	0.9167	0.1117	0.5006
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_12_5pct	operator	13.313399999999998	12	0.9167	0.1088	0.4863
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_17_5pct	operator	13.133399999999998	12	0.9167	0.107	0.484
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_15pct	operator	13.073399999999998	12	0.9167	0.1064	0.4853
+ret_60_plus_all_regime_features	top_17_5pct	headline	13.023399999999999	12	0.9167	0.1059	0.5005
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	threshold	operator	12.8634	15	0.8667	0.1038	0.447
+ret_60_plus_all_regime_features	threshold	headline	12.8366	15	0.9333	0.1022	0.3
+ret_60_plus_all_regime_features	fixed_0.47	headline	12.8366	15	0.9333	0.1022	0.47
+ret_60_plus_all_regime_features	fixed_0.49	headline	12.8366	15	0.9333	0.1022	0.49
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	fixed_0.47	operator	12.3642	14	0.8571	0.0995	0.47
+ret_60_plus_all_regime_features	top_20pct	headline	10.229999999999999	12	0.75	0.0813	0.5005

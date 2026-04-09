@@ -1,0 +1,9 @@
+asset_key	role	parent_model_name	model_name	extra_features	neg_weight	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	walkforward_avg_test_bal_acc	round2_score
+ethe	headline	sma_gap_60	sma_gap_60_plus_rolling_return_120	sma_gap_60,rolling_return_120		0.5474	0.5222	0.5655	0.5093	0.9535	0.5407	0.5091	0.919
+ethe	headline	sma_gap_60	sma_gap_60_plus_up_day_ratio_20	sma_gap_60,up_day_ratio_20		0.5448	0.5242	0.5684	0.5188	0.9302	0.5444	0.5122	0.8534
+ethe	headline	sma_gap_60	sma_gap_60_plus_distance_to_252_high	sma_gap_60,distance_to_252_high		0.5436	0.5148	0.5646	0.5036	0.9721	0.5371	0.508	0.8448
+ethe	headline	sma_gap_60	sma_gap_60_plus_sma_gap_120	sma_gap_60,sma_gap_120		0.5487	0.5316	0.5694	0.517	0.9442	0.5458	0.5113	0.8272
+ethe	headline	sma_gap_60	sma_gap_60_plus_close_location_20	sma_gap_60,close_location_20		0.5507	0.5353	0.5694	0.517	0.9442	0.5465	0.5062	0.8264
+ethe	headline	sma_gap_60	sma_gap_60_plus_atr_pct_20	sma_gap_60,atr_pct_20		0.5487	0.5316	0.5694	0.517	0.9442	0.5458	0.508	0.8262
+ethe	headline	sma_gap_60	sma_gap_60_plus_above_200dma_flag	sma_gap_60,above_200dma_flag		0.5429	0.5205	0.5694	0.517	0.9442	0.5435	0.5154	0.8261
+ethe	headline	sma_gap_60	sma_gap_60_plus_rolling_vol_60	sma_gap_60,rolling_vol_60		0.5493	0.5259	0.5646	0.5036	0.9721	0.5394	0.5071	0.8195

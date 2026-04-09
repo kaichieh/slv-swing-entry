@@ -1,0 +1,7 @@
+asset_key	role	model_name	extra_features	fold_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate
+pep	headline	above_200dma_flag	above_200dma_flag	fold_1	0.573	0.5028	0.5107	0.5001	0.9969
+pep	headline	above_200dma_flag	above_200dma_flag	fold_2	0.5238	0.5468	0.5657	0.5301	0.9065
+pep	headline	above_200dma_flag	above_200dma_flag	fold_3	0.5786	0.6048	0.5226	0.5855	0.6461
+pep	operator	ret_60_plus_sma_gap_60_plus_neg_weight_1_15	ret_60,sma_gap_60	fold_1	0.5735	0.5034	0.5114	0.5012	0.9969
+pep	operator	ret_60_plus_sma_gap_60_plus_neg_weight_1_15	ret_60,sma_gap_60	fold_2	0.5195	0.5523	0.5579	0.5314	0.855
+pep	operator	ret_60_plus_sma_gap_60_plus_neg_weight_1_15	ret_60,sma_gap_60	fold_3	0.5668	0.527	0.5182	0.5359	0.8968

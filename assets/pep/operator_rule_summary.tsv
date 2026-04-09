@@ -1,0 +1,17 @@
+model_name	rule_name	threshold_or_cutoff	selected_count	predicted_positive_rate	precision	recall	hit_rate	avg_return	max_drawdown_compound	asset_key	role
+above_200dma_flag	threshold	0.415	29	0.5884	0.4171	0.7075	0.5517	0.0138	-0.335	pep	headline
+above_200dma_flag	fixed_0.47	0.47	18	0.1179	0.5433	0.1846	0.6667	0.0261	-0.2216	pep	headline
+above_200dma_flag	fixed_0.49	0.49	10	0.0125	0.5909	0.0212	0.7	0.0354	-0.2074	pep	headline
+above_200dma_flag	top_10pct	0.4718	18	0.1003	0.5311	0.1536	0.6667	0.0278	-0.2243	pep	headline
+above_200dma_flag	top_12_5pct	0.4691	18	0.1253	0.5566	0.201	0.6667	0.026	-0.2216	pep	headline
+above_200dma_flag	top_15pct	0.4655	19	0.1502	0.5698	0.2467	0.6842	0.03	-0.2299	pep	headline
+above_200dma_flag	top_17_5pct	0.4631	20	0.1752	0.5761	0.2908	0.7	0.023	-0.2299	pep	headline
+above_200dma_flag	top_20pct	0.4601	21	0.2001	0.5836	0.3366	0.7143	0.0211	-0.2299	pep	headline
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	threshold	0.413	30	0.9014	0.3667	0.9526	0.5333	0.0102	-0.2868	pep	operator
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	fixed_0.47	0.47	19	0.0788	0.4892	0.1111	0.6316	0.0238	-0.1663	pep	operator
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	fixed_0.49	0.49	6	0.0062	0.7273	0.0131	1.0	0.1301	0.0	pep	operator
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_10pct	0.4676	20	0.1003	0.4633	0.134	0.65	0.0246	-0.2216	pep	operator
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_12_5pct	0.4654	21	0.1253	0.4661	0.1683	0.619	0.0183	-0.2216	pep	operator
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_15pct	0.4637	22	0.1502	0.4792	0.2075	0.6818	0.0254	-0.2216	pep	operator
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_17_5pct	0.4616	23	0.1752	0.4693	0.2369	0.6957	0.0234	-0.2105	pep	operator
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_20pct	0.4601	24	0.2001	0.4674	0.2696	0.7083	0.0177	-0.2105	pep	operator

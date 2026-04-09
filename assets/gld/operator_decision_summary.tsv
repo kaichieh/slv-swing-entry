@@ -1,0 +1,4 @@
+model_name	rule_name	role	operator_score	recent_selected_count	latest_date	latest_selected	cutoff
+ret_60_plus_sma_gap_60_interaction	threshold	headline	11.4846	20	2026-03-26	True	0.418
+ret_60_plus_sma_gap_60_interaction	fixed_0.47	headline	10.05	6	2026-03-26	True	0.47
+ret_60_plus_sma_gap_60_interaction	top_20pct	headline	10.05	4	2026-03-26	True	0.4721

@@ -1,15 +1,15 @@
 # QQQ Program
 
-This asset is no longer a standard binary swing-entry candidate. The current research path has moved from baseline barrier labels into regression and ranking studies on future `60`-day returns.
+This asset is part of the cross-asset batch universe under the `Index ETFs` bucket.
 
 ## Current Research Direction
 
-- start from the legacy binary baseline for reference
-- prefer regression or ranking prototypes over new binary barrier tweaks
-- track recent candidate buckets through the saved regression outputs
+- baseline reference: `60d +8%/-4% drop-neutral`
+- establish a clean baseline before trying asset-specific feature ideas
+- compare this line against the rest of the first-round universe for predictability and stability
 
 ## Working Style
 
-1. Keep binary-label history and regression follow-ups together in `task.md`.
-2. Save completed result rows into `results.tsv`, `regression_summary.tsv`, and related comparison files.
-3. Promote only the most stable regression candidate into the live-like recent outputs.
+1. Keep the active research backlog in `task.md`.
+2. Save every completed run in `results.tsv`.
+3. Keep future follow-up ideas in `ideas.md` until they become concrete backlog items.

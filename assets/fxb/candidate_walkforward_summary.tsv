@@ -1,0 +1,10 @@
+asset_key	role	model_name	extra_features	fold_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate
+fxb	headline	sma_gap_120	sma_gap_120	fold_1	0.1053	0.5525	0.0	0.4411	0.1111
+fxb	headline	sma_gap_120	sma_gap_120	fold_2	0.1326	0.5815	0.2378	0.6315	0.3906
+fxb	headline	sma_gap_120	sma_gap_120	fold_3	0.2581	0.5741	0.4828	0.6649	0.0572
+fxb	balance	ret_60_replaces_ret_20	ret_60	fold_1	0.1667	0.5645	0.0	0.4679	0.0606
+fxb	balance	ret_60_replaces_ret_20	ret_60	fold_2	0.1758	0.6174	0.2041	0.5722	0.2391
+fxb	balance	ret_60_replaces_ret_20	ret_60	fold_3	0.2581	0.5741	0.4286	0.6405	0.0505
+fxb	operator	ret_60	ret_60	fold_1	0.1667	0.5645	0.0	0.4679	0.0606
+fxb	operator	ret_60	ret_60	fold_2	0.1758	0.6174	0.2041	0.5722	0.2391
+fxb	operator	ret_60	ret_60	fold_3	0.2581	0.5741	0.4286	0.6405	0.0505

@@ -1,0 +1,9 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+fxb	headline	sma_gap_120_plus_atr_pct_20	top_20pct	3	0.6667	0.0341	0.4861	1	2026-01-29	0.4821	False	2025-04-07
+fxb	headline	sma_gap_120_plus_distance_to_252_high	fixed_0.47	3	0.6667	0.0216	0.47	1	2026-01-29	0.4569	False	2025-01-23
+fxb	headline	sma_gap_120_plus_close_location_20	top_17_5pct	3	0.6667	0.0341	0.4951	2	2026-01-29	0.4939	False	2025-04-07
+fxb	headline	sma_gap_120_plus_up_day_ratio_20	top_15pct	4	0.5	0.0122	0.3577	1	2026-01-29	0.3325	False	2025-04-07
+fxb	headline	sma_gap_120_plus_above_200dma_flag	top_15pct	3	0.6667	0.0302	0.3739	1	2026-01-29	0.3349	False	2025-04-07
+fxb	headline	sma_gap_120_plus_rolling_vol_60	top_20pct	3	0.6667	0.0162	0.3432	1	2026-01-29	0.3135	False	2025-04-07
+fxb	headline	sma_gap_120_plus_rolling_return_120	top_20pct	3	0.6667	0.0341	0.4784	2	2026-01-29	0.4691	False	2025-04-07
+fxb	headline	sma_gap_120	top_17_5pct	3	0.6667	0.0341	0.4951	2	2026-01-29	0.4938	False	2025-04-07

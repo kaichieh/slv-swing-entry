@@ -1,0 +1,4 @@
+asset_key	role	model_name	round2_score	walkforward_avg_test_bal_acc	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+rsp	headline	close_location_20_plus_above_200dma_flag	0.8089	0.5279	top_10pct	0.0515	6	0	False
+rsp	headline	close_location_20_plus_atr_pct_20	0.8015	0.5201	top_10pct	0.0453	7	0	False
+rsp	headline	close_location_20_plus_sma_gap_120	0.8012	0.5286	top_10pct	0.0453	7	0	False

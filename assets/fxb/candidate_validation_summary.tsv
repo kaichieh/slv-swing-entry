@@ -1,0 +1,4 @@
+asset_key	role	model_name	extra_features	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score
+fxb	headline	sma_gap_120	sma_gap_120	0.2941	0.5884	0.7368	0.826	0.1306	0.6602
+fxb	balance	ret_60_replaces_ret_20	ret_60	0.2857	0.5863	0.7368	0.826	0.1306	0.6583
+fxb	operator	ret_60	ret_60	0.2857	0.5984	0.6522	0.8196	0.1903	0.6237

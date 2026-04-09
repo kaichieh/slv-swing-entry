@@ -1,0 +1,6 @@
+model_name	rule_name	role	recent_selected_count	latest_date	latest_score	latest_selected	cutoff	last_selected_date
+close_location_20	top_10pct	headline	0	2026-03-17	0.3667	False	0.4	
+close_location_20	top_12_5pct	headline	0	2026-03-17	0.3667	False	0.3953	
+close_location_20	top_15pct	headline	4	2026-03-17	0.3667	False	0.3914	2026-03-06
+close_location_20	top_17_5pct	headline	4	2026-03-17	0.3667	False	0.3878	2026-03-06
+close_location_20	top_20pct	headline	5	2026-03-17	0.3667	False	0.385	2026-03-06

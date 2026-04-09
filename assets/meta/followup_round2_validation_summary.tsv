@@ -1,0 +1,9 @@
+asset_key	role	parent_model_name	model_name	extra_features	neg_weight	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	walkforward_avg_test_bal_acc	round2_score
+meta	headline	ret_60_plus_rolling_return_120	ret_60_plus_rolling_return_120_plus_up_day_ratio_20	ret_60,rolling_return_120,up_day_ratio_20		0.7056	0.5046	0.5616	0.5017	0.9979	0.5667	0.4782	0.8501
+meta	headline	ret_60_plus_rolling_return_120	ret_60_plus_rolling_return_120_plus_distance_to_252_high	ret_60,rolling_return_120,distance_to_252_high		0.7059	0.5099	0.5616	0.5017	0.9979	0.5673	0.4971	0.82
+meta	headline	ret_60_plus_rolling_return_120	ret_60_plus_rolling_return_120	ret_60,rolling_return_120		0.7059	0.5099	0.5616	0.5017	0.9979	0.5673	0.4958	0.8153
+meta	headline	ret_60_plus_rolling_return_120	ret_60_plus_rolling_return_120_plus_rolling_vol_60	ret_60,rolling_return_120,rolling_vol_60		0.7059	0.5099	0.5616	0.5017	0.9979	0.5673	0.4916	0.8146
+meta	headline	ret_60_plus_rolling_return_120	ret_60_plus_rolling_return_120_plus_close_location_20	ret_60,rolling_return_120,close_location_20		0.7059	0.5099	0.5616	0.5017	0.9979	0.5673	0.4914	0.814
+meta	headline	ret_60_plus_rolling_return_120	ret_60_plus_rolling_return_120_plus_above_200dma_flag	ret_60,rolling_return_120,above_200dma_flag		0.7059	0.5099	0.5616	0.5017	0.9979	0.5673	0.4934	0.8127
+meta	headline	ret_60_plus_rolling_return_120	ret_60_plus_rolling_return_120_plus_sma_gap_120	ret_60,rolling_return_120,sma_gap_120		0.7059	0.5099	0.5616	0.5017	0.9979	0.5673	0.4757	0.7975
+meta	headline	ret_60_plus_rolling_return_120	ret_60_plus_rolling_return_120_plus_atr_pct_20	ret_60,rolling_return_120,atr_pct_20		0.7056	0.5046	0.5616	0.5017	0.9979	0.5667	0.491	0.7974

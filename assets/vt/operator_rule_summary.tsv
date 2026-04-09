@@ -1,0 +1,17 @@
+model_name	rule_name	threshold_or_cutoff	selected_count	predicted_positive_rate	precision	recall	hit_rate	avg_return	max_drawdown_compound	asset_key	role
+ret_60_plus_all_regime_features	threshold	0.423	4	0.1182	0.84	0.2958	1.0	0.0572	0.0	vt	headline
+ret_60_plus_all_regime_features	fixed_0.47	0.47	1	0.0449	0.8421	0.1127	1.0	0.1435	0.0	vt	headline
+ret_60_plus_all_regime_features	fixed_0.49	0.49	1	0.0331	0.8571	0.0845	1.0	0.2215	0.0	vt	headline
+ret_60_plus_all_regime_features	top_10pct	0.4318	4	0.1017	0.8837	0.2676	1.0	0.088	0.0	vt	headline
+ret_60_plus_all_regime_features	top_12_5pct	0.4139	4	0.1253	0.8113	0.3028	1.0	0.0388	0.0	vt	headline
+ret_60_plus_all_regime_features	top_15pct	0.4059	4	0.1513	0.7812	0.3521	1.0	0.0417	0.0	vt	headline
+ret_60_plus_all_regime_features	top_17_5pct	0.3945	5	0.1749	0.7297	0.3803	1.0	0.0485	0.0	vt	headline
+ret_60_plus_all_regime_features	top_20pct	0.3823	6	0.2009	0.6941	0.4155	0.8333	0.0543	-0.0095	vt	headline
+ret_60_plus_sma_gap_60	threshold	0.485	6	0.3783	0.3563	0.4014	0.8333	0.0419	-0.0364	vt	operator
+ret_60_plus_sma_gap_60	fixed_0.47	0.47	8	0.8747	0.3378	0.8803	0.875	0.0554	-0.0824	vt	operator
+ret_60_plus_sma_gap_60	fixed_0.49	0.49	6	0.2908	0.374	0.3239	1.0	0.0465	0.0	vt	operator
+ret_60_plus_sma_gap_60	top_10pct	0.505	5	0.1017	0.5349	0.162	1.0	0.0629	0.0	vt	operator
+ret_60_plus_sma_gap_60	top_12_5pct	0.5026	6	0.1253	0.4906	0.1831	1.0	0.0641	0.0	vt	operator
+ret_60_plus_sma_gap_60	top_15pct	0.5013	6	0.1513	0.5	0.2254	1.0	0.061	0.0	vt	operator
+ret_60_plus_sma_gap_60	top_17_5pct	0.4991	6	0.1749	0.4865	0.2535	1.0	0.0493	0.0	vt	operator
+ret_60_plus_sma_gap_60	top_20pct	0.497	6	0.2009	0.4706	0.2817	1.0	0.0478	0.0	vt	operator

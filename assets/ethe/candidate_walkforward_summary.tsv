@@ -1,0 +1,10 @@
+asset_key	role	model_name	extra_features	fold_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate
+ethe	headline	sma_gap_60	sma_gap_60	fold_1	0.5175	0.5421	0.5946	0.4918	0.9705
+ethe	headline	sma_gap_60	sma_gap_60	fold_2	0.6207	0.544	0.4812	0.5115	0.7848
+ethe	headline	sma_gap_60	sma_gap_60	fold_3	0.5097	0.5129	0.6018	0.5205	0.9662
+ethe	balance	up_day_ratio_20	up_day_ratio_20	fold_1	0.5203	0.5386	0.6071	0.5063	0.9831
+ethe	balance	up_day_ratio_20	up_day_ratio_20	fold_2	0.6266	0.5552	0.4812	0.5115	0.7848
+ethe	balance	up_day_ratio_20	up_day_ratio_20	fold_3	0.5099	0.5195	0.5912	0.5174	0.9198
+ethe	operator	ret_60	ret_60	fold_1	0.5159	0.5422	0.591	0.4843	0.9789
+ethe	operator	ret_60	ret_60	fold_2	0.6226	0.5477	0.4715	0.5021	0.7722
+ethe	operator	ret_60	ret_60	fold_3	0.5097	0.5129	0.6018	0.5205	0.9662

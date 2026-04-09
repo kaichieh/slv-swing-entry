@@ -1,0 +1,11 @@
+asset	model_reference	model_role	headline_score	test_bal_acc	walkforward_avg_test_bal_acc	operator_reference	operator_role	operator_recent_selected_count	operator_latest_selected	operator_cutoff	status
+GLD	ret_60_plus_sma_gap_60_interaction	headline	0.681	0.6159	0.5221333333333332	ret_60_plus_sma_gap_60_interaction::threshold	headline	20	True	0.418	active_now
+FXB	sma_gap_120	headline	0.6602	0.826	0.5791666666666667	ret_60_replaces_ret_20::top_12_5pct	balance	1	False	0.3532	watching
+XLP	ret_60_plus_sma_gap_60_plus_above_200dma_flag	headline	0.6202	0.6731	0.6144666666666666	ret_60_plus_sma_gap_60_plus_above_200dma_flag::top_10pct	headline	0	False	0.4953	inactive
+IJH	ret_60_plus_sma_gap_60_plus_above_200dma_flag	headline	0.5716	0.6007	0.5356	ret_60_plus_all_regime_features::top_17_5pct	balance	0	False	0.4952	inactive
+SMH	ret_60_plus_all_regime_features	headline	0.5694	0.5	0.5064333333333334	ret_60_plus_sma_gap_60_plus_neg_weight_1_15::fixed_0.49	operator	3	False	0.49	watching
+PEP	above_200dma_flag	headline	0.5673	0.5912	0.5385666666666666	ret_60_plus_sma_gap_60_plus_neg_weight_1_15::fixed_0.49	operator	1	False	0.49	watching
+META	ret_60_plus_rolling_return_120	headline	0.5673	0.5017	0.4957666666666667	ret_60_plus_rolling_return_120::fixed_0.47	headline	34	False	0.47	watching
+RSP	close_location_20	headline	0.5612	0.5998	0.5276333333333333	close_location_20::top_10pct	headline	0	False	0.4	inactive
+ETHE	sma_gap_60	headline	0.5465	0.517	0.5079333333333332	sma_gap_60::fixed_0.49	headline	4	False	0.49	watching
+VT	ret_60_plus_all_regime_features	headline	0.5303	0.6337	0.6059333333333333	ret_60_plus_all_regime_features::top_10pct	headline	0	False	0.4799	inactive

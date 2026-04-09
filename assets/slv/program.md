@@ -1,16 +1,15 @@
 # SLV Program
 
-This asset tracks a swing-entry workflow for `SLV` using a `60`-day horizon and a default `drop-neutral` barrier label.
+This asset is part of the cross-asset batch universe under the `Macro ETFs` bucket.
 
-## Current Default Research Setup
+## Current Research Direction
 
-- horizon: `60` trading days
-- upper barrier: `+8%`
-- lower barrier: `-4%`
-- label mode: `drop-neutral`
+- baseline reference: `60d +8%/-4% drop-neutral`
+- establish a clean baseline before trying asset-specific feature ideas
+- compare this line against the rest of the first-round universe for predictability and stability
 
 ## Working Style
 
-1. Keep the next concrete research steps in `task.md`.
-2. Record every completed run in `results.tsv`.
-3. Keep speculative follow-up ideas in `ideas.md` until they are promoted into the backlog.
+1. Keep the active research backlog in `task.md`.
+2. Save every completed run in `results.tsv`.
+3. Keep future follow-up ideas in `ideas.md` until they become concrete backlog items.

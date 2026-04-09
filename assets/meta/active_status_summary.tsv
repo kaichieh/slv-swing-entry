@@ -1,0 +1,4 @@
+line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
+ret_60_plus_rolling_return_120_plus_up_day_ratio_20::fixed_0.49	deep_research	primary	True	watchlist_ready	10	2026-04-07	0.4382	False	0.49	2026-03-10	Second-round deep-research line with round2_score=0.8501; best rule avg_return=0.1049 across 7 trades.
+ret_60_plus_rolling_return_120_plus_distance_to_252_high::fixed_0.47	deep_research	research_side_line	False	watchlist_ready	26	2026-04-07	0.4146	False	0.47	2026-03-24	Second-round deep-research line with round2_score=0.8200; best rule avg_return=0.0636 across 8 trades.
+ret_60_plus_rolling_return_120::fixed_0.47	deep_research	research_side_line	False	watchlist_ready	34	2026-04-07	0.4316	False	0.47	2026-03-25	Second-round deep-research line with round2_score=0.8153; best rule avg_return=0.0593 across 8 trades.

@@ -1,0 +1,2 @@
+asset_key	role	model_name	extra_features	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score
+rsp	headline	close_location_20	close_location_20	0.5222	0.5925	0.5439	0.5998	0.7025	0.5612

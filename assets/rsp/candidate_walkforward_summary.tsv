@@ -1,0 +1,4 @@
+asset_key	role	model_name	extra_features	fold_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate
+rsp	headline	close_location_20	close_location_20	fold_1	0.622	0.5029	0.3271	0.5	1.0
+rsp	headline	close_location_20	close_location_20	fold_2	0.3353	0.5727	0.2651	0.506	0.2162
+rsp	headline	close_location_20	close_location_20	fold_3	0.4976	0.5822	0.5357	0.5769	0.7472

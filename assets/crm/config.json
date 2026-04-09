@@ -1,0 +1,8 @@
+{
+  "asset_key": "crm",
+  "symbol": "CRM",
+  "horizon_days": 60,
+  "upper_barrier": 0.1,
+  "lower_barrier": -0.05,
+  "label_mode": "drop-neutral"
+}

@@ -1,0 +1,17 @@
+model_name	rule_name	role	operator_score	selected_count	hit_rate	avg_return	cutoff
+ret_60_plus_sma_gap_60_plus_above_200dma_flag	top_10pct	headline	4.96	5	0.8	0.0311	0.4901
+ret_60_plus_sma_gap_60_plus_above_200dma_flag	fixed_0.49	headline	4.65	5	0.8	0.028	0.49
+ret_60_plus_sma_gap_60_plus_above_200dma_flag	top_12_5pct	headline	4.59	5	0.8	0.0274	0.4864
+ret_60_plus_sma_gap_60_plus_above_200dma_flag	fixed_0.47	headline	3.9433999999999996	6	0.6667	0.0231	0.47
+sma_gap_60	top_10pct	operator	2.4372000000000003	7	0.4286	0.0123	0.4988
+ret_60_plus_sma_gap_60_plus_above_200dma_flag	top_15pct	headline	2.1534	6	0.6667	0.0052	0.4821
+ret_60_plus_sma_gap_60_plus_above_200dma_flag	top_17_5pct	headline	2.1534	6	0.6667	0.0052	0.4776
+ret_60_plus_sma_gap_60_plus_above_200dma_flag	top_20pct	headline	2.1534	6	0.6667	0.0052	0.4747
+sma_gap_60	top_12_5pct	operator	2.1372	7	0.4286	0.0093	0.4966
+sma_gap_60	threshold	operator	2.1112	9	0.5556	0.0055	0.477
+ret_60_plus_sma_gap_60_plus_above_200dma_flag	threshold	headline	1.5288	9	0.4444	0.0019	0.422
+sma_gap_60	top_15pct	operator	1.4171999999999998	7	0.4286	0.0021	0.4932
+sma_gap_60	top_17_5pct	operator	1.3771999999999998	7	0.4286	0.0017	0.4913
+sma_gap_60	fixed_0.49	operator	0.9471999999999999	7	0.4286	-0.0026	0.49
+sma_gap_60	fixed_0.47	operator	0.5	10	0.2	-0.004	0.47
+sma_gap_60	top_20pct	operator	-0.11280000000000012	7	0.4286	-0.0132	0.4893

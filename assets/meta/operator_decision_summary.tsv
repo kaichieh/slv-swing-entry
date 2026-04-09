@@ -1,0 +1,4 @@
+model_name	rule_name	role	operator_score	recent_selected_count	latest_date	latest_selected	cutoff
+ret_60_plus_rolling_return_120	fixed_0.47	headline	7.58	34	2026-04-07	False	0.47
+ret_60_plus_sma_gap_60	top_15pct	balance	7.0434	0	2026-04-07	False	0.4984
+ret_60_plus_sma_gap_60	top_17_5pct	balance	7.0434	1	2026-04-07	False	0.4974

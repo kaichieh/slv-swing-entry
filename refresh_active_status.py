@@ -217,6 +217,41 @@ BUILDERS = {
 }
 
 
+def build_followup_round2_status(asset_dir: Path) -> pd.DataFrame:
+    decision_path = asset_dir / "followup_round2_decision_summary.tsv"
+    operator_path = asset_dir / "followup_round2_operator_summary.tsv"
+    if not decision_path.exists() or not operator_path.exists():
+        raise FileNotFoundError(f"Missing round-2 follow-up files for {asset_dir.name}")
+    decision = read_tsv(decision_path)
+    operator = read_tsv(operator_path)
+    rows: list[dict[str, object]] = []
+    for idx, row in decision.iterrows():
+        matches = operator.loc[
+            (operator["model_name"] == row["model_name"]) & (operator["best_rule_name"] == row["best_rule_name"])
+        ]
+        op_row = matches.iloc[0] if not matches.empty else operator.loc[operator["model_name"] == row["model_name"]].iloc[0]
+        rows.append(
+            {
+                "line_id": f'{row["model_name"]}::{row["best_rule_name"]}',
+                "lane_type": "deep_research",
+                "role": "primary" if idx == 0 else "research_side_line",
+                "preferred": idx == 0,
+                "status": "watchlist_ready" if int(op_row["recent_selected_count"]) > 0 else "inactive",
+                "recent_selected_count": int(op_row["recent_selected_count"]),
+                "latest_date": fmt_date(op_row["latest_date"]),
+                "latest_value": float(op_row["latest_score"]),
+                "latest_selected": bool(op_row["latest_selected"]),
+                "cutoff": float(op_row["cutoff"]),
+                "last_selected_date": fmt_date(op_row["last_selected_date"]),
+                "usage_note": (
+                    f'Second-round deep-research line with round2_score={float(row["round2_score"]):.4f}; '
+                    f'best rule avg_return={float(row["best_rule_avg_return"]):.4f} across {int(row["best_rule_trade_count"])} trades.'
+                ),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def build_gld(asset_dir: Path) -> pd.DataFrame:
     latest_prediction_path = ac.get_latest_prediction_path("gld")
     if not latest_prediction_path.exists():
@@ -294,9 +329,10 @@ BUILDERS["slv"] = build_slv
 def main() -> None:
     asset_key = ac.get_asset_key()
     asset_dir = ac.get_asset_dir(asset_key)
-    if asset_key not in BUILDERS:
-        raise ValueError(f"No active-status builder configured for asset '{asset_key}'")
-    output = BUILDERS[asset_key](asset_dir)
+    if asset_key in BUILDERS:
+        output = BUILDERS[asset_key](asset_dir)
+    else:
+        output = build_followup_round2_status(asset_dir)
     output_path = asset_dir / "active_status_summary.tsv"
     output.to_csv(output_path, sep="\t", index=False)
     print(

@@ -1,0 +1,2 @@
+asset_key	role	model_name	extra_features	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score
+gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60,sma_gap_60	0.6078	0.5776	0.7921	0.6159	0.7698	0.681

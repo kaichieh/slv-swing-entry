@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RSP Active Status</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f4ed;
+      --text: #172033;
+      --muted: #5b6474;
+      --card: #fffdf8;
+      --line: #e8dfcf;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #f7f4ed 0%, #efe8d8 100%);
+      color: var(--text);
+      padding: 28px;
+    }
+    .hero {
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-top: 5px solid var(--accent);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+    .eyebrow {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.2;
+    }
+    .badge {
+      background: color-mix(in srgb, var(--accent) 14%, white);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .note {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      min-height: 48px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      margin: 0;
+    }
+    .stats div {
+      padding: 10px 12px;
+      background: #faf6ee;
+      border-radius: 12px;
+      border: 1px solid #efe5d4;
+    }
+    dt {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    dd {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .dump {
+      margin-top: 22px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.65);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>RSP Active Status</h1>
+    <p>Preferred line: close_location_20_plus_above_200dma_flag::top_10pct | status=inactive | recent_count=0</p>
+  </div>
+  <div class="grid">
+    
+    <section class="card" style="--accent:#0f766e">
+      <div class="card-top">
+        <div>
+          <div class="eyebrow">deep_research</div>
+          <h2>close_location_20_plus_above_200dma_flag::top_10pct</h2>
+        </div>
+        <div class="badge">Preferred</div>
+      </div>
+      <p class="note">Second-round deep-research line with round2_score=0.8089; best rule avg_return=0.0515 across 6 trades.</p>
+      <dl class="stats">
+        <div><dt>role</dt><dd>primary</dd></div>
+        <div><dt>status</dt><dd>inactive</dd></div>
+        <div><dt>recent count</dt><dd>0</dd></div>
+        <div><dt>latest date</dt><dd>2026-03-17</dd></div>
+        <div><dt>latest value</dt><dd>0.367400</dd></div>
+        <div><dt>latest selected</dt><dd>no</dd></div>
+        <div><dt>cutoff</dt><dd>0.399200</dd></div>
+        <div><dt>last selected</dt><dd>n/a</dd></div>
+      </dl>
+    </section>
+    
+
+    <section class="card" style="--accent:#94a3b8">
+      <div class="card-top">
+        <div>
+          <div class="eyebrow">deep_research</div>
+          <h2>close_location_20_plus_atr_pct_20::top_10pct</h2>
+        </div>
+        <div class="badge">Secondary</div>
+      </div>
+      <p class="note">Second-round deep-research line with round2_score=0.8015; best rule avg_return=0.0453 across 7 trades.</p>
+      <dl class="stats">
+        <div><dt>role</dt><dd>research_side_line</dd></div>
+        <div><dt>status</dt><dd>inactive</dd></div>
+        <div><dt>recent count</dt><dd>0</dd></div>
+        <div><dt>latest date</dt><dd>2026-03-17</dd></div>
+        <div><dt>latest value</dt><dd>0.373400</dd></div>
+        <div><dt>latest selected</dt><dd>no</dd></div>
+        <div><dt>cutoff</dt><dd>0.399900</dd></div>
+        <div><dt>last selected</dt><dd>n/a</dd></div>
+      </dl>
+    </section>
+    
+
+    <section class="card" style="--accent:#94a3b8">
+      <div class="card-top">
+        <div>
+          <div class="eyebrow">deep_research</div>
+          <h2>close_location_20_plus_sma_gap_120::top_10pct</h2>
+        </div>
+        <div class="badge">Secondary</div>
+      </div>
+      <p class="note">Second-round deep-research line with round2_score=0.8012; best rule avg_return=0.0453 across 7 trades.</p>
+      <dl class="stats">
+        <div><dt>role</dt><dd>research_side_line</dd></div>
+        <div><dt>status</dt><dd>inactive</dd></div>
+        <div><dt>recent count</dt><dd>0</dd></div>
+        <div><dt>latest date</dt><dd>2026-03-17</dd></div>
+        <div><dt>latest value</dt><dd>0.363000</dd></div>
+        <div><dt>latest selected</dt><dd>no</dd></div>
+        <div><dt>cutoff</dt><dd>0.391600</dd></div>
+        <div><dt>last selected</dt><dd>n/a</dd></div>
+      </dl>
+    </section>
+    
+  </div>
+  <div class="dump">[{&quot;line_id&quot;: &quot;close_location_20_plus_above_200dma_flag::top_10pct&quot;, &quot;lane_type&quot;: &quot;deep_research&quot;, &quot;role&quot;: &quot;primary&quot;, &quot;preferred&quot;: true, &quot;status&quot;: &quot;inactive&quot;, &quot;recent_selected_count&quot;: 0, &quot;latest_date&quot;: &quot;2026-03-17&quot;, &quot;latest_value&quot;: 0.3674, &quot;latest_selected&quot;: false, &quot;cutoff&quot;: 0.3992, &quot;last_selected_date&quot;: &quot;&quot;, &quot;usage_note&quot;: &quot;Second-round deep-research line with round2_score=0.8089; best rule avg_return=0.0515 across 6 trades.&quot;}, {&quot;line_id&quot;: &quot;close_location_20_plus_atr_pct_20::top_10pct&quot;, &quot;lane_type&quot;: &quot;deep_research&quot;, &quot;role&quot;: &quot;research_side_line&quot;, &quot;preferred&quot;: false, &quot;status&quot;: &quot;inactive&quot;, &quot;recent_selected_count&quot;: 0, &quot;latest_date&quot;: &quot;2026-03-17&quot;, &quot;latest_value&quot;: 0.3734, &quot;latest_selected&quot;: false, &quot;cutoff&quot;: 0.3999, &quot;last_selected_date&quot;: &quot;&quot;, &quot;usage_note&quot;: &quot;Second-round deep-research line with round2_score=0.8015; best rule avg_return=0.0453 across 7 trades.&quot;}, {&quot;line_id&quot;: &quot;close_location_20_plus_sma_gap_120::top_10pct&quot;, &quot;lane_type&quot;: &quot;deep_research&quot;, &quot;role&quot;: &quot;research_side_line&quot;, &quot;preferred&quot;: false, &quot;status&quot;: &quot;inactive&quot;, &quot;recent_selected_count&quot;: 0, &quot;latest_date&quot;: &quot;2026-03-17&quot;, &quot;latest_value&quot;: 0.363, &quot;latest_selected&quot;: false, &quot;cutoff&quot;: 0.3916, &quot;last_selected_date&quot;: &quot;&quot;, &quot;usage_note&quot;: &quot;Second-round deep-research line with round2_score=0.8012; best rule avg_return=0.0453 across 7 trades.&quot;}]</div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+model_name	rule_name	role	operator_score	selected_count	hit_rate	avg_return	cutoff
+ret_60_plus_sma_gap_60_interaction	threshold	headline	11.4846	11	0.7273	0.0948	0.418
+ret_60_plus_sma_gap_60_interaction	fixed_0.47	headline	10.05	8	0.75	0.0815	0.47
+ret_60_plus_sma_gap_60_interaction	top_20pct	headline	10.05	8	0.75	0.0815	0.47
+ret_60_plus_sma_gap_60_interaction	top_10pct	headline	9.184199999999999	7	0.8571	0.0712	0.4758
+ret_60_plus_sma_gap_60_interaction	top_17_5pct	headline	8.9286	7	0.7143	0.0715	0.4707
+ret_60_plus_sma_gap_60_interaction	top_12_5pct	headline	8.6886	7	0.7143	0.0691	0.4743
+ret_60_plus_sma_gap_60_interaction	top_15pct	headline	8.6886	7	0.7143	0.0691	0.472
+ret_60_plus_sma_gap_60_interaction	fixed_0.49	headline	5.3634	3	0.6667	0.0388	0.49

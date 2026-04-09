@@ -1,0 +1,4 @@
+asset_key	role	model_name	round2_score	walkforward_avg_test_bal_acc	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60	0.8201	0.6059	top_10pct	0.088	4	0	False
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_neg_weight_1_15	0.7415	0.6038	fixed_0.49	0.0866	4	1	True
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_close_location_20	0.7333	0.5924	fixed_0.47	0.0783	4	1	True

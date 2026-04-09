@@ -1,0 +1,13 @@
+split	year_bucket	rows	positive_rate	avg_future_return	summary_type	model_name	period	predicted_positive_rate
+validation	2022.0	73	0.0	-0.03826132553403477	yearly_barrier			
+validation	2023.0	12	0.0	-0.04470669558589211	yearly_barrier			
+test	2023.0	28	0.0	-0.021803583235920014	yearly_barrier			
+test	2025.0	58	0.0	-0.022521885224024984	yearly_barrier			
+		129			stage_model_positive_rate	ret_60	2008_2010	0.20930232558139536
+		154			stage_model_positive_rate	ret_60	2011_2019	0.032467532467532464
+		226			stage_model_positive_rate	ret_60	2020_2023	0.04424778761061947
+		58			stage_model_positive_rate	ret_60	2024_plus	0.0
+		129			stage_model_positive_rate	sma_gap_60	2008_2010	0.1937984496124031
+		154			stage_model_positive_rate	sma_gap_60	2011_2019	0.05194805194805195
+		226			stage_model_positive_rate	sma_gap_60	2020_2023	0.04424778761061947
+		58			stage_model_positive_rate	sma_gap_60	2024_plus	0.0

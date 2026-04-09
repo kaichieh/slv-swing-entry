@@ -1,0 +1,6 @@
+asset	best_model	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	best_rule	best_rule_avg_return	best_rule_hit_rate	best_rule_trade_count
+EMB	ret_60_plus_sma_gap_60_plus_distance_to_252_high	0.418605	0.773810	0.500000	0.666667	0.075221	0.561102	combo_top_12_5pct	0.004428	0.600000	5
+JNK	ret_60_plus_year	0.696970	0.883373	0.133333	0.565438	0.096774	0.450696	combo_top_12_5pct	-0.012360	0.333333	6
+HYG	ret_60_plus_year	0.655172	0.909319	0.086957	0.538095	0.068966	0.418178	combo_neg115_threshold	-0.018738	0.250000	8
+MUB	ret_60	0.000000	0.500000	0.000000	0.500000	0.000000	0.200000	combo_threshold	0.050069	1.000000	1
+TIP	sma_gap_60	0.000000	0.500000	0.000000	0.500000	0.000000	0.200000	combo_threshold	0.036370	1.000000	1

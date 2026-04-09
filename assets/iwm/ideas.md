@@ -1,5 +1,5 @@
 # IWM Ideas
 
-- compare small-cap relative strength against SPY
-- test whether IWM prefers a wider barrier than SPY
-- check whether top-percentile rules work better than threshold because of higher volatility
+- compare nearby label widths if the baseline is too imbalanced
+- test one or two simple momentum features before broader sweeps
+- compare threshold and top-percentile rules after the first stable candidate appears

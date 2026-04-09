@@ -1,0 +1,9 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+rsp	headline	close_location_20_plus_atr_pct_20	top_10pct	7	0.7143	0.0453	0.3999	0	2026-03-17	0.3734	False	
+rsp	headline	close_location_20_plus_distance_to_252_high	top_10pct	6	0.8333	0.0583	0.4599	0	2026-03-17	0.437	False	
+rsp	headline	close_location_20	top_10pct	7	0.7143	0.0453	0.3945	0	2026-03-17	0.3667	False	
+rsp	headline	close_location_20_plus_above_200dma_flag	top_10pct	6	0.8333	0.0515	0.3992	0	2026-03-17	0.3674	False	
+rsp	headline	close_location_20_plus_ret_60	top_10pct	7	0.8571	0.062	0.5004	0	2026-03-17	0.4977	False	
+rsp	headline	close_location_20_plus_rolling_return_120	top_12_5pct	7	0.7143	0.0403	0.4068	0	2026-03-17	0.383	False	
+rsp	headline	close_location_20_plus_rolling_vol_60	fixed_0.47	4	0.75	0.0653	0.47	0	2026-03-17	0.4463	False	
+rsp	headline	close_location_20_plus_sma_gap_120	top_10pct	7	0.7143	0.0453	0.3916	0	2026-03-17	0.363	False	

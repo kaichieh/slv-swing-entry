@@ -1,0 +1,4 @@
+asset_key	role	model_name	extra_features	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score
+ethe	headline	sma_gap_60	sma_gap_60	0.5507	0.5353	0.5694	0.517	0.9442	0.5465
+ethe	balance	up_day_ratio_20	up_day_ratio_20	0.5448	0.5242	0.5684	0.5188	0.9302	0.5444
+ethe	operator	ret_60	ret_60	0.5468	0.5279	0.5694	0.517	0.9442	0.545

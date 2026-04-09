@@ -1,0 +1,4 @@
+asset_key	role	model_name	extra_features	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score
+meta	headline	ret_60_plus_rolling_return_120	ret_60,rolling_return_120	0.7059	0.5099	0.5616	0.5017	0.9979	0.5673
+meta	balance	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	0.7057	0.5072	0.5616	0.5017	0.9979	0.567
+meta	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	0.7057	0.5072	0.5616	0.5017	0.9979	0.567

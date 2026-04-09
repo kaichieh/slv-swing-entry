@@ -1,0 +1,7 @@
+asset_key	role	model_name	extra_features	fold_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate
+xlp	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag	ret_60,sma_gap_60,above_200dma_flag	fold_1	0.6109	0.5014	0.3429	0.502	0.9969
+xlp	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag	ret_60,sma_gap_60,above_200dma_flag	fold_2	0.4857	0.6911	0.5726	0.6646	0.4203
+xlp	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag	ret_60,sma_gap_60,above_200dma_flag	fold_3	0.6682	0.7473	0.5347	0.6768	0.4688
+xlp	operator	sma_gap_60	sma_gap_60	fold_1	0.6109	0.5014	0.3442	0.5049	0.9922
+xlp	operator	sma_gap_60	sma_gap_60	fold_2	0.3558	0.5516	0.4658	0.5147	0.6625
+xlp	operator	sma_gap_60	sma_gap_60	fold_3	0.5891	0.6653	0.4333	0.5593	0.6281

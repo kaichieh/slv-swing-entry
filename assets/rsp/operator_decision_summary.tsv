@@ -1,0 +1,4 @@
+model_name	rule_name	role	operator_score	recent_selected_count	latest_date	latest_selected	cutoff
+close_location_20	top_10pct	headline	6.3086	0	2026-03-17	False	0.4
+close_location_20	top_12_5pct	headline	5.6886	0	2026-03-17	False	0.3953
+close_location_20	top_15pct	headline	3.93	4	2026-03-17	False	0.3914

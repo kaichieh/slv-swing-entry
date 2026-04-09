@@ -1,0 +1,4 @@
+asset_key	role	model_name	extra_features	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag	ret_60,sma_gap_60,above_200dma_flag	0.5082	0.5951	0.5757	0.6007	0.5941	0.5716
+ijh	balance	ret_60_plus_all_regime_features	ret_60,year,rolling_return_120,rolling_vol_60	0.5101	0.586	0.55	0.6233	0.4059	0.5676
+ijh	operator	sma_gap_60	sma_gap_60	0.5021	0.5902	0.4884	0.5313	0.5296	0.5142

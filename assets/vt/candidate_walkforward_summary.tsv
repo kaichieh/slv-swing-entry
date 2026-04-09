@@ -1,0 +1,7 @@
+asset_key	role	model_name	extra_features	fold_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate
+vt	headline	ret_60_plus_all_regime_features	ret_60,year,rolling_return_120,rolling_vol_60	fold_1	0.3353	0.5904	0.383	0.5853	0.1962
+vt	headline	ret_60_plus_all_regime_features	ret_60,year,rolling_return_120,rolling_vol_60	fold_2	0.5968	0.7071	0.4714	0.5823	0.6013
+vt	headline	ret_60_plus_all_regime_features	ret_60,year,rolling_return_120,rolling_vol_60	fold_3	0.4972	0.5822	0.5675	0.6502	0.6034
+vt	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_1	0.3684	0.6051	0.4898	0.6306	0.322
+vt	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_2	0.5623	0.6743	0.4711	0.5729	0.6652
+vt	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_3	0.4963	0.6131	0.3299	0.5146	0.2921

@@ -1,0 +1,6 @@
+model_name	rule_name	role	recent_selected_count	latest_date	latest_score	latest_selected	cutoff	last_selected_date
+ret_60_plus_all_regime_features	top_10pct	headline	0	2026-03-30	0.432	False	0.4799	
+ret_60_plus_sma_gap_60	top_12_5pct	operator	2	2026-03-30	0.5162	True	0.5114	2026-03-30
+ret_60_plus_sma_gap_60	top_10pct	operator	1	2026-03-30	0.5162	True	0.5148	2026-03-30
+ret_60_plus_sma_gap_60	top_15pct	operator	3	2026-03-30	0.5162	True	0.5078	2026-03-30
+ret_60_plus_all_regime_features	threshold	headline	1	2026-03-30	0.432	True	0.423	2026-03-30

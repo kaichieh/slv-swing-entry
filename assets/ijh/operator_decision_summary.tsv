@@ -1,0 +1,4 @@
+model_name	rule_name	role	operator_score	recent_selected_count	latest_date	latest_selected	cutoff
+ret_60_plus_all_regime_features	top_17_5pct	balance	8.72	0	2026-03-30	False	0.4952
+ret_60_plus_all_regime_features	top_15pct	balance	7.7986	0	2026-03-30	False	0.4957
+sma_gap_60	top_20pct	operator	7.79	8	2026-03-30	False	0.4793

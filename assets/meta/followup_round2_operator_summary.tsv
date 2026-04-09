@@ -1,0 +1,9 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+meta	headline	ret_60_plus_rolling_return_120	fixed_0.47	8	0.625	0.0593	0.47	34	2026-04-07	0.4316	False	2026-03-25
+meta	headline	ret_60_plus_rolling_return_120_plus_atr_pct_20	top_20pct	7	0.5714	0.0484	0.4982	5	2026-04-07	0.4579	False	2026-03-16
+meta	headline	ret_60_plus_rolling_return_120_plus_distance_to_252_high	fixed_0.47	8	0.625	0.0636	0.47	26	2026-04-07	0.4146	False	2026-03-24
+meta	headline	ret_60_plus_rolling_return_120_plus_close_location_20	fixed_0.47	8	0.625	0.0593	0.47	34	2026-04-07	0.4314	False	2026-03-25
+meta	headline	ret_60_plus_rolling_return_120_plus_up_day_ratio_20	fixed_0.49	7	0.8571	0.1049	0.49	10	2026-04-07	0.4382	False	2026-03-10
+meta	headline	ret_60_plus_rolling_return_120_plus_above_200dma_flag	fixed_0.47	8	0.625	0.0574	0.47	26	2026-04-07	0.425	False	2026-03-24
+meta	headline	ret_60_plus_rolling_return_120_plus_rolling_vol_60	fixed_0.47	8	0.625	0.0598	0.47	31	2026-04-07	0.4166	False	2026-03-24
+meta	headline	ret_60_plus_rolling_return_120_plus_sma_gap_120	threshold	8	0.5	0.0475	0.382	60	2026-04-07	0.4515	True	2026-04-07

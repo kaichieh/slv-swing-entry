@@ -1,0 +1,10 @@
+asset_key	role	model_name	extra_features	fold_name	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate
+meta	headline	ret_60_plus_rolling_return_120	ret_60,rolling_return_120	fold_1	0.5962	0.5185	0.5753	0.5574	0.8797
+meta	headline	ret_60_plus_rolling_return_120	ret_60,rolling_return_120	fold_2	0.5774	0.6151	0.4453	0.4299	0.5451
+meta	headline	ret_60_plus_rolling_return_120	ret_60,rolling_return_120	fold_3	0.6573	0.5091	0.5602	0.5	1.0
+meta	balance	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_1	0.6076	0.5319	0.5667	0.5476	0.8722
+meta	balance	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_2	0.5642	0.5249	0.6357	0.5099	0.8929
+meta	balance	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_3	0.6675	0.5396	0.5499	0.4886	0.985
+meta	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_1	0.6076	0.5319	0.5667	0.5476	0.8722
+meta	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_2	0.5642	0.5249	0.6357	0.5099	0.8929
+meta	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_3	0.6675	0.5396	0.5499	0.4886	0.985

@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-xle	XLE	distance_to_252_high	regression_watchlist	primary	watchlist_ready	watchlist_wait	6	2026-03-30	0.0274024068690951	False	-9.4e-05	2026-02-19	39	Preferred line is valid but currently waiting below cutoff.
+xle	XLE	distance_to_252_high	regression_watchlist	primary	watchlist_ready	watchlist_wait	6	2026-04-08	0.0393029519967115	False	-9.4e-05	2026-02-19	48	Preferred line is valid but currently waiting below cutoff.

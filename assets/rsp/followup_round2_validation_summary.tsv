@@ -1,0 +1,9 @@
+asset_key	role	parent_model_name	model_name	extra_features	neg_weight	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	walkforward_avg_test_bal_acc	round2_score
+rsp	headline	close_location_20	close_location_20_plus_above_200dma_flag	close_location_20,above_200dma_flag		0.5219	0.59	0.5557	0.6113	0.7183	0.5691	0.5279	0.8089
+rsp	headline	close_location_20	close_location_20_plus_atr_pct_20	close_location_20,atr_pct_20		0.5213	0.5912	0.5497	0.6063	0.7042	0.5652	0.5201	0.8015
+rsp	headline	close_location_20	close_location_20_plus_sma_gap_120	close_location_20,sma_gap_120		0.5145	0.587	0.5467	0.6067	0.6778	0.5623	0.5286	0.8012
+rsp	headline	close_location_20	close_location_20	close_location_20		0.5222	0.5925	0.5439	0.5998	0.7025	0.5612	0.5276	0.7998
+rsp	headline	close_location_20	close_location_20_plus_rolling_vol_60	close_location_20,rolling_vol_60		0.5268	0.5891	0.5303	0.5784	0.7359	0.5499	0.5295	0.794
+rsp	headline	close_location_20	close_location_20_plus_distance_to_252_high	close_location_20,distance_to_252_high		0.5063	0.5525	0.5333	0.568	0.8222	0.5402	0.5267	0.7866
+rsp	headline	close_location_20	close_location_20_plus_rolling_return_120	close_location_20,rolling_return_120		0.5065	0.5601	0.5381	0.5789	0.7923	0.5462	0.5255	0.7792
+rsp	headline	close_location_20	close_location_20_plus_ret_60	close_location_20,ret_60		0.4973	0.5053	0.5072	0.5	1.0	0.5029	0.4912	0.7472

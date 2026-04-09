@@ -1,0 +1,9 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+pep	headline	above_200dma_flag_plus_atr_pct_20	top_10pct	17	0.6471	0.0363	0.4876	5	2026-03-17	0.4642	False	2026-01-09
+pep	headline	above_200dma_flag_plus_distance_to_252_high	fixed_0.47	18	0.6667	0.0328	0.47	3	2026-03-17	0.4369	False	2026-01-07
+pep	headline	above_200dma_flag_plus_close_location_20	fixed_0.49	4	0.75	0.0802	0.49	2	2026-03-17	0.4259	False	2026-01-07
+pep	headline	above_200dma_flag_plus_up_day_ratio_20	fixed_0.47	15	0.6667	0.0368	0.47	3	2026-03-17	0.419	False	2026-01-07
+pep	headline	above_200dma_flag	fixed_0.49	10	0.7	0.0354	0.49	3	2026-03-17	0.4406	False	2026-01-07
+pep	headline	above_200dma_flag_plus_ret_60	top_10pct	17	0.6471	0.0342	0.4834	5	2026-03-17	0.4581	False	2026-01-09
+pep	headline	above_200dma_flag_plus_rolling_return_120	top_15pct	19	0.6842	0.0326	0.4926	5	2026-03-17	0.474	False	2026-01-09
+pep	headline	above_200dma_flag_plus_rolling_vol_60	top_10pct	18	0.6667	0.0336	0.5058	5	2026-03-17	0.4969	False	2026-01-09

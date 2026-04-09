@@ -1,0 +1,4 @@
+model_name	rule_name	role	operator_score	recent_selected_count	latest_date	latest_selected	cutoff
+ret_60_replaces_ret_20	top_12_5pct	balance	6.4034	1	2026-01-29	False	0.3532
+ret_60	top_12_5pct	operator	6.4034	1	2026-01-29	False	0.3532
+ret_60_replaces_ret_20	top_10pct	balance	6.0234	1	2026-01-29	False	0.3639

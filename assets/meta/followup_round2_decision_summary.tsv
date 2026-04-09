@@ -1,0 +1,4 @@
+asset_key	role	model_name	round2_score	walkforward_avg_test_bal_acc	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+meta	headline	ret_60_plus_rolling_return_120_plus_up_day_ratio_20	0.8501	0.4782	fixed_0.49	0.1049	7	10	False
+meta	headline	ret_60_plus_rolling_return_120_plus_distance_to_252_high	0.82	0.4971	fixed_0.47	0.0636	8	26	False
+meta	headline	ret_60_plus_rolling_return_120	0.8153	0.4958	fixed_0.47	0.0593	8	34	False
