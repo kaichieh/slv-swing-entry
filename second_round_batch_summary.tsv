@@ -1,0 +1,6 @@
+asset	best_model	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	best_rule	best_rule_avg_return	best_rule_hit_rate	best_rule_trade_count
+GLD	ret_60_plus_sma_gap_60_interaction	0.607843	0.577579	0.792123	0.615941	0.769841	0.680958	combo_neg115_top_20pct	0.039872	0.612903	31
+FXB	sma_gap_120	0.294118	0.588426	0.736842	0.826045	0.130597	0.660216	combo_fixed_0_49	0.049603	0.666667	3
+FXE	ret_60_plus_rolling_vol_60	0.444444	0.888998	0.537037	0.658645	0.548638	0.590197	combo_top_15pct	-0.012493	0.181818	11
+SMH	ret_60_plus_all_regime_features	0.627960	0.500000	0.609435	0.500000	1.000000	0.569366	combo_fixed_0_49	0.072259	0.689655	29
+KRE	ret_60_plus_all_regime_features	0.474057	0.518131	0.557452	0.534854	0.913490	0.530061	combo_top_20pct	0.024461	0.586207	29

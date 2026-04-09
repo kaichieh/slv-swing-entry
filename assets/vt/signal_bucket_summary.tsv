@@ -1,0 +1,9 @@
+model_name	signal_name	sample_count	hit_rate	avg_return
+ret_60_plus_sma_gap_60	weak_bullish	130	0.8384615384615385	0.051896377183871786
+ret_60_plus_sma_gap_60	bullish	18	1.0	0.08620871897241997
+ret_60_plus_sma_gap_60	strong_bullish	7	1.0	0.1538802050841764
+ret_60_plus_sma_gap_60	very_strong_bullish	5	1.0	0.2105842093659059
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	weak_bullish	131	0.8396946564885496	0.052197532415040014
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	bullish	18	1.0	0.08620871897241997
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	strong_bullish	7	1.0	0.1538802050841764
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	very_strong_bullish	5	1.0	0.2105842093659059

@@ -4,15 +4,5 @@
   "horizon_days": 60,
   "upper_barrier": 0.08,
   "lower_barrier": -0.04,
-  "label_mode": "drop-neutral",
-  "live_extra_features": [
-    "ret_60",
-    "sma_gap_60",
-    "trend_quality_20",
-    "percent_up_days_20",
-    "bollinger_bandwidth_20",
-    "distance_from_60d_low",
-    "atr_pct_20_percentile"
-  ],
-  "live_reference_top_pct": 7.5
+  "label_mode": "drop-neutral"
 }

@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-context_stack_live	binary_operator	primary	True	active	14	2026-04-01	0.4662	True	0.461	2026-04-01	Current GLD live line uses context-stack extras with the threshold-plus-buy-point overlay; top_7.5pct remains the reference rule.
+context_stack_live	binary_operator	primary	True	active	15	2026-04-08	0.4643	True	0.461	2026-04-08	Current GLD live line uses context-stack extras with the threshold-plus-buy-point overlay; top_7.5pct remains the reference rule.

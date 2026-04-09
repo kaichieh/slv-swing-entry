@@ -1,0 +1,14 @@
+model_name	rule_name	threshold_or_cutoff	selected_count	predicted_positive_rate	precision	recall	hit_rate	avg_return	max_drawdown_compound
+ret_60_plus_sma_gap_60	threshold	0.471	12	0.9985	0.3759	1.0	0.6667	0.0479	-0.1538
+ret_60_plus_sma_gap_60	fixed_0.47	0.47	12	0.9985	0.3759	1.0	0.6667	0.0479	-0.1538
+ret_60_plus_sma_gap_60	fixed_0.49	0.49	7	0.0821	0.4643	0.1016	0.7143	0.0579	-0.0358
+ret_60_plus_sma_gap_60	top_12_5pct	0.4893	8	0.1261	0.4302	0.1445	0.75	0.0827	-0.0584
+ret_60_plus_sma_gap_60	top_15pct	0.4891	9	0.151	0.4175	0.168	0.7778	0.0858	-0.0499
+ret_60_plus_sma_gap_60	top_17_5pct	0.4887	9	0.176	0.4083	0.1914	0.6667	0.0707	-0.0826
+ret_60_plus_sma_gap_60	top_20pct	0.4883	9	0.2009	0.4088	0.2188	0.6667	0.0696	-0.0826
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	threshold	0.498	12	0.9941	0.3776	1.0	0.6667	0.0479	-0.1538
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	fixed_0.47	0.47	12	1.0	0.3754	1.0	0.6667	0.0479	-0.1538
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	fixed_0.49	0.49	12	1.0	0.3754	1.0	0.6667	0.0479	-0.1538
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_15pct	0.4992	9	0.151	0.4369	0.1758	0.7778	0.0888	-0.0584
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_17_5pct	0.4992	9	0.176	0.425	0.1992	0.6667	0.0661	-0.0826
+ret_60_plus_sma_gap_60_plus_neg_weight_1_15	top_20pct	0.4991	9	0.2009	0.4234	0.2266	0.6667	0.0661	-0.0826
