@@ -1,0 +1,6 @@
+asset	best_model	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	best_rule	best_rule_avg_return	best_rule_hit_rate	best_rule_trade_count
+PEP	above_200dma_flag	0.583382	0.633656	0.524848	0.591171	0.588435	0.567333	combo_fixed_0_49	0.106022	0.875000	8
+META	ret_60_plus_rolling_return_120	0.705882	0.509852	0.561562	0.501706	0.997917	0.567298	combo_threshold	0.068170	0.666667	27
+ETHE	sma_gap_60	0.550725	0.535328	0.569444	0.516968	0.944186	0.546546	combo_neg115_fixed_0_47	0.218573	0.555556	9
+ETH-USD	atr_pct_20	0.520499	0.501852	0.585789	0.517220	0.973684	0.543766	combo_neg115_fixed_0_47	0.051558	0.500000	24
+KO	ret_60_plus_sma_gap_60_plus_atr_pct_20	0.484145	0.534074	0.552421	0.532851	0.910859	0.531060	combo_top_17_5pct	0.022530	0.602410	83

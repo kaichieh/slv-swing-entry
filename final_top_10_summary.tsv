@@ -1,0 +1,11 @@
+rank	asset	category	rationale
+1	GLD	macro	all-around strongest blend of headline score and usable forward rule; `31` trades with `combo_neg115_top_20pct`
+2	XLP	defensive_equity	cleanest practical classifier from round 1 with balanced test behavior and a usable fixed-threshold rule
+3	IJH	equity_operator	best operator-style candidate so far with `5.00%` average forward return over `27` trades and strong hit rate
+4	FXB	fx_macro	cleanest sparse classifier in the full universe, though still under-sampled on forward rules
+5	SMH	thematic_equity	raw classifier is weak but filtered rule quality is elite with `7.23%` average return over `29` trades
+6	PEP	defensive_equity	strong new large-cap survivor with non-degenerate classifier balance and a `10.60%` fixed-threshold forward rule
+7	VT	global_equity	conservative global baseline with low positive-rate behavior and decent forward-rule quality
+8	RSP	broad_equity	stable broad-equity alternate with balanced test metrics and usable rule depth across `26` trades
+9	META	large_cap_growth	kept a strong headline score and viable forward rule, but remains near-all-positive and needs stricter guardrails
+10	ETHE	crypto_proxy	rule-first speculative candidate with outsized forward returns, but still too close to degenerate positive-rate behavior

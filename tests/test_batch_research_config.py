@@ -48,6 +48,36 @@ class BatchResearchConfigTests(unittest.TestCase):
         self.assertEqual(second_round[0].asset_key, "smh")
         self.assertEqual(second_round[-1].asset_key, "fxb")
 
+    def test_third_round_assets_are_supported_by_asset_config(self) -> None:
+        config = brc.load_batch_research_config()
+        third_round = config.candidates[40:60]
+
+        self.assertEqual(len(third_round), 20)
+        self.assertIn("ief", ac.ASSET_DEFAULTS)
+        self.assertIn("arkg", ac.ASSET_DEFAULTS)
+        self.assertEqual(third_round[0].asset_key, "tlt")
+        self.assertEqual(third_round[-1].asset_key, "arkg")
+
+    def test_fourth_round_assets_are_supported_by_asset_config(self) -> None:
+        config = brc.load_batch_research_config()
+        fourth_round = config.candidates[60:80]
+
+        self.assertEqual(len(fourth_round), 20)
+        self.assertIn("aapl", ac.ASSET_DEFAULTS)
+        self.assertIn("cvx", ac.ASSET_DEFAULTS)
+        self.assertEqual(fourth_round[0].asset_key, "aapl")
+        self.assertEqual(fourth_round[-1].asset_key, "cvx")
+
+    def test_fifth_round_assets_are_supported_by_asset_config(self) -> None:
+        config = brc.load_batch_research_config()
+        fifth_round = config.candidates[80:100]
+
+        self.assertEqual(len(fifth_round), 20)
+        self.assertIn("ko", ac.ASSET_DEFAULTS)
+        self.assertIn("bitb", ac.ASSET_DEFAULTS)
+        self.assertEqual(fifth_round[0].asset_key, "ko")
+        self.assertEqual(fifth_round[-1].asset_key, "bitb")
+
 
 if __name__ == "__main__":
     unittest.main()
