@@ -1,0 +1,4 @@
+asset_key	role	model_name	round3_score	walkforward_avg_test_bal_acc	test_positive_rate	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+fxb	headline	sma_gap_120	0.912	0.5791	0.1306	top_17_5pct	0.0341	3	2	False
+fxb	headline	sma_gap_120_plus_close_location_20	0.9099	0.5731	0.1306	top_17_5pct	0.0341	3	2	False
+fxb	headline	sma_gap_120_plus_atr_pct_20	0.869	0.6763	0.3396	top_20pct	0.0341	3	1	False

@@ -1,0 +1,4 @@
+asset_key	role	model_name	round3_score	walkforward_avg_test_bal_acc	test_positive_rate	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_neg_weight_1_15	0.8641	0.5325	0.6505	fixed_0.49	0.0968	4	0	False
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_rolling_vol_60_plus_neg_weight_1_15	0.8608	0.5401	0.6331	top_20pct	0.0551	9	0	False
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_atr_pct_20_plus_neg_weight_1_15	0.8604	0.5365	0.6707	top_20pct	0.0506	10	0	False

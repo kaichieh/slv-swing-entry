@@ -1,0 +1,13 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+pep	headline	above_200dma_flag_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60	top_20pct	10	0.7	0.0473	0.5572	6	2026-03-17	0.4724	False	2026-01-12
+pep	headline	above_200dma_flag_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_20pct	10	0.7	0.0429	0.5562	6	2026-03-17	0.447	False	2026-01-12
+pep	headline	above_200dma_flag_plus_atr_pct_20_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60	top_10pct	8	0.625	0.0425	0.601	5	2026-03-17	0.4555	False	2026-01-09
+pep	headline	above_200dma_flag_plus_atr_pct_20_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_12_5pct	8	0.625	0.0432	0.5891	5	2026-03-17	0.44	False	2026-01-09
+pep	headline	above_200dma_flag_plus_atr_pct_20_plus_rs_vs_benchmark_60	top_10pct	8	0.625	0.045	0.6025	6	2026-03-17	0.4263	False	2026-01-12
+pep	headline	above_200dma_flag_plus_atr_pct_20_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_10pct	8	0.625	0.045	0.5958	6	2026-03-17	0.4166	False	2026-01-12
+pep	headline	above_200dma_flag_plus_close_location_20_plus_rs_vs_benchmark_60	top_12_5pct	8	0.625	0.0431	0.5939	6	2026-03-17	0.4334	False	2026-01-12
+pep	headline	above_200dma_flag_plus_close_location_20_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_10pct	8	0.625	0.0425	0.5952	5	2026-03-17	0.4463	False	2026-01-09
+pep	headline	above_200dma_flag_plus_distance_to_252_high_plus_rs_vs_benchmark_60	top_20pct	10	0.7	0.0441	0.5649	6	2026-03-17	0.4885	False	2026-01-12
+pep	headline	above_200dma_flag_plus_distance_to_252_high_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_20pct	10	0.7	0.0441	0.5657	6	2026-03-17	0.4834	False	2026-01-12
+pep	headline	above_200dma_flag_plus_ret_60_plus_rs_vs_benchmark_60	top_10pct	8	0.625	0.0423	0.5876	5	2026-03-17	0.4607	False	2026-01-09
+pep	headline	above_200dma_flag_plus_ret_60_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_17_5pct	9	0.6667	0.042	0.5635	6	2026-03-17	0.4829	False	2026-01-12

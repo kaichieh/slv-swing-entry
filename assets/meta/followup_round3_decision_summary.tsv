@@ -1,0 +1,4 @@
+asset_key	role	model_name	round3_score	walkforward_avg_test_bal_acc	test_positive_rate	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+meta	headline	ret_60_plus_rolling_return_120_plus_close_location_20_plus_neg_weight_1_3	0.7892	0.4902	0.9979	fixed_0.49	0.0945	3	0	False
+meta	headline	ret_60_plus_rolling_return_120_plus_above_200dma_flag_plus_neg_weight_1_45	0.7697	0.4974	0.9854	top_12_5pct	0.054	6	0	False
+meta	headline	ret_60_plus_rolling_return_120_plus_above_200dma_flag_plus_neg_weight_1_3	0.7691	0.496	0.9854	top_12_5pct	0.054	6	0	False

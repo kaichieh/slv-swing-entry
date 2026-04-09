@@ -1,6 +1,7 @@
 {
   "asset_key": "smh",
   "symbol": "SMH",
+  "benchmark_symbol": "SPY",
   "horizon_days": 60,
   "upper_barrier": 0.12,
   "lower_barrier": -0.06,

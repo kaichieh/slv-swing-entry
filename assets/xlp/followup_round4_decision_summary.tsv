@@ -1,0 +1,4 @@
+asset_key	role	model_name	round4_score	walkforward_avg_test_bal_acc	test_positive_rate	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+xlp	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_atr_pct_20_percentile_plus_ret_20_vs_benchmark	0.8939	0.6151	0.5321	top_10pct	0.0417	5	0	False
+xlp	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_up_day_ratio_20_plus_rs_vs_benchmark_60	0.8804	0.5983	0.4679	top_12_5pct	0.0414	6	0	False
+xlp	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_sma_gap_120_plus_rs_vs_benchmark_60	0.8753	0.6004	0.6256	top_15pct	0.0221	6	2	False

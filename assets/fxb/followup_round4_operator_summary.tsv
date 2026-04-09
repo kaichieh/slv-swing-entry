@@ -1,0 +1,13 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+fxb	headline	sma_gap_120_plus_above_200dma_flag_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60	top_12_5pct	3	0.6667	0.0454	0.3693	1	2026-01-29	0.3275	False	2025-04-07
+fxb	headline	sma_gap_120_plus_above_200dma_flag_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_17_5pct	3	0.6667	0.0341	0.4498	3	2026-01-29	0.43	False	2025-04-07
+fxb	headline	sma_gap_120_plus_above_200dma_flag_plus_rs_vs_benchmark_60	top_12_5pct	3	0.6667	0.0454	0.3564	1	2026-01-29	0.315	False	2025-04-07
+fxb	headline	sma_gap_120_plus_above_200dma_flag_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_12_5pct	3	0.6667	0.0454	0.3771	1	2026-01-29	0.3333	False	2025-04-07
+fxb	headline	sma_gap_120_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60	top_17_5pct	3	0.6667	0.0341	0.4863	3	2026-01-29	0.4822	False	2025-04-07
+fxb	headline	sma_gap_120_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_17_5pct	3	0.6667	0.0341	0.4833	3	2026-01-29	0.4781	False	2025-04-07
+fxb	headline	sma_gap_120_plus_atr_pct_20_plus_rs_vs_benchmark_60	fixed_0.49	3	0.6667	0.0341	0.49	2	2026-01-29	0.4866	False	2025-04-07
+fxb	headline	sma_gap_120_plus_atr_pct_20_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_20pct	3	0.6667	0.0341	0.4861	1	2026-01-29	0.4821	False	2025-04-07
+fxb	headline	sma_gap_120_plus_close_location_20_plus_rs_vs_benchmark_60	top_17_5pct	3	0.6667	0.0341	0.4951	2	2026-01-29	0.494	False	2025-04-07
+fxb	headline	sma_gap_120_plus_close_location_20_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_17_5pct	3	0.6667	0.0341	0.4951	2	2026-01-29	0.4939	False	2025-04-07
+fxb	headline	sma_gap_120_plus_distance_to_252_high_plus_rs_vs_benchmark_60	threshold	5	0.6	-0.0099	0.45	20	2026-01-29	0.451	True	2026-01-29
+fxb	headline	sma_gap_120_plus_distance_to_252_high_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	threshold	5	0.6	-0.0044	0.316	14	2026-01-29	0.3163	True	2026-01-29

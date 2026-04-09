@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+meta	META	ret_60_plus_rolling_return_120_plus_close_location_20_plus_neg_weight_1_3::fixed_0.49	deep_research_round3	primary	inactive	research_only	0	2026-04-07	0.3981	False	0.49			Research-only line; no live operating action.

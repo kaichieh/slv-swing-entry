@@ -1,0 +1,13 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60_plus_neg_weight_1_15	top_10pct	8	0.75	0.0599	0.4739	0	2026-03-30	0.4541	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_atr_pct_20_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60	top_10pct	7	0.7143	0.0642	0.4974	0	2026-03-30	0.4946	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_atr_pct_20_plus_rs_vs_benchmark_60_plus_neg_weight_1_15	top_20pct	10	0.8	0.0507	0.493	0	2026-03-30	0.4922	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_close_location_20_plus_rs_vs_benchmark_60_plus_neg_weight_1_15	top_20pct	10	0.8	0.051	0.4954	0	2026-03-30	0.4949	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_distance_to_252_high_plus_rs_vs_benchmark_60_plus_neg_weight_1_15	top_10pct	4	0.75	0.0661	0.4267	0	2026-03-30	0.3914	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_rolling_return_120_plus_rs_vs_benchmark_60_plus_neg_weight_1_15	top_17_5pct	9	0.7778	0.0496	0.4716	0	2026-03-30	0.4641	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_rolling_vol_60_plus_rs_vs_benchmark_60	top_15pct	7	0.7143	0.0485	0.486	0	2026-03-30	0.4788	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_rs_vs_benchmark_60_plus_neg_weight_1_15	top_20pct	9	0.7778	0.0497	0.4852	0	2026-03-30	0.4822	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60_plus_neg_weight_1_15	top_15pct	8	0.75	0.053	0.4936	0	2026-03-30	0.4916	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_sma_gap_120_plus_rs_vs_benchmark_60_plus_neg_weight_1_15	top_20pct	9	0.7778	0.0497	0.4859	0	2026-03-30	0.4831	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_up_day_ratio_20_plus_rs_vs_benchmark_60_plus_neg_weight_1_15	top_15pct	8	0.75	0.053	0.4931	0	2026-03-30	0.4905	False	
+ijh	headline	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_atr_pct_20_percentile_plus_ret_20_vs_benchmark_plus_neg_weight_1_15	top_12_5pct	7	0.7143	0.0604	0.495	0	2026-03-30	0.4916	False	

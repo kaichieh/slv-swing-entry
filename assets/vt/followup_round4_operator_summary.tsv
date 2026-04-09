@@ -1,0 +1,13 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_rs_vs_benchmark_60	top_12_5pct	4	1.0	0.0667	0.4928	1	2026-03-30	0.54	True	2026-03-30
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_ret_20_vs_benchmark	top_10pct	5	1.0	0.074	0.5012	0	2026-03-30	0.522	False	
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_ret_60_vs_benchmark	top_12_5pct	4	1.0	0.0667	0.4928	1	2026-03-30	0.54	True	2026-03-30
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_price_ratio_benchmark_z_20	top_10pct	6	1.0	0.0878	0.4845	0	2026-03-30	0.5316	False	
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_price_ratio_benchmark_z_60	top_12_5pct	6	1.0	0.0757	0.5021	1	2026-03-30	0.5339	True	2026-03-30
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60	top_12_5pct	4	1.0	0.069	0.5026	1	2026-03-30	0.5473	True	2026-03-30
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_atr_pct_20_percentile_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_15pct	6	1.0	0.0783	0.5127	5	2026-03-30	0.558	True	2026-03-30
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_bollinger_bandwidth_20_plus_rs_vs_benchmark_60	top_17_5pct	5	0.8	0.0739	0.4783	4	2026-03-30	0.5445	True	2026-03-30
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_bollinger_bandwidth_20_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	top_10pct	6	1.0	0.0806	0.5047	1	2026-03-30	0.5134	True	2026-03-30
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_distance_from_60d_low_plus_rs_vs_benchmark_60	top_10pct	3	1.0	0.0828	0.5107	0	2026-03-30	0.5285	False	
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_distance_from_60d_low_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	threshold	6	1.0	0.0806	0.506	11	2026-03-30	0.5341	True	2026-03-30
+vt	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_sma_gap_60_plus_percent_up_days_20_plus_rs_vs_benchmark_60	top_12_5pct	4	0.75	0.0644	0.4942	1	2026-03-30	0.5559	True	2026-03-30

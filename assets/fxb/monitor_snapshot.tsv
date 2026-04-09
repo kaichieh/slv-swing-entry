@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+fxb	FXB	sma_gap_120_plus_close_location_20_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60::top_17_5pct	deep_research_round4	primary	watchlist_ready	research_only	2	2026-01-29	0.4939	False	0.4951	2025-04-07	297	Research-only line; no live operating action.

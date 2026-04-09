@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+smh	SMH	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_atr_pct_20_plus_ret_20_vs_benchmark_plus_neg_weight_1_6::top_10pct	deep_research_round4	primary	watchlist_ready	research_only	16	2026-04-06	0.4821	False	0.5003	2026-03-30	7	Research-only line; no live operating action.

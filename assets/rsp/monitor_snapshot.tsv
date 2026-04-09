@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+rsp	RSP	close_location_20_plus_rolling_return_120_plus_slope_20_plus_neg_weight_1_15::top_12_5pct	deep_research_round3	primary	inactive	research_only	0	2026-03-17	0.3663	False	0.3886			Research-only line; no live operating action.

@@ -158,6 +158,7 @@ def build_labeled_frame(
     label_mode: str = "drop-neutral",
 ) -> pd.DataFrame:
     df = pr.add_price_features(raw)
+    df = pr.add_relative_strength_features(df, pr.BENCHMARK_SYMBOL)
     df = pr.add_context_features(df)
     df = add_regime_features(df)
     labels, realized_returns = pr.build_barrier_labels(df, horizon_days, upper_barrier, lower_barrier)

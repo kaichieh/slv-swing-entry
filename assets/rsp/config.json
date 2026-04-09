@@ -1,6 +1,7 @@
 {
   "asset_key": "rsp",
   "symbol": "RSP",
+  "benchmark_symbol": "SPY",
   "horizon_days": 60,
   "upper_barrier": 0.08,
   "lower_barrier": -0.04,

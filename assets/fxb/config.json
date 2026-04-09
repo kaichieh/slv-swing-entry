@@ -1,6 +1,7 @@
 {
   "asset_key": "fxb",
   "symbol": "FXB",
+  "benchmark_symbol": "UUP",
   "horizon_days": 60,
   "upper_barrier": 0.06,
   "lower_barrier": -0.03,

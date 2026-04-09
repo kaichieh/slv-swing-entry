@@ -1,0 +1,11 @@
+asset_key	role	model_name	best_rule_name	selected_count	hit_rate	avg_return	cutoff	recent_selected_count	latest_date	latest_score	latest_selected	last_selected_date
+meta	headline	ret_60_plus_rolling_return_120_plus_above_200dma_flag_plus_neg_weight_1_3	top_12_5pct	6	0.6667	0.054	0.4919	0	2026-04-07	0.4621	False	
+meta	headline	ret_60_plus_rolling_return_120_plus_above_200dma_flag_plus_neg_weight_1_45	top_12_5pct	6	0.6667	0.054	0.4885	0	2026-04-07	0.4608	False	
+meta	headline	ret_60_plus_rolling_return_120_plus_atr_pct_20_plus_neg_weight_1_3	threshold	8	0.5	0.0475	0.492	60	2026-04-07	0.4985	True	2026-04-07
+meta	headline	ret_60_plus_rolling_return_120_plus_atr_pct_20_plus_neg_weight_1_45	threshold	8	0.5	0.0475	0.49	60	2026-04-07	0.4982	True	2026-04-07
+meta	headline	ret_60_plus_rolling_return_120_plus_close_location_20_plus_neg_weight_1_3	fixed_0.49	3	1.0	0.0945	0.49	0	2026-04-07	0.3981	False	
+meta	headline	ret_60_plus_rolling_return_120_plus_close_location_20_plus_neg_weight_1_45	top_12_5pct	6	0.6667	0.0564	0.4881	0	2026-04-07	0.4604	False	
+meta	headline	ret_60_plus_rolling_return_120_plus_distance_to_252_high_plus_neg_weight_1_3	top_15pct	6	0.6667	0.054	0.4908	1	2026-04-07	0.4622	False	2026-01-12
+meta	headline	ret_60_plus_rolling_return_120_plus_distance_to_252_high_plus_neg_weight_1_45	top_15pct	6	0.6667	0.054	0.4871	1	2026-04-07	0.4593	False	2026-01-12
+meta	headline	ret_60_plus_rolling_return_120_plus_neg_weight_1_3	threshold	8	0.5	0.0475	0.304	60	2026-04-07	0.3972	True	2026-04-07
+meta	headline	ret_60_plus_rolling_return_120_plus_neg_weight_1_45	top_17_5pct	7	0.5714	0.0484	0.4864	6	2026-04-07	0.461	False	2026-03-16

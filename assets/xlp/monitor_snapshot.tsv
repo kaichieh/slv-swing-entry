@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+xlp	XLP	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_atr_pct_20_percentile_plus_ret_20_vs_benchmark::top_10pct	deep_research_round4	primary	inactive	research_only	0	2026-03-17	0.4695	False	0.507			Research-only line; no live operating action.

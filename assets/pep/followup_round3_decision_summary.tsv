@@ -1,0 +1,4 @@
+asset_key	role	model_name	round3_score	walkforward_avg_test_bal_acc	test_positive_rate	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+pep	headline	above_200dma_flag_plus_distance_to_252_high	0.902	0.5452	0.538	fixed_0.47	0.0328	18	3	False
+pep	headline	above_200dma_flag_plus_rolling_return_120	0.8994	0.5533	0.5777	top_15pct	0.0326	19	5	False
+pep	headline	above_200dma_flag_plus_ret_60	0.8781	0.5458	0.5765	top_10pct	0.0342	17	5	False

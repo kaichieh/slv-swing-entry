@@ -1,0 +1,4 @@
+asset_key	role	model_name	round3_score	walkforward_avg_test_bal_acc	test_positive_rate	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+smh	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_close_location_20_plus_neg_weight_1_45	0.8835	0.5027	0.9878	top_10pct	0.134	12	16	False
+smh	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_atr_pct_20_plus_neg_weight_1_3	0.8829	0.508	1.0	top_10pct	0.1358	12	16	False
+smh	headline	ret_60_plus_year_plus_rolling_return_120_plus_rolling_vol_60_plus_atr_pct_20_plus_neg_weight_1_45	0.8827	0.5073	1.0	top_10pct	0.1358	12	16	False

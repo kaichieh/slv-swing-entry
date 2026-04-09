@@ -1,0 +1,2 @@
+asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
+pep	PEP	above_200dma_flag_plus_distance_to_252_high_plus_rs_vs_benchmark_60::top_20pct	deep_research_round4	primary	watchlist_ready	research_only	6	2026-03-17	0.4885	False	0.5649	2026-01-12	64	Research-only line; no live operating action.

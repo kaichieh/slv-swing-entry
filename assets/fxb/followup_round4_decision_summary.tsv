@@ -1,0 +1,4 @@
+asset_key	role	model_name	round4_score	walkforward_avg_test_bal_acc	test_positive_rate	best_rule_name	best_rule_avg_return	best_rule_trade_count	recent_selected_count	latest_selected
+fxb	headline	sma_gap_120_plus_close_location_20_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	0.9133	0.5827	0.1306	top_17_5pct	0.0341	3	2	False
+fxb	headline	sma_gap_120_plus_close_location_20_plus_rs_vs_benchmark_60	0.9122	0.5797	0.1306	top_17_5pct	0.0341	3	2	False
+fxb	headline	sma_gap_120_plus_atr_pct_20_plus_rs_vs_benchmark_60_plus_price_ratio_benchmark_z_20_plus_price_ratio_benchmark_z_60	0.8586	0.6826	0.3433	top_20pct	0.0341	3	1	False

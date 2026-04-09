@@ -1,0 +1,11 @@
+asset_key	role	parent_model_name	model_name	extra_features	neg_weight	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	walkforward_avg_test_bal_acc	round3_score
+pep	headline	above_200dma_flag_plus_distance_to_252_high	above_200dma_flag_plus_distance_to_252_high	above_200dma_flag,distance_to_252_high		0.6082	0.6654	0.5394	0.6148	0.538	0.5884	0.5452	0.902
+pep	headline	above_200dma_flag_plus_rolling_return_120	above_200dma_flag_plus_rolling_return_120	above_200dma_flag,rolling_return_120		0.5735	0.6257	0.5432	0.6119	0.5777	0.5781	0.5533	0.8994
+pep	headline	above_200dma_flag_plus_ret_60	above_200dma_flag_plus_ret_60	above_200dma_flag,ret_60		0.5779	0.6301	0.5267	0.5953	0.5765	0.5679	0.5458	0.8781
+pep	headline	above_200dma_flag_plus_rolling_vol_60	above_200dma_flag_plus_rolling_vol_60	above_200dma_flag,rolling_vol_60		0.5648	0.6241	0.5189	0.5953	0.5357	0.5615	0.5439	0.8755
+pep	headline	above_200dma_flag_plus_atr_pct_20	above_200dma_flag_plus_atr_pct_20	above_200dma_flag,atr_pct_20		0.5713	0.6266	0.5261	0.5989	0.5539	0.567	0.5315	0.8743
+pep	headline	above_200dma_flag_plus_up_day_ratio_20	above_200dma_flag_plus_up_day_ratio_20	above_200dma_flag,up_day_ratio_20		0.5839	0.6325	0.5282	0.593	0.5975	0.5692	0.5377	0.8692
+pep	headline	above_200dma_flag_plus_atr_pct_20	above_200dma_flag_plus_atr_pct_20_plus_atr_pct_20_percentile	above_200dma_flag,atr_pct_20,atr_pct_20_percentile		0.5683	0.6238	0.521	0.5934	0.5561	0.5625	0.5371	0.8682
+pep	headline	above_200dma_flag_plus_close_location_20	above_200dma_flag_plus_close_location_20	above_200dma_flag,close_location_20		0.5837	0.6363	0.5176	0.5842	0.5862	0.5627	0.5361	0.8505
+pep	headline	above_200dma_flag	above_200dma_flag	above_200dma_flag		0.5834	0.6337	0.5248	0.5912	0.5884	0.5673	0.5386	0.8412
+pep	headline	above_200dma_flag	above_200dma_flag_plus_atr_pct_20_percentile	above_200dma_flag,atr_pct_20_percentile		0.5873	0.6332	0.5201	0.5792	0.6253	0.5626	0.5352	0.8268
