@@ -9,6 +9,7 @@ import os
 from html import escape
 
 import numpy as np
+import pandas as pd
 
 import asset_config as ac
 import train as tr
@@ -33,6 +34,7 @@ from prepare import (
 )
 
 OUTPUT_PATH = str(ac.get_chart_output_path())
+ROWS_OUTPUT_PATH = str(ac.get_cache_dir() / "signal_rows.tsv")
 DEFAULT_LOOKBACK_DAYS = 5 * 252
 SIGNAL_COLORS = {
     "no_entry": "#9ca3af",
@@ -474,9 +476,11 @@ def main() -> None:
     lookback_days = get_env_int("AR_CHART_LOOKBACK_DAYS", DEFAULT_LOOKBACK_DAYS)
     rows, meta = build_chart_rows(lookback_days)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    pd.DataFrame(rows).to_csv(ROWS_OUTPUT_PATH, sep="\t", index=False)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
       f.write(build_html(rows, meta))
     print(f"Saved chart to: {OUTPUT_PATH}")
+    print(f"Saved rows to: {ROWS_OUTPUT_PATH}")
     print(f"Bars rendered: {len(rows)}")
     print(f"Latest date: {meta['latest_date']}")
 

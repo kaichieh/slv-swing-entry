@@ -6,7 +6,6 @@ from pathlib import Path
 import pandas as pd
 
 import asset_config as ac
-import chart_signals as cs
 
 
 def read_tsv(path: Path) -> pd.DataFrame:
@@ -24,6 +23,16 @@ def fmt_date(value: object) -> str:
         return ""
     text = str(value)
     return text[:10] if text else ""
+
+
+def read_signal_rows_from_cache(cache_dir: Path, asset_key: str, lookback_days: int = 60) -> pd.DataFrame:
+    path = cache_dir / "signal_rows.tsv"
+    if not path.exists():
+        raise FileNotFoundError(f"Missing signal rows cache for {asset_key}: {path}")
+    frame = read_tsv(path)
+    if frame.empty:
+        raise ValueError(f"Signal rows cache is empty for {asset_key}: {path}")
+    return frame.tail(lookback_days).reset_index(drop=True)
 
 
 def build_iwm(asset_dir: Path) -> pd.DataFrame:
@@ -327,9 +336,10 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
     if not latest_prediction_path.exists():
         raise FileNotFoundError(f"Missing GLD latest prediction file: {latest_prediction_path}")
     payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
-    rows, _meta = cs.build_chart_rows(60)
-    recent_selected_count = sum(1 for row in rows if str(row["signal"]) != "no_entry")
-    selected_dates = [str(row["date"]) for row in rows if str(row["signal"]) != "no_entry"]
+    rows = read_signal_rows_from_cache(latest_prediction_path.parent, "gld", 60)
+    selected_rows = rows.loc[rows["signal"].astype(str) != "no_entry"]
+    recent_selected_count = int(len(selected_rows))
+    selected_dates = [str(value) for value in selected_rows["date"].tolist()]
     live_extra_features = tuple(str(name) for name in payload.get("model_extra_features", []) if str(name).strip())
     reference_rule = str(payload.get("model_summary", {}).get("reference_percentile_rule", "top_20pct"))
     if len(live_extra_features) > 2:
@@ -369,9 +379,10 @@ def build_slv(asset_dir: Path) -> pd.DataFrame:
     if not latest_prediction_path.exists():
         raise FileNotFoundError(f"Missing SLV latest prediction file: {latest_prediction_path}")
     payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
-    rows, _meta = cs.build_chart_rows(60)
-    recent_selected_count = sum(1 for row in rows if str(row["signal"]) != "no_entry")
-    latest_row = rows[-1]
+    rows = read_signal_rows_from_cache(latest_prediction_path.parent, "slv", 60)
+    selected_rows = rows.loc[rows["signal"].astype(str) != "no_entry"]
+    recent_selected_count = int(len(selected_rows))
+    latest_signal_row = latest_row(rows)
     signal = str(payload["signal_summary"]["signal"])
     return pd.DataFrame(
         [
@@ -386,7 +397,7 @@ def build_slv(asset_dir: Path) -> pd.DataFrame:
                 "latest_value": float(payload["signal_summary"]["predicted_probability"]),
                 "latest_selected": signal != "no_entry",
                 "cutoff": float(payload["signal_summary"]["decision_threshold"]),
-                "last_selected_date": str(latest_row["date"]) if signal != "no_entry" else "",
+                "last_selected_date": str(latest_signal_row["date"]) if signal != "no_entry" else "",
                 "usage_note": "Research-only SLV line. Keep the baseline signal as context while the operating rule remains unadopted.",
             }
         ]
