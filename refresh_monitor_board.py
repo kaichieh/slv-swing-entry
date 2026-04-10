@@ -7,7 +7,6 @@ import pandas as pd
 
 import asset_config as ac
 
-ASSET_KEYS = ["gld", "slv", "iwm", "spy", "tlt", "xle", "nvda", "qqq", "tsla"]
 ACTION_PRIORITY = {
     "selected_now": 0,
     "watchlist_wait": 1,
@@ -19,7 +18,7 @@ ACTION_PRIORITY = {
 
 def load_board() -> pd.DataFrame:
     frames: list[pd.DataFrame] = []
-    for key in ASSET_KEYS:
+    for key in ac.MONITOR_BOARD_ASSET_KEYS:
         frame = pd.read_csv(ac.get_monitor_snapshot_path(key), sep="\t")
         frame["sort_priority"] = frame["action"].map(lambda value: ACTION_PRIORITY.get(str(value), 99))
         frame["chart_href"] = ac.get_primary_chart_path(key).relative_to(ac.REPO_DIR).as_posix()

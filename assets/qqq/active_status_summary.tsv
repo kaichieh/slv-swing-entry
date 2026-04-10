@@ -1,4 +1,4 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-distance_bottom5	regression_watchlist	primary	True	watchlist_ready	0	2026-04-08	0.0046932833529045	True	-0.019215	nan	Default QQQ watchlist. Robustest sparse-bottom candidate.
+distance_bottom5	regression_watchlist	primary	True	watchlist_ready	0	2026-04-09	0.0047868351862839	True	-0.019215	nan	Default QQQ watchlist. Robustest sparse-bottom candidate.
 distance_plus_atr_bottom5	regression_watchlist	sidecar	False	secondary	0			False	-0.013639	nan	Side study only; keep for research context, not as the default line.
 distance_bottom3	regression_watchlist	sidecar	False	secondary	0			False	-0.034378	nan	Side study only; keep for research context, not as the default line.

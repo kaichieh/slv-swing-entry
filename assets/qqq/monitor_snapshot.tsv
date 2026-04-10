@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-qqq	QQQ	distance_bottom5	regression_watchlist	primary	watchlist_ready	selected_now	0	2026-04-08	0.0046932833529045	True	-0.019215			Preferred line is currently selected.
+qqq	QQQ	distance_bottom5	regression_watchlist	primary	watchlist_ready	selected_now	0	2026-04-09	0.0047868351862839	True	-0.019215			Preferred line is currently selected.

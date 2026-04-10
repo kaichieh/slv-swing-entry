@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-gld	GLD	context_stack_live	binary_operator	primary	active	selected_now	15	2026-04-08	0.4643	True	0.461	2026-04-08	0	Preferred line is currently selected.
+gld	GLD	gld_live_threshold_overlay	binary_operator	primary	active	selected_now	19	2026-04-09	0.4383	True	0.431	2026-04-09	0	Preferred line is currently selected.

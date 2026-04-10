@@ -120,6 +120,7 @@ ASSET_DEFAULTS: dict[str, AssetDefaults] = {
     "bitb": AssetDefaults("bitb", "BITB", 0.18, -0.09, 60, "drop-neutral"),
 }
 REGRESSION_ASSET_KEYS = {"qqq", "tlt", "xle"}
+MONITOR_BOARD_ASSET_KEYS = ("gld", "slv", "iwm", "spy", "tlt", "xle", "nvda", "qqq", "tsla")
 
 REPO_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = REPO_DIR / "assets"

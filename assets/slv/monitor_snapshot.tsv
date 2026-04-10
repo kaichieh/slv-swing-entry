@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-slv	SLV	baseline_threshold	binary_operator	research_primary	active	selected_now	55	2026-04-08	0.4102	True	0.406	2026-04-08	0	Preferred line is currently selected.
+slv	SLV	baseline_threshold	binary_operator	research_primary	active	selected_now	55	2026-04-09	0.4516	True	0.406	2026-04-09	0	Preferred line is currently selected.

@@ -396,6 +396,51 @@ def build_slv(asset_dir: Path) -> pd.DataFrame:
 BUILDERS["slv"] = build_slv
 
 
+def build_base_status(asset_dir: Path) -> pd.DataFrame:
+    results_path = asset_dir / "results.tsv"
+    latest_value = None
+    cutoff = None
+    latest_date = ""
+    status = "research_only"
+    usage_note = "Base research asset with no follow-up operating rounds yet."
+
+    if results_path.exists():
+        results = read_tsv(results_path)
+        if not results.empty:
+            row = latest_row(results)
+            headline = row.get("headline_score")
+            promotion_gate = row.get("promotion_gate")
+            description = str(row.get("description", "")).strip()
+            result_status = str(row.get("status", "")).strip()
+            if pd.notna(headline):
+                latest_value = float(headline)
+            if pd.notna(promotion_gate):
+                cutoff = float(promotion_gate)
+            if result_status:
+                status = result_status.lower().replace(" ", "_")
+            if description:
+                usage_note = description
+
+    return pd.DataFrame(
+        [
+            {
+                "line_id": "base_research",
+                "lane_type": "research_backlog",
+                "role": "research_primary",
+                "preferred": True,
+                "status": status,
+                "recent_selected_count": 0,
+                "latest_date": latest_date,
+                "latest_value": latest_value,
+                "latest_selected": False,
+                "cutoff": cutoff,
+                "last_selected_date": "",
+                "usage_note": usage_note,
+            }
+        ]
+    )
+
+
 def main() -> None:
     asset_key = ac.get_asset_key()
     asset_dir = ac.get_asset_dir(asset_key)
@@ -405,8 +450,10 @@ def main() -> None:
         output = build_followup_round4_status(asset_dir)
     elif (asset_dir / "followup_round3_decision_summary.tsv").exists() and (asset_dir / "followup_round3_operator_summary.tsv").exists():
         output = build_followup_round3_status(asset_dir)
-    else:
+    elif (asset_dir / "followup_round2_decision_summary.tsv").exists() and (asset_dir / "followup_round2_operator_summary.tsv").exists():
         output = build_followup_round2_status(asset_dir)
+    else:
+        output = build_base_status(asset_dir)
     output_path = asset_dir / "active_status_summary.tsv"
     output.to_csv(output_path, sep="\t", index=False)
     print(

@@ -45,7 +45,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "assets",
         nargs="*",
-        help="Optional asset keys. Default: all assets.",
+        help="Optional asset keys. Default: monitor board assets.",
     )
     return parser.parse_args()
 
@@ -54,7 +54,7 @@ def main() -> None:
     args = parse_args()
     asset_keys = [asset.strip().lower() for asset in args.assets if asset.strip()]
     if not asset_keys:
-        asset_keys = list(ac.ASSET_DEFAULTS)
+        asset_keys = list(ac.MONITOR_BOARD_ASSET_KEYS)
 
     unknown = [key for key in asset_keys if key not in ac.ASSET_DEFAULTS]
     if unknown:
