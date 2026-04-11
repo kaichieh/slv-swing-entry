@@ -121,6 +121,7 @@ ASSET_DEFAULTS: dict[str, AssetDefaults] = {
 }
 REGRESSION_ASSET_KEYS = {"qqq", "tlt", "xle"}
 MONITOR_BOARD_ASSET_KEYS = ("gld", "slv", "iwm", "spy", "tlt", "xle", "nvda", "qqq", "tsla")
+MONITOR_PRIORITY_RESEARCH_ASSET_KEYS = ("xlp", "ijh", "fxb", "smh", "pep", "vt", "rsp", "meta")
 
 REPO_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = REPO_DIR / "assets"
@@ -267,6 +268,22 @@ def get_primary_chart_path(asset_key: str | None = None) -> Path:
     if uses_regression_chart(key):
         return get_regression_recent_chart_path(key)
     return get_chart_output_path(key)
+
+
+def get_monitor_card_chart_path(asset_key: str | None = None) -> Path:
+    key = asset_key or get_asset_key()
+    regression_path = get_regression_recent_chart_path(key)
+    if uses_regression_chart(key) and regression_path.exists():
+        return regression_path
+    signal_path = get_chart_output_path(key)
+    if signal_path.exists():
+        return signal_path
+    if regression_path.exists():
+        return regression_path
+    active_status_path = get_active_status_chart_path(key)
+    if active_status_path.exists():
+        return active_status_path
+    return get_primary_chart_path(key)
 
 
 def get_regression_walkforward_output_path(asset_key: str | None = None) -> Path:
