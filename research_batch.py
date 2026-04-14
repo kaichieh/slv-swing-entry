@@ -8,6 +8,7 @@ import json
 import os
 from dataclasses import asdict, dataclass
 import importlib
+from typing import TypedDict, cast
 
 import numpy as np
 import pandas as pd
@@ -83,6 +84,42 @@ class BacktestResult:
     longest_win_streak: int
     longest_loss_streak: int
     threshold_or_cutoff: float
+
+
+class FamilyArtifacts(TypedDict):
+    model_family: str
+    weights: np.ndarray | None
+    negative_weights: np.ndarray | None
+    positive_weights: np.ndarray | None
+    gate_feature: str | None
+    threshold: float
+    validation_y: np.ndarray
+    test_y: np.ndarray
+    validation_logits: np.ndarray
+    test_logits: np.ndarray
+    validation_probabilities: np.ndarray
+    test_probabilities: np.ndarray
+    validation_metrics: tr.Metrics
+    test_metrics: tr.Metrics
+
+
+class ModelArtifacts(TypedDict):
+    model_family: str
+    feature_names: list[str]
+    pair_indices: tuple[tuple[int, int], ...]
+    weights: np.ndarray | None
+    negative_weights: np.ndarray | None
+    positive_weights: np.ndarray | None
+    threshold: float
+    train_mean: np.ndarray
+    train_std: np.ndarray
+    clean_splits: dict[str, pd.DataFrame]
+    validation_probabilities: np.ndarray
+    test_probabilities: np.ndarray
+    validation_y: np.ndarray
+    test_y: np.ndarray
+    neg_weight: float
+    gate_feature: str | None
 
 
 def require_xgboost():
@@ -162,7 +199,8 @@ def build_labeled_frame(
     df = pr.add_context_features(df)
     df = add_regime_features(df)
     labels, realized_returns = pr.build_barrier_labels(df, horizon_days, upper_barrier, lower_barrier)
-    labels = pr.apply_label_mode(labels, realized_returns, label_mode)
+    train_end, _ = pr.split_indices(len(df))
+    labels = pr.apply_label_mode(labels, realized_returns, label_mode, train_end=train_end)
     df[pr.TARGET_COLUMN] = labels
     df[FUTURE_RETURN_COLUMN] = realized_returns
     selectable_experimental = [name for name in pr.EXPERIMENTAL_FEATURE_COLUMNS if name in df.columns]
@@ -219,7 +257,7 @@ def add_interactions(features: np.ndarray, pairs: tuple[tuple[int, int], ...]) -
 
 def prepare_feature_matrices(
     splits: dict[str, pd.DataFrame], feature_names: list[str], extra_interactions: tuple[tuple[str, str], ...] = ()
-) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray], np.ndarray, np.ndarray, tuple[tuple[int, int], ...]]:
+) -> tuple[dict[str, pd.DataFrame], dict[str, np.ndarray], np.ndarray, np.ndarray, tuple[tuple[int, int], ...]]:
     clean_splits: dict[str, pd.DataFrame] = {}
     for split_name, frame in splits.items():
         clean_splits[split_name] = frame.dropna(subset=feature_names + [pr.TARGET_COLUMN, FUTURE_RETURN_COLUMN]).reset_index(drop=True)
@@ -260,33 +298,25 @@ def prepare_tree_feature_matrices(
     return clean_splits, matrices
 
 
-def train_model(
-    frame: pd.DataFrame,
-    name: str,
-    extra_features: tuple[str, ...] = (),
-    drop_features: tuple[str, ...] = (),
-    extra_interactions: tuple[tuple[str, str], ...] = (),
-    neg_weight: float | None = None,
-    threshold_steps: int | None = None,
-) -> tuple[ModelResult, dict[str, object]]:
-    feature_names = get_feature_names(extra_features, drop_features)
-    splits = split_frame(frame)
-    clean_splits, matrices, mean, std, pair_indices = prepare_feature_matrices(splits, feature_names, extra_interactions)
-    train_x = matrices["train"]
-    validation_x = matrices["validation"]
-    test_x = matrices["test"]
-    train_y = clean_splits["train"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
-    validation_y = clean_splits["validation"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
-    test_y = clean_splits["test"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+def probabilities_to_logits(probabilities: np.ndarray) -> np.ndarray:
+    clipped = np.clip(np.asarray(probabilities, dtype=np.float32), 1e-6, 1.0 - 1e-6)
+    return np.log(clipped / (1.0 - clipped))
 
+
+def fit_logistic_weights(
+    train_x: np.ndarray,
+    train_y: np.ndarray,
+    validation_x: np.ndarray,
+    validation_y: np.ndarray,
+    validation_returns: np.ndarray,
+    neg_weight: float,
+    threshold_steps: int,
+) -> tuple[np.ndarray, float]:
     weights = np.zeros(train_x.shape[1], dtype=np.float32)
     best_weights = weights.copy()
     best_validation_f1 = -np.inf
     best_threshold = 0.5
     epochs_without_improvement = 0
-
-    neg_weight = tr.NEG_WEIGHT if neg_weight is None else neg_weight
-    threshold_steps = tr.THRESHOLD_STEPS if threshold_steps is None else threshold_steps
 
     for _epoch in range(1, tr.MAX_EPOCHS + 1):
         logits = train_x @ weights
@@ -298,12 +328,7 @@ def train_model(
 
         validation_logits = validation_x @ weights
         threshold = select_threshold_with_steps(tr.sigmoid(validation_logits), validation_y, threshold_steps)
-        validation_metrics = tr.compute_metrics(
-            validation_logits,
-            validation_y,
-            clean_splits["validation"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32),
-            threshold,
-        )
+        validation_metrics = tr.compute_metrics(validation_logits, validation_y, validation_returns, threshold)
         if validation_metrics.f1 > best_validation_f1:
             best_validation_f1 = validation_metrics.f1
             best_weights = weights.copy()
@@ -314,24 +339,184 @@ def train_model(
         if epochs_without_improvement >= tr.PATIENCE:
             break
 
+    return best_weights, best_threshold
+
+
+def train_logistic_family(
+    clean_splits: dict[str, pd.DataFrame],
+    matrices: dict[str, np.ndarray],
+    neg_weight: float,
+    threshold_steps: int,
+) -> FamilyArtifacts:
+    train_x = matrices["train"]
+    validation_x = matrices["validation"]
+    test_x = matrices["test"]
+    train_y = clean_splits["train"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    validation_y = clean_splits["validation"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    test_y = clean_splits["test"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    validation_returns = clean_splits["validation"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32)
+    test_returns = clean_splits["test"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32)
+
+    best_weights, best_threshold = fit_logistic_weights(
+        train_x,
+        train_y,
+        validation_x,
+        validation_y,
+        validation_returns,
+        neg_weight,
+        threshold_steps,
+    )
     validation_logits = validation_x @ best_weights
     test_logits = test_x @ best_weights
-    validation_metrics = tr.compute_metrics(
-        validation_logits,
-        validation_y,
-        clean_splits["validation"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32),
-        best_threshold,
+    validation_probabilities = tr.sigmoid(validation_logits)
+    test_probabilities = tr.sigmoid(test_logits)
+    return {
+        "model_family": "logistic",
+        "weights": best_weights,
+        "negative_weights": None,
+        "positive_weights": None,
+        "gate_feature": None,
+        "threshold": best_threshold,
+        "validation_y": validation_y,
+        "test_y": test_y,
+        "validation_logits": validation_logits,
+        "test_logits": test_logits,
+        "validation_probabilities": validation_probabilities,
+        "test_probabilities": test_probabilities,
+        "validation_metrics": tr.compute_metrics(validation_logits, validation_y, validation_returns, best_threshold),
+        "test_metrics": tr.compute_metrics(test_logits, test_y, test_returns, best_threshold),
+    }
+
+
+def regime_gate_mask(frame: pd.DataFrame, gate_feature: str, positive_regime: bool) -> np.ndarray:
+    values = frame[gate_feature].to_numpy(dtype=np.float32)
+    if positive_regime:
+        return values >= 0.5
+    return values < 0.5
+
+
+def can_fit_regime(mask: np.ndarray, labels: np.ndarray) -> bool:
+    if int(mask.sum()) < 12:
+        return False
+    subset = labels[mask]
+    return len(np.unique(subset)) >= 2
+
+
+def combine_regime_probabilities(
+    matrices: dict[str, np.ndarray],
+    clean_splits: dict[str, pd.DataFrame],
+    gate_feature: str,
+    negative_weights: np.ndarray,
+    positive_weights: np.ndarray,
+) -> dict[str, np.ndarray]:
+    combined: dict[str, np.ndarray] = {}
+    for split_name in ("validation", "test"):
+        positive_mask = regime_gate_mask(clean_splits[split_name], gate_feature, positive_regime=True)
+        logits = np.empty(len(clean_splits[split_name]), dtype=np.float32)
+        logits[positive_mask] = matrices[split_name][positive_mask] @ positive_weights
+        logits[~positive_mask] = matrices[split_name][~positive_mask] @ negative_weights
+        combined[split_name] = tr.sigmoid(logits)
+    return combined
+
+
+def train_regime_dual_logistic_family(
+    clean_splits: dict[str, pd.DataFrame],
+    matrices: dict[str, np.ndarray],
+    neg_weight: float,
+    threshold_steps: int,
+    gate_feature: str,
+) -> FamilyArtifacts:
+    train_y = clean_splits["train"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    validation_y = clean_splits["validation"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    test_y = clean_splits["test"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    validation_returns = clean_splits["validation"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32)
+    test_returns = clean_splits["test"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32)
+
+    pooled = train_logistic_family(clean_splits, matrices, neg_weight, threshold_steps)
+    negative_weights = pooled["weights"]
+    positive_weights = pooled["weights"]
+
+    train_positive_mask = regime_gate_mask(clean_splits["train"], gate_feature, positive_regime=True)
+    validation_positive_mask = regime_gate_mask(clean_splits["validation"], gate_feature, positive_regime=True)
+    if can_fit_regime(~train_positive_mask, train_y) and can_fit_regime(~validation_positive_mask, validation_y):
+        negative_weights, _ = fit_logistic_weights(
+            matrices["train"][~train_positive_mask],
+            train_y[~train_positive_mask],
+            matrices["validation"][~validation_positive_mask],
+            validation_y[~validation_positive_mask],
+            validation_returns[~validation_positive_mask],
+            neg_weight,
+            threshold_steps,
+        )
+    if can_fit_regime(train_positive_mask, train_y) and can_fit_regime(validation_positive_mask, validation_y):
+        positive_weights, _ = fit_logistic_weights(
+            matrices["train"][train_positive_mask],
+            train_y[train_positive_mask],
+            matrices["validation"][validation_positive_mask],
+            validation_y[validation_positive_mask],
+            validation_returns[validation_positive_mask],
+            neg_weight,
+            threshold_steps,
+        )
+
+    combined_probabilities = combine_regime_probabilities(
+        matrices,
+        clean_splits,
+        gate_feature,
+        negative_weights,
+        positive_weights,
     )
-    test_metrics = tr.compute_metrics(
-        test_logits,
-        test_y,
-        clean_splits["test"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32),
-        best_threshold,
-    )
+    threshold = select_threshold_with_steps(combined_probabilities["validation"], validation_y, threshold_steps)
+    validation_logits = probabilities_to_logits(combined_probabilities["validation"])
+    test_logits = probabilities_to_logits(combined_probabilities["test"])
+    return {
+        "model_family": "regime_dual_logistic",
+        "weights": None,
+        "gate_feature": gate_feature,
+        "negative_weights": negative_weights,
+        "positive_weights": positive_weights,
+        "threshold": threshold,
+        "validation_y": validation_y,
+        "test_y": test_y,
+        "validation_logits": validation_logits,
+        "test_logits": test_logits,
+        "validation_probabilities": combined_probabilities["validation"],
+        "test_probabilities": combined_probabilities["test"],
+        "validation_metrics": tr.compute_metrics(validation_logits, validation_y, validation_returns, threshold),
+        "test_metrics": tr.compute_metrics(test_logits, test_y, test_returns, threshold),
+    }
+
+
+def train_model(
+    frame: pd.DataFrame,
+    name: str,
+    extra_features: tuple[str, ...] = (),
+    drop_features: tuple[str, ...] = (),
+    extra_interactions: tuple[tuple[str, str], ...] = (),
+    neg_weight: float | None = None,
+    threshold_steps: int | None = None,
+    model_family: str = "logistic",
+    gate_feature: str = "above_200dma_flag",
+) -> tuple[ModelResult, ModelArtifacts]:
+    feature_names = get_feature_names(extra_features, drop_features)
+    splits = split_frame(frame)
+    clean_splits, matrices, mean, std, pair_indices = prepare_feature_matrices(splits, feature_names, extra_interactions)
+    neg_weight = tr.NEG_WEIGHT if neg_weight is None else neg_weight
+    threshold_steps = tr.THRESHOLD_STEPS if threshold_steps is None else threshold_steps
+    if model_family == "logistic":
+        family_artifacts = train_logistic_family(clean_splits, matrices, neg_weight, threshold_steps)
+    elif model_family == "regime_dual_logistic":
+        family_artifacts = train_regime_dual_logistic_family(clean_splits, matrices, neg_weight, threshold_steps, gate_feature)
+    else:
+        raise ValueError(f"Unsupported model family: {model_family}")
+
+    validation_metrics = cast(tr.Metrics, family_artifacts["validation_metrics"])
+    test_metrics = cast(tr.Metrics, family_artifacts["test_metrics"])
+    threshold_value = cast(float, family_artifacts["threshold"])
     result = ModelResult(
         name=name,
         feature_names=feature_names,
-        threshold=best_threshold,
+        threshold=float(threshold_value),
         validation_f1=validation_metrics.f1,
         validation_accuracy=validation_metrics.accuracy,
         validation_bal_acc=validation_metrics.balanced_accuracy,
@@ -344,17 +529,21 @@ def train_model(
         validation_rows=len(clean_splits["validation"]),
         test_rows=len(clean_splits["test"]),
     )
-    artifacts = {
+    artifacts: ModelArtifacts = {
+        "model_family": model_family,
         "feature_names": feature_names,
         "pair_indices": pair_indices,
-        "weights": best_weights,
-        "threshold": best_threshold,
+        "weights": cast(np.ndarray, family_artifacts.get("weights")) if family_artifacts.get("weights") is not None else None,
+        "threshold": float(threshold_value),
         "train_mean": mean,
         "train_std": std,
         "clean_splits": clean_splits,
-        "test_probabilities": tr.sigmoid(test_logits),
-        "validation_probabilities": tr.sigmoid(validation_logits),
+        "test_probabilities": cast(np.ndarray, family_artifacts["test_probabilities"]),
+        "validation_probabilities": cast(np.ndarray, family_artifacts["validation_probabilities"]),
         "neg_weight": neg_weight,
+        "gate_feature": cast(str, family_artifacts.get("gate_feature")) if family_artifacts.get("gate_feature") is not None else None,
+        "negative_weights": cast(np.ndarray, family_artifacts.get("negative_weights")) if family_artifacts.get("negative_weights") is not None else None,
+        "positive_weights": cast(np.ndarray, family_artifacts.get("positive_weights")) if family_artifacts.get("positive_weights") is not None else None,
     }
     return result, artifacts
 
@@ -553,10 +742,11 @@ def run_cooldown_backtest(
     )
 
 
-def backtest_rules(model_name: str, artifacts: dict[str, object]) -> list[BacktestResult]:
-    test_frame = artifacts["clean_splits"]["test"]
-    probs = np.asarray(artifacts["test_probabilities"], dtype=np.float64)
-    threshold = float(artifacts["threshold"])
+def backtest_rules(model_name: str, artifacts: ModelArtifacts) -> list[BacktestResult]:
+    clean_splits = cast(dict[str, pd.DataFrame], artifacts["clean_splits"])
+    test_frame = clean_splits["test"]
+    probs = np.asarray(cast(np.ndarray, artifacts["test_probabilities"]), dtype=np.float64)
+    threshold = float(cast(float, artifacts["threshold"]))
     future_returns = test_frame[FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float64)
     rows: list[BacktestResult] = []
 
@@ -565,7 +755,7 @@ def backtest_rules(model_name: str, artifacts: dict[str, object]) -> list[Backte
         for rule_name in ("threshold", "top_10pct", "top_15pct", "top_20pct")
     }
     historical_probs = np.concatenate(
-        [np.asarray(artifacts["validation_probabilities"], dtype=np.float64), np.asarray(artifacts["test_probabilities"], dtype=np.float64)]
+        [np.asarray(cast(np.ndarray, artifacts["validation_probabilities"]), dtype=np.float64), np.asarray(cast(np.ndarray, artifacts["test_probabilities"]), dtype=np.float64)]
     )
     bullish_plus = np.array(
         [
@@ -596,9 +786,10 @@ def backtest_rules(model_name: str, artifacts: dict[str, object]) -> list[Backte
     return rows
 
 
-def fixed_threshold_backtests(model_name: str, artifacts: dict[str, object], thresholds: tuple[float, ...]) -> list[BacktestResult]:
-    test_frame = artifacts["clean_splits"]["test"]
-    probs = np.asarray(artifacts["test_probabilities"], dtype=np.float64)
+def fixed_threshold_backtests(model_name: str, artifacts: ModelArtifacts, thresholds: tuple[float, ...]) -> list[BacktestResult]:
+    clean_splits = cast(dict[str, pd.DataFrame], artifacts["clean_splits"])
+    test_frame = clean_splits["test"]
+    probs = np.asarray(cast(np.ndarray, artifacts["test_probabilities"]), dtype=np.float64)
     future_returns = test_frame[FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float64)
     rows: list[BacktestResult] = []
     for threshold in thresholds:
@@ -609,14 +800,15 @@ def fixed_threshold_backtests(model_name: str, artifacts: dict[str, object], thr
     return rows
 
 
-def rule_comparison_rows(model_name: str, artifacts: dict[str, object], rules: tuple[str, ...]) -> list[dict[str, object]]:
-    test_frame = artifacts["clean_splits"]["test"]
-    probs = np.asarray(artifacts["test_probabilities"], dtype=np.float64)
+def rule_comparison_rows(model_name: str, artifacts: ModelArtifacts, rules: tuple[str, ...]) -> list[dict[str, object]]:
+    clean_splits = cast(dict[str, pd.DataFrame], artifacts["clean_splits"])
+    test_frame = clean_splits["test"]
+    probs = np.asarray(cast(np.ndarray, artifacts["test_probabilities"]), dtype=np.float64)
     labels = test_frame[pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
     future_returns = test_frame[FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float64)
     rows: list[dict[str, object]] = []
     for rule_name in rules:
-        selected, cutoff = classify_probs_by_rule(probs, float(artifacts["threshold"]), rule_name)
+        selected, cutoff = classify_probs_by_rule(probs, float(cast(float, artifacts["threshold"])), rule_name)
         selected_float = selected.astype(np.float32)
         tp = float(np.sum((selected_float == 1.0) & (labels == 1.0)))
         fp = float(np.sum((selected_float == 1.0) & (labels == 0.0)))
@@ -643,10 +835,11 @@ def rule_comparison_rows(model_name: str, artifacts: dict[str, object], rules: t
     return rows
 
 
-def cooldown_backtests(model_name: str, artifacts: dict[str, object], cooldown_days: tuple[int, ...]) -> list[BacktestResult]:
-    test_frame = artifacts["clean_splits"]["test"]
-    probs = np.asarray(artifacts["test_probabilities"], dtype=np.float64)
-    threshold = float(artifacts["threshold"])
+def cooldown_backtests(model_name: str, artifacts: ModelArtifacts, cooldown_days: tuple[int, ...]) -> list[BacktestResult]:
+    clean_splits = cast(dict[str, pd.DataFrame], artifacts["clean_splits"])
+    test_frame = clean_splits["test"]
+    probs = np.asarray(cast(np.ndarray, artifacts["test_probabilities"]), dtype=np.float64)
+    threshold = float(cast(float, artifacts["threshold"]))
     future_returns = test_frame[FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float64)
     rows: list[BacktestResult] = []
     for cooldown in cooldown_days:
@@ -691,19 +884,29 @@ def fit_on_custom_splits(
     test_frame: pd.DataFrame,
     feature_names: list[str],
     neg_weight: float = tr.NEG_WEIGHT,
+    model_family: str = "logistic",
+    gate_feature: str = "above_200dma_flag",
 ) -> ForwardFoldResult:
-    artifacts = train_custom_model(train_frame, validation_frame, test_frame, feature_names, neg_weight=neg_weight)
+    artifacts = train_custom_model(
+        train_frame,
+        validation_frame,
+        test_frame,
+        feature_names,
+        neg_weight=neg_weight,
+        model_family=model_family,
+        gate_feature=gate_feature,
+    )
     validation_metrics = tr.compute_metrics(
-        artifacts["matrices"]["validation"] @ artifacts["weights"],
-        artifacts["validation_y"],
+        probabilities_to_logits(np.asarray(artifacts["validation_probabilities"], dtype=np.float32)),
+        np.asarray(artifacts["validation_y"], dtype=np.float32),
         artifacts["clean_splits"]["validation"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32),
-        artifacts["threshold"],
+        float(artifacts["threshold"]),
     )
     test_metrics = tr.compute_metrics(
-        artifacts["matrices"]["test"] @ artifacts["weights"],
-        artifacts["test_y"],
+        probabilities_to_logits(np.asarray(artifacts["test_probabilities"], dtype=np.float32)),
+        np.asarray(artifacts["test_y"], dtype=np.float32),
         artifacts["clean_splits"]["test"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32),
-        artifacts["threshold"],
+        float(artifacts["threshold"]),
     )
     return ForwardFoldResult(
         fold_name="",
@@ -721,84 +924,103 @@ def train_custom_model(
     test_frame: pd.DataFrame,
     feature_names: list[str],
     neg_weight: float = tr.NEG_WEIGHT,
-) -> dict[str, object]:
+    model_family: str = "logistic",
+    gate_feature: str = "above_200dma_flag",
+) -> ModelArtifacts:
     splits = {"train": train_frame, "validation": validation_frame, "test": test_frame}
     clean_splits, matrices, _mean, _std, _pairs = prepare_feature_matrices(splits, feature_names)
-    train_x = matrices["train"]
-    validation_x = matrices["validation"]
-    test_x = matrices["test"]
-    train_y = clean_splits["train"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
-    validation_y = clean_splits["validation"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
-    test_y = clean_splits["test"][pr.TARGET_COLUMN].to_numpy(dtype=np.float32)
-    weights = np.zeros(train_x.shape[1], dtype=np.float32)
-    best_weights = weights.copy()
-    best_validation_f1 = -np.inf
-    best_threshold = 0.5
-    epochs_without_improvement = 0
-
-    for _epoch in range(1, tr.MAX_EPOCHS + 1):
-        probs = tr.sigmoid(train_x @ weights)
-        sample_weights = np.where(train_y == 1.0, tr.POS_WEIGHT, neg_weight).astype(np.float32)
-        gradient = train_x.T @ ((probs - train_y) * sample_weights) / train_x.shape[0]
-        gradient[:-1] += tr.L2_REG * weights[:-1]
-        weights -= tr.LEARNING_RATE * gradient
-        validation_logits = validation_x @ weights
-        threshold = select_threshold_with_steps(tr.sigmoid(validation_logits), validation_y, tr.THRESHOLD_STEPS)
-        validation_metrics = tr.compute_metrics(
-            validation_logits,
-            validation_y,
-            clean_splits["validation"][FUTURE_RETURN_COLUMN].to_numpy(dtype=np.float32),
-            threshold,
-        )
-        if validation_metrics.f1 > best_validation_f1:
-            best_validation_f1 = validation_metrics.f1
-            best_weights = weights.copy()
-            best_threshold = threshold
-            epochs_without_improvement = 0
-        else:
-            epochs_without_improvement += 1
-        if epochs_without_improvement >= tr.PATIENCE:
-            break
+    if model_family == "logistic":
+        family_artifacts = train_logistic_family(clean_splits, matrices, neg_weight, tr.THRESHOLD_STEPS)
+    elif model_family == "regime_dual_logistic":
+        family_artifacts = train_regime_dual_logistic_family(clean_splits, matrices, neg_weight, tr.THRESHOLD_STEPS, gate_feature)
+    else:
+        raise ValueError(f"Unsupported model family: {model_family}")
 
     return {
+        "model_family": model_family,
         "clean_splits": clean_splits,
         "matrices": matrices,
-        "weights": best_weights,
-        "threshold": best_threshold,
-        "validation_y": validation_y,
-        "test_y": test_y,
+        "weights": cast(np.ndarray, family_artifacts.get("weights")) if family_artifacts.get("weights") is not None else None,
+        "negative_weights": cast(np.ndarray, family_artifacts.get("negative_weights")) if family_artifacts.get("negative_weights") is not None else None,
+        "positive_weights": cast(np.ndarray, family_artifacts.get("positive_weights")) if family_artifacts.get("positive_weights") is not None else None,
+        "threshold": float(cast(float, family_artifacts["threshold"])),
+        "validation_y": cast(np.ndarray, family_artifacts["validation_y"]),
+        "test_y": cast(np.ndarray, family_artifacts["test_y"]),
+        "validation_probabilities": cast(np.ndarray, family_artifacts["validation_probabilities"]),
+        "test_probabilities": cast(np.ndarray, family_artifacts["test_probabilities"]),
+        "gate_feature": cast(str, family_artifacts.get("gate_feature")) if family_artifacts.get("gate_feature") is not None else None,
     }
 
 
-def evaluate_seeds(frame: pd.DataFrame, extra_features: tuple[str, ...], neg_weight: float = tr.NEG_WEIGHT) -> list[ModelResult]:
+def evaluate_seeds(
+    frame: pd.DataFrame,
+    extra_features: tuple[str, ...],
+    neg_weight: float = tr.NEG_WEIGHT,
+    model_family: str = "logistic",
+    gate_feature: str = "above_200dma_flag",
+) -> list[ModelResult]:
     feature_names = get_feature_names(extra_features)
     results: list[ModelResult] = []
     for seed in (1, 2, 3):
         np.random.seed(seed)
-        result, _ = train_model(frame, f"seed_{seed}", extra_features=extra_features, neg_weight=neg_weight)
+        result, _ = train_model(
+            frame,
+            f"seed_{seed}",
+            extra_features=extra_features,
+            neg_weight=neg_weight,
+            model_family=model_family,
+            gate_feature=gate_feature,
+        )
         result.name = f"seed_{seed}"
         result.feature_names = feature_names
         results.append(result)
     return results
 
 
-def evaluate_walk_forward(frame: pd.DataFrame, extra_features: tuple[str, ...], neg_weight: float = tr.NEG_WEIGHT) -> list[ForwardFoldResult]:
+def evaluate_walk_forward(
+    frame: pd.DataFrame,
+    extra_features: tuple[str, ...],
+    neg_weight: float = tr.NEG_WEIGHT,
+    model_family: str = "logistic",
+    gate_feature: str = "above_200dma_flag",
+) -> list[ForwardFoldResult]:
     feature_names = get_feature_names(extra_features)
     rows: list[ForwardFoldResult] = []
     for fold_idx, (train_frame, validation_frame, test_frame) in enumerate(walk_forward_splits(frame), start=1):
-        result = fit_on_custom_splits(train_frame, validation_frame, test_frame, feature_names, neg_weight=neg_weight)
+        result = fit_on_custom_splits(
+            train_frame,
+            validation_frame,
+            test_frame,
+            feature_names,
+            neg_weight=neg_weight,
+            model_family=model_family,
+            gate_feature=gate_feature,
+        )
         result.fold_name = f"fold_{fold_idx}"
         rows.append(result)
     return rows
 
 
 def evaluate_walk_forward_with_folds(
-    frame: pd.DataFrame, extra_features: tuple[str, ...], folds: int, neg_weight: float = tr.NEG_WEIGHT
+    frame: pd.DataFrame,
+    extra_features: tuple[str, ...],
+    folds: int,
+    neg_weight: float = tr.NEG_WEIGHT,
+    model_family: str = "logistic",
+    gate_feature: str = "above_200dma_flag",
 ) -> list[ForwardFoldResult]:
     feature_names = get_feature_names(extra_features)
     rows: list[ForwardFoldResult] = []
     for fold_idx, (train_frame, validation_frame, test_frame) in enumerate(walk_forward_splits(frame, folds=folds), start=1):
-        result = fit_on_custom_splits(train_frame, validation_frame, test_frame, feature_names, neg_weight=neg_weight)
+        result = fit_on_custom_splits(
+            train_frame,
+            validation_frame,
+            test_frame,
+            feature_names,
+            neg_weight=neg_weight,
+            model_family=model_family,
+            gate_feature=gate_feature,
+        )
         result.fold_name = f"fold_{fold_idx}"
         rows.append(result)
     return rows
@@ -905,7 +1127,7 @@ def regime_summary(frame: pd.DataFrame) -> pd.DataFrame:
     return pd.concat(summary_frames, ignore_index=True)
 
 
-def stage_positive_rate_summary(full_frame: pd.DataFrame, models: dict[str, dict[str, object]]) -> pd.DataFrame:
+def stage_positive_rate_summary(full_frame: pd.DataFrame, models: dict[str, ModelArtifacts]) -> pd.DataFrame:
     periods = [
         ("2008_2010", "2008-01-01", "2010-12-31"),
         ("2011_2019", "2011-01-01", "2019-12-31"),
@@ -914,21 +1136,22 @@ def stage_positive_rate_summary(full_frame: pd.DataFrame, models: dict[str, dict
     ]
     rows: list[dict[str, object]] = []
     for model_name, artifacts in models.items():
+        clean_splits = cast(dict[str, pd.DataFrame], artifacts["clean_splits"])
         clean_frame = pd.concat(
             [
-                artifacts["clean_splits"]["train"],
-                artifacts["clean_splits"]["validation"],
-                artifacts["clean_splits"]["test"],
+                clean_splits["train"],
+                clean_splits["validation"],
+                clean_splits["test"],
             ],
             ignore_index=True,
         )
         probs = score_frame(
             clean_frame,
-            artifacts["feature_names"],
-            artifacts["train_mean"],
-            artifacts["train_std"],
-            artifacts["pair_indices"],
-            artifacts["weights"],
+            cast(list[str], artifacts["feature_names"]),
+            cast(np.ndarray, artifacts["train_mean"]),
+            cast(np.ndarray, artifacts["train_std"]),
+            cast(tuple[tuple[int, int], ...], artifacts["pair_indices"]),
+            cast(np.ndarray, artifacts["weights"]),
         )
         clean_frame = clean_frame.assign(predicted_positive=(probs >= float(artifacts["threshold"])).astype(float))
         for label, start, end in periods:

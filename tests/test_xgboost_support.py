@@ -58,5 +58,72 @@ class XGBoostSupportTests(unittest.TestCase):
         self.assertLessEqual(result.threshold, rb.tr.THRESHOLD_MAX)
 
 
+def make_regime_frame(rows: int = 240) -> pd.DataFrame:
+    index = np.arange(rows, dtype=np.float32)
+    gate = ((index // 30) % 2).astype(np.float32)
+    signal = np.sin(index / 6.0).astype(np.float32)
+    labels = np.where(gate > 0.5, signal < 0.0, signal > 0.0).astype(np.float32)
+    future_returns = np.where(labels > 0.5, 0.08, -0.04).astype(np.float32)
+
+    frame = pd.DataFrame(
+        {
+            name: (signal + (idx * 0.01)).astype(np.float32)
+            for idx, name in enumerate(rb.pr.FEATURE_COLUMNS)
+        }
+    )
+    frame["date"] = pd.date_range("2020-01-01", periods=rows, freq="D")
+    frame[rb.pr.TARGET_COLUMN] = labels
+    frame[rb.FUTURE_RETURN_COLUMN] = future_returns
+    frame["ret_60"] = signal
+    frame["sma_gap_60"] = signal * 0.8
+    frame["above_200dma_flag"] = gate
+    return frame
+
+
+class RegimeDualLogisticTests(unittest.TestCase):
+    def test_train_model_regime_dual_logistic_returns_family_metadata(self) -> None:
+        result, artifacts = rb.train_model(
+            make_regime_frame(),
+            "demo_regime_dual",
+            extra_features=("ret_60", "sma_gap_60", "above_200dma_flag"),
+            model_family="regime_dual_logistic",
+        )
+
+        self.assertEqual(result.name, "demo_regime_dual")
+        self.assertEqual(artifacts["model_family"], "regime_dual_logistic")
+        self.assertEqual(len(artifacts["validation_probabilities"]), result.validation_rows)
+        self.assertEqual(len(artifacts["test_probabilities"]), result.test_rows)
+
+    def test_regime_dual_logistic_outperforms_single_logistic_on_regime_shifted_data(self) -> None:
+        frame = make_regime_frame()
+
+        logistic_result, _ = rb.train_model(
+            frame,
+            "demo_logistic",
+            extra_features=("ret_60", "sma_gap_60", "above_200dma_flag"),
+        )
+        regime_result, _ = rb.train_model(
+            frame,
+            "demo_regime_dual",
+            extra_features=("ret_60", "sma_gap_60", "above_200dma_flag"),
+            model_family="regime_dual_logistic",
+        )
+
+        self.assertGreater(regime_result.test_bal_acc, logistic_result.test_bal_acc)
+        self.assertGreater(regime_result.test_f1, logistic_result.test_f1)
+
+    def test_evaluate_walk_forward_with_folds_supports_regime_dual_logistic(self) -> None:
+        frame = make_regime_frame(300)
+        rows = rb.evaluate_walk_forward_with_folds(
+            frame,
+            ("ret_60", "sma_gap_60", "above_200dma_flag"),
+            folds=4,
+            model_family="regime_dual_logistic",
+        )
+
+        self.assertEqual(len(rows), len(list(rb.walk_forward_splits(frame, folds=4))))
+        self.assertTrue(all(row.test_bal_acc >= 0.0 for row in rows))
+
+
 if __name__ == "__main__":
     unittest.main()
