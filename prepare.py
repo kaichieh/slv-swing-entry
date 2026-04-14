@@ -13,6 +13,8 @@ import json
 import os
 from dataclasses import dataclass
 from io import StringIO
+from pathlib import Path
+from typing import cast
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -22,9 +24,9 @@ import pandas as pd
 import asset_config as ac
 
 ASSET_CONFIG = ac.load_asset_config()
-HORIZON_DAYS = int(ASSET_CONFIG["horizon_days"])
-UPPER_BARRIER = float(ASSET_CONFIG["upper_barrier"])
-LOWER_BARRIER = float(ASSET_CONFIG["lower_barrier"])
+HORIZON_DAYS = int(cast(int, ASSET_CONFIG["horizon_days"]))
+UPPER_BARRIER = float(cast(float, ASSET_CONFIG["upper_barrier"]))
+LOWER_BARRIER = float(cast(float, ASSET_CONFIG["lower_barrier"]))
 BENCHMARK_SYMBOL = str(ASSET_CONFIG.get("benchmark_symbol", "")).strip().upper()
 TRAIN_FRACTION = 0.70
 VALID_FRACTION = 0.15
@@ -155,16 +157,47 @@ def parse_future_return_top_bottom_pct(label_mode: str) -> float | None:
     return None
 
 
-def apply_label_mode(labels: np.ndarray, realized_returns: np.ndarray, label_mode: str) -> np.ndarray:
+def select_label_mode_cutoffs(
+    realized_returns: np.ndarray,
+    label_mode: str,
+    train_end: int | None = None,
+) -> tuple[float | None, float | None]:
+    valid_mask = ~np.isnan(realized_returns)
+    if train_end is not None:
+        train_mask = np.zeros(len(realized_returns), dtype=bool)
+        train_mask[:train_end] = True
+        valid_mask &= train_mask
+    valid_returns = realized_returns[valid_mask]
+    if len(valid_returns) == 0:
+        return None, None
+
+    top_pct = parse_future_return_top_pct(label_mode)
+    if top_pct is not None:
+        return float(np.quantile(valid_returns, 1.0 - top_pct / 100.0)), None
+
+    top_bottom_pct = parse_future_return_top_bottom_pct(label_mode)
+    if top_bottom_pct is not None:
+        return (
+            float(np.quantile(valid_returns, 1.0 - top_bottom_pct / 100.0)),
+            float(np.quantile(valid_returns, top_bottom_pct / 100.0)),
+        )
+    return None, None
+
+
+def apply_label_mode(
+    labels: np.ndarray,
+    realized_returns: np.ndarray,
+    label_mode: str,
+    train_end: int | None = None,
+) -> np.ndarray:
     if label_mode == "keep-all-binary":
         return np.where(np.isnan(labels), 0.0, labels)
     top_pct = parse_future_return_top_pct(label_mode)
     if top_pct is not None:
         next_labels = np.full(len(realized_returns), np.nan, dtype=np.float64)
-        valid_returns = realized_returns[~np.isnan(realized_returns)]
-        if len(valid_returns) == 0:
+        cutoff, _ = select_label_mode_cutoffs(realized_returns, label_mode, train_end=train_end)
+        if cutoff is None:
             return next_labels
-        cutoff = float(np.quantile(valid_returns, 1.0 - top_pct / 100.0))
         valid_mask = ~np.isnan(realized_returns)
         next_labels[valid_mask] = (realized_returns[valid_mask] >= cutoff).astype(np.float64)
         return next_labels
@@ -172,11 +205,9 @@ def apply_label_mode(labels: np.ndarray, realized_returns: np.ndarray, label_mod
     if top_bottom_pct is None:
         return labels
     next_labels = np.full(len(realized_returns), np.nan, dtype=np.float64)
-    valid_returns = realized_returns[~np.isnan(realized_returns)]
-    if len(valid_returns) == 0:
+    upper_cutoff, lower_cutoff = select_label_mode_cutoffs(realized_returns, label_mode, train_end=train_end)
+    if upper_cutoff is None or lower_cutoff is None:
         return next_labels
-    upper_cutoff = float(np.quantile(valid_returns, 1.0 - top_bottom_pct / 100.0))
-    lower_cutoff = float(np.quantile(valid_returns, top_bottom_pct / 100.0))
     valid_mask = ~np.isnan(realized_returns)
     upper_mask = valid_mask & (realized_returns >= upper_cutoff)
     lower_mask = valid_mask & (realized_returns <= lower_cutoff)
@@ -248,6 +279,7 @@ def download_prices_from_stooq(url: str) -> pd.DataFrame:
 
 def download_symbol_prices(symbol: str, stooq_url: str, cache_path: str) -> pd.DataFrame:
     ensure_cache_dir()
+    Path(cache_path).parent.mkdir(parents=True, exist_ok=True)
     try:
         frame = download_prices_from_yahoo(symbol)
     except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError):
@@ -379,9 +411,9 @@ def build_barrier_labels(
         if lower_idx is not None and upper_idx is None:
             labels[idx] = 0.0
             continue
-        if upper_idx < lower_idx:
+        if upper_idx is not None and lower_idx is not None and upper_idx < lower_idx:
             labels[idx] = 1.0
-        elif lower_idx < upper_idx:
+        elif upper_idx is not None and lower_idx is not None and lower_idx < upper_idx:
             labels[idx] = 0.0
         else:
             labels[idx] = np.nan
@@ -470,7 +502,8 @@ def add_features(frame: pd.DataFrame) -> pd.DataFrame:
         float(config["upper_barrier"]),
         float(config["lower_barrier"]),
     )
-    labels = apply_label_mode(labels, realized_returns, str(config["label_mode"]))
+    train_end, _ = split_indices(len(df))
+    labels = apply_label_mode(labels, realized_returns, str(config["label_mode"]), train_end=train_end)
     df[TARGET_COLUMN] = labels
     df["future_return_60"] = realized_returns
 
