@@ -116,3 +116,4 @@ eb85247	0.5695	0.4000	0.5026	0.8149	0.6921	0.5201	0.6461	fail	discard	ranking br
 3c19131	0.3926	0.2553	0.5063	0.0800	0.0666	0.4943	0.3094	fail	discard	exit baseline with a symmetric -8% before +4% target collapses on test because the recent regime leaves only a 4.22% exit positive rate
 3c19131	0.3926	0.2553	0.5063	0.0772	0.0682	0.4768	0.3031	fail	discard	exit ret_60 plus sma_gap_60 does not help the first exit target and further weakens test balanced accuracy
 3c19131	0.3906	0.2439	0.5011	0.0787	0.0503	0.4859	0.3055	fail	discard	exit ret_60 plus sma_gap_60 plus rolling_vol_60 remains unusable on the symmetric exit target and confirms the current exit branch is dominated by regime shift
+uncommitted	0.5502		0.5282	0.9595		0.6987	0.7563	pass	candidate	leakage-safe future-return-top-bottom-20pct hard_gate_two_expert combines dual_context_above200 with combo via rolling_vol_60 gate 0.0087 and clears headline_score 0.7563 while passing the static promotion gate
