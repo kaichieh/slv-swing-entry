@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-xgboost_tb30_distance_live	binary_live_model	execution_preference	True	inactive	0	2026-04-14	0.5733	False	0.7		Primary TSLA live line uses XGBoost with the future-return-top-bottom-30pct label and distance_to_252_high feature.
+xgboost_tb30_distance_live	binary_live_model	execution_preference	True	inactive	0	2026-04-15	0.4165	False	0.698		Primary TSLA live line uses XGBoost with the future-return-top-bottom-30pct label and distance_to_252_high feature.
