@@ -120,7 +120,7 @@
 <body>
   <div class="hero">
     <h1>NVDA Active Status</h1>
-    <p>Preferred line: binary_top12_5 | status=watchlist_ready | recent_count=6</p>
+    <p>Preferred line: ret_60_sma_gap_60_atr_pct_20 | status=watchlist_ready | recent_count=50</p>
   </div>
   <div class="grid">
     
@@ -128,14 +128,36 @@
       <div class="card-top">
         <div>
           <div class="eyebrow">binary_watchlist</div>
-          <h2>binary_top12_5</h2>
+          <h2>ret_60_sma_gap_60_atr_pct_20</h2>
         </div>
         <div class="badge">Preferred</div>
       </div>
-      <p class="note">Best practical NVDA overlay. Keep as the default watchlist lane.</p>
+      <p class="note">Best current NVDA watchlist candidate. Keep this return-gap line as the default lane.</p>
       <dl class="stats">
         <div><dt>role</dt><dd>primary</dd></div>
         <div><dt>status</dt><dd>watchlist_ready</dd></div>
+        <div><dt>recent count</dt><dd>50</dd></div>
+        <div><dt>latest date</dt><dd>2026-04-15</dd></div>
+        <div><dt>latest value</dt><dd>0.515700</dd></div>
+        <div><dt>latest selected</dt><dd>yes</dd></div>
+        <div><dt>cutoff</dt><dd>0.466000</dd></div>
+        <div><dt>last selected</dt><dd>2026-04-15</dd></div>
+      </dl>
+    </section>
+    
+
+    <section class="card" style="--accent:#d97706">
+      <div class="card-top">
+        <div>
+          <div class="eyebrow">binary_watchlist</div>
+          <h2>binary_top12_5</h2>
+        </div>
+        <div class="badge">Secondary</div>
+      </div>
+      <p class="note">Secondary NVDA watchlist candidate; keep for comparison rather than the default lane.</p>
+      <dl class="stats">
+        <div><dt>role</dt><dd>sidecar</dd></div>
+        <div><dt>status</dt><dd>secondary</dd></div>
         <div><dt>recent count</dt><dd>6</dd></div>
         <div><dt>latest date</dt><dd>2026-03-17</dd></div>
         <div><dt>latest value</dt><dd>0.492579</dd></div>
@@ -154,7 +176,7 @@
         </div>
         <div class="badge">Secondary</div>
       </div>
-      <p class="note">Tighter side rule; recent activity matches the primary line but trade profile is weaker.</p>
+      <p class="note">Secondary NVDA watchlist candidate; keep for comparison rather than the default lane.</p>
       <dl class="stats">
         <div><dt>role</dt><dd>sidecar</dd></div>
         <div><dt>status</dt><dd>secondary</dd></div>
@@ -168,6 +190,6 @@
     </section>
     
   </div>
-  <div class="dump">[{&quot;line_id&quot;: &quot;binary_top12_5&quot;, &quot;lane_type&quot;: &quot;binary_watchlist&quot;, &quot;role&quot;: &quot;primary&quot;, &quot;preferred&quot;: true, &quot;status&quot;: &quot;watchlist_ready&quot;, &quot;recent_selected_count&quot;: 6, &quot;latest_date&quot;: &quot;2026-03-17&quot;, &quot;latest_value&quot;: 0.492579, &quot;latest_selected&quot;: false, &quot;cutoff&quot;: 0.512625, &quot;last_selected_date&quot;: &quot;2026-02-25&quot;, &quot;usage_note&quot;: &quot;Best practical NVDA overlay. Keep as the default watchlist lane.&quot;}, {&quot;line_id&quot;: &quot;binary_top10&quot;, &quot;lane_type&quot;: &quot;binary_watchlist&quot;, &quot;role&quot;: &quot;sidecar&quot;, &quot;preferred&quot;: false, &quot;status&quot;: &quot;secondary&quot;, &quot;recent_selected_count&quot;: 6, &quot;latest_date&quot;: &quot;2026-03-17&quot;, &quot;latest_value&quot;: 0.492579, &quot;latest_selected&quot;: false, &quot;cutoff&quot;: 0.514794, &quot;last_selected_date&quot;: &quot;2026-02-25&quot;, &quot;usage_note&quot;: &quot;Tighter side rule; recent activity matches the primary line but trade profile is weaker.&quot;}]</div>
+  <div class="dump">[{&quot;line_id&quot;: &quot;ret_60_sma_gap_60_atr_pct_20&quot;, &quot;lane_type&quot;: &quot;binary_watchlist&quot;, &quot;role&quot;: &quot;primary&quot;, &quot;preferred&quot;: true, &quot;status&quot;: &quot;watchlist_ready&quot;, &quot;recent_selected_count&quot;: 50, &quot;latest_date&quot;: &quot;2026-04-15&quot;, &quot;latest_value&quot;: 0.5157, &quot;latest_selected&quot;: true, &quot;cutoff&quot;: 0.466, &quot;last_selected_date&quot;: &quot;2026-04-15&quot;, &quot;usage_note&quot;: &quot;Best current NVDA watchlist candidate. Keep this return-gap line as the default lane.&quot;}, {&quot;line_id&quot;: &quot;binary_top12_5&quot;, &quot;lane_type&quot;: &quot;binary_watchlist&quot;, &quot;role&quot;: &quot;sidecar&quot;, &quot;preferred&quot;: false, &quot;status&quot;: &quot;secondary&quot;, &quot;recent_selected_count&quot;: 6, &quot;latest_date&quot;: &quot;2026-03-17&quot;, &quot;latest_value&quot;: 0.492579, &quot;latest_selected&quot;: false, &quot;cutoff&quot;: 0.512625, &quot;last_selected_date&quot;: &quot;2026-02-25&quot;, &quot;usage_note&quot;: &quot;Secondary NVDA watchlist candidate; keep for comparison rather than the default lane.&quot;}, {&quot;line_id&quot;: &quot;binary_top10&quot;, &quot;lane_type&quot;: &quot;binary_watchlist&quot;, &quot;role&quot;: &quot;sidecar&quot;, &quot;preferred&quot;: false, &quot;status&quot;: &quot;secondary&quot;, &quot;recent_selected_count&quot;: 6, &quot;latest_date&quot;: &quot;2026-03-17&quot;, &quot;latest_value&quot;: 0.492579, &quot;latest_selected&quot;: false, &quot;cutoff&quot;: 0.514794, &quot;last_selected_date&quot;: &quot;2026-02-25&quot;, &quot;usage_note&quot;: &quot;Secondary NVDA watchlist candidate; keep for comparison rather than the default lane.&quot;}]</div>
 </body>
 </html>
