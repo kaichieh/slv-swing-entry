@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SLV Active Status</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f4ed;
+      --text: #172033;
+      --muted: #5b6474;
+      --card: #fffdf8;
+      --line: #e8dfcf;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #f7f4ed 0%, #efe8d8 100%);
+      color: var(--text);
+      padding: 28px;
+    }
+    .hero {
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-top: 5px solid var(--accent);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+    .eyebrow {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.2;
+    }
+    .badge {
+      background: color-mix(in srgb, var(--accent) 14%, white);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .note {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      min-height: 48px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      margin: 0;
+    }
+    .stats div {
+      padding: 10px 12px;
+      background: #faf6ee;
+      border-radius: 12px;
+      border: 1px solid #efe5d4;
+    }
+    dt {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    dd {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .dump {
+      margin-top: 22px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.65);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>SLV Active Status</h1>
+    <p>Preferred line: baseline_threshold | status=active | recent_count=52</p>
+  </div>
+  <div class="grid">
+    
+    <section class="card" style="--accent:#0f766e">
+      <div class="card-top">
+        <div>
+          <div class="eyebrow">binary_operator</div>
+          <h2>baseline_threshold</h2>
+        </div>
+        <div class="badge">Preferred</div>
+      </div>
+      <p class="note">Research-only SLV line. Keep the baseline signal as context while the operating rule remains unadopted.</p>
+      <dl class="stats">
+        <div><dt>role</dt><dd>research_primary</dd></div>
+        <div><dt>status</dt><dd>active</dd></div>
+        <div><dt>recent count</dt><dd>52</dd></div>
+        <div><dt>latest date</dt><dd>2026-04-15</dd></div>
+        <div><dt>latest value</dt><dd>0.473600</dd></div>
+        <div><dt>latest selected</dt><dd>yes</dd></div>
+        <div><dt>cutoff</dt><dd>0.396000</dd></div>
+        <div><dt>last selected</dt><dd>2026-04-15</dd></div>
+      </dl>
+    </section>
+    
+  </div>
+  <div class="dump">[{&quot;line_id&quot;: &quot;baseline_threshold&quot;, &quot;lane_type&quot;: &quot;binary_operator&quot;, &quot;role&quot;: &quot;research_primary&quot;, &quot;preferred&quot;: true, &quot;status&quot;: &quot;active&quot;, &quot;recent_selected_count&quot;: 52, &quot;latest_date&quot;: &quot;2026-04-15&quot;, &quot;latest_value&quot;: 0.4736, &quot;latest_selected&quot;: true, &quot;cutoff&quot;: 0.396, &quot;last_selected_date&quot;: &quot;2026-04-15&quot;, &quot;usage_note&quot;: &quot;Research-only SLV line. Keep the baseline signal as context while the operating rule remains unadopted.&quot;}]</div>
+</body>
+</html>
