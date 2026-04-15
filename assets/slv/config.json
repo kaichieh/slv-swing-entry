@@ -1,8 +1,12 @@
 {
   "asset_key": "slv",
   "symbol": "SLV",
+  "benchmark_symbol": "GDX",
   "horizon_days": 60,
   "upper_barrier": 0.08,
   "lower_barrier": -0.04,
-  "label_mode": "drop-neutral"
+  "label_mode": "drop-neutral",
+  "live_model_family": "hard_gate_two_expert",
+  "live_operator_line_id": "hard_gate_two_expert_gdx_live",
+  "live_label_mode": "future-return-top-bottom-15pct"
 }

@@ -29,7 +29,16 @@ WEAK_BULLISH_QUANTILE = 0.70
 BULLISH_QUANTILE = 0.90
 VERY_STRONG_BULLISH_QUANTILE = 0.97
 RULE_TOP_PCT = 20.0
+HARD_GATE_TWO_EXPERT = "hard_gate_two_expert"
 HARD_GATE_TWO_EXPERT_MIXED = "hard_gate_two_expert_mixed"
+HARD_GATE_TWO_EXPERT_GDX_LIVE = "hard_gate_two_expert_gdx_live"
+LIVE_OPERATOR_FEATURE_MAP = {
+    "ret_60_sma_gap_60_atr_pct_20": {"ret_60", "sma_gap_60", "atr_pct_20"},
+    "xgboost_tb30_distance_live": {"distance_to_252_high"},
+}
+LIVE_OPERATOR_MODEL_FAMILY_MAP = {
+    HARD_GATE_TWO_EXPERT_GDX_LIVE: HARD_GATE_TWO_EXPERT,
+}
 
 try:
     _XGBOOST_MODULE = importlib.import_module("xgboost")
@@ -66,6 +75,46 @@ def get_live_label_mode() -> str:
     return value if value else str(config.get("label_mode", "drop-neutral"))
 
 
+def get_live_operator_line_id() -> str:
+    value = str(ac.load_asset_config().get("live_operator_line_id", "")).strip()
+    return value
+
+
+def get_live_benchmark_symbol() -> str:
+    configured = str(ac.load_asset_config().get("benchmark_symbol", "")).strip().upper()
+    if configured:
+        return configured
+    return BENCHMARK_SYMBOL
+
+
+def resolve_live_operator_line_id(feature_names: list[str], model_family: str) -> str:
+    configured_line = get_live_operator_line_id()
+    if not configured_line:
+        return ""
+    expected_family = LIVE_OPERATOR_MODEL_FAMILY_MAP.get(configured_line)
+    if expected_family is not None:
+        return configured_line if model_family == expected_family else ""
+    expected_features = LIVE_OPERATOR_FEATURE_MAP.get(configured_line)
+    if expected_features is None:
+        return ""
+    actual_features = {name for name in feature_names if name not in tr.FEATURE_COLUMNS}
+    return configured_line if actual_features == expected_features else ""
+
+
+def build_live_provenance(model_artifacts: Mapping[str, Any], live_operator_line_id: str) -> dict[str, object]:
+    model_family = str(model_artifacts.get("model_family", "")).strip()
+    if model_family != HARD_GATE_TWO_EXPERT:
+        return {}
+    return {
+        "operator_line_id": live_operator_line_id,
+        "benchmark_symbol": get_live_benchmark_symbol(),
+        "outer_gate_feature": str(model_artifacts.get("outer_gate_feature", "")),
+        "outer_gate_threshold": round(float(cast(float | int | str, model_artifacts.get("outer_gate_threshold", 0.0))), 6),
+        "left_expert": str(model_artifacts.get("left_expert", "")),
+        "right_expert": str(model_artifacts.get("right_expert", "")),
+    }
+
+
 def require_xgboost() -> Any:
     if _XGBOOST_MODULE is not None:
         return _XGBOOST_MODULE
@@ -75,9 +124,81 @@ def require_xgboost() -> Any:
 
 def get_live_model_family() -> str:
     family = ac.get_live_model_family()
-    if family not in {"logistic", "xgboost", HARD_GATE_TWO_EXPERT_MIXED}:
+    if family not in {"logistic", "xgboost", HARD_GATE_TWO_EXPERT, HARD_GATE_TWO_EXPERT_MIXED}:
         raise ValueError(f"Unsupported live_model_family '{family}'")
     return family
+
+
+def fit_hard_gate_two_expert_model(raw_prices) -> dict[str, Any]:
+    import research_batch as rb
+    import research_slv_topbottom15_gdx_hard_gate_two_expert as winner
+
+    left_extra_features = (
+        "ret_60",
+        "sma_gap_60",
+        "distance_to_252_high",
+        "rs_vs_benchmark_60",
+        "price_ratio_benchmark_z_20",
+    )
+    right_extra_features = (
+        "ret_60",
+        "sma_gap_60",
+        "distance_to_252_high",
+        "rs_vs_benchmark_60",
+        "price_ratio_benchmark_z_20",
+        "atr_pct_20_percentile",
+    )
+
+    frame = rb.build_labeled_frame(raw_prices, label_mode=get_live_label_mode())
+    _, left_artifacts = rb.train_model(
+        frame,
+        winner.LEFT_EXPERT,
+        model_family="regime_dual_logistic",
+        extra_features=left_extra_features,
+        gate_feature="above_200dma_flag",
+    )
+    _, right_artifacts = rb.train_model(
+        frame,
+        winner.RIGHT_EXPERT,
+        extra_features=right_extra_features,
+    )
+
+    splits = rb.split_frame(frame)
+    validation = splits["validation"].reset_index(drop=True)
+    test = splits["test"].reset_index(drop=True)
+    validation_y = validation[tr.TARGET_COLUMN].to_numpy(dtype=np.float32)
+    validation_mask = validation[winner.OUTER_GATE_FEATURE].to_numpy(dtype=np.float32) >= winner.OUTER_GATE_THRESHOLD
+    test_mask = test[winner.OUTER_GATE_FEATURE].to_numpy(dtype=np.float32) >= winner.OUTER_GATE_THRESHOLD
+    validation_probabilities = np.where(
+        validation_mask,
+        np.asarray(left_artifacts["validation_probabilities"], dtype=np.float32),
+        np.asarray(right_artifacts["validation_probabilities"], dtype=np.float32),
+    )
+    test_probabilities = np.where(
+        test_mask,
+        np.asarray(left_artifacts["test_probabilities"], dtype=np.float32),
+        np.asarray(right_artifacts["test_probabilities"], dtype=np.float32),
+    )
+    feature_names = list(dict.fromkeys([*left_artifacts["feature_names"], *right_artifacts["feature_names"]]))
+    threshold = float(rb.select_threshold_with_steps(validation_probabilities, validation_y, tr.THRESHOLD_STEPS))
+
+    return {
+        "model_family": HARD_GATE_TWO_EXPERT,
+        "threshold": threshold,
+        "train_frame": splits["train"],
+        "feature_names": feature_names,
+        "left_artifacts": left_artifacts,
+        "right_artifacts": right_artifacts,
+        "left_expert": winner.LEFT_EXPERT,
+        "right_expert": winner.RIGHT_EXPERT,
+        "outer_gate_feature": winner.OUTER_GATE_FEATURE,
+        "outer_gate_threshold": float(winner.OUTER_GATE_THRESHOLD),
+        "validation_probabilities": validation_probabilities,
+        "test_probabilities": test_probabilities,
+        "live_label_mode": get_live_label_mode(),
+        "default_interactions": [],
+        "trained_until_label_date": test["date"].iloc[-1].strftime("%Y-%m-%d"),
+    }
 
 
 def fit_hard_gate_two_expert_mixed_model(raw_prices) -> dict[str, Any]:
@@ -253,6 +374,10 @@ def fit_xgboost_model(splits: Mapping[str, DatasetSplit], feature_names: list[st
 
 def fit_model(splits: Mapping[str, DatasetSplit], feature_names: list[str], raw_prices=None) -> dict[str, Any]:
     family = get_live_model_family()
+    if family == HARD_GATE_TWO_EXPERT:
+        if raw_prices is None:
+            raise ValueError("raw_prices is required for hard_gate_two_expert live path")
+        return fit_hard_gate_two_expert_model(raw_prices)
     if family == HARD_GATE_TWO_EXPERT_MIXED:
         if raw_prices is None:
             raise ValueError("raw_prices is required for hard_gate_two_expert_mixed live path")
@@ -300,7 +425,7 @@ def score_hard_gate_two_expert_mixed_probabilities(model_artifacts: Mapping[str,
 
 def score_latest_row(model_artifacts: dict[str, Any], feature_names: list[str], train_frame, latest_row) -> tuple[np.ndarray, dict[str, float]]:
     model_family = str(model_artifacts["model_family"])
-    if model_family == HARD_GATE_TWO_EXPERT_MIXED:
+    if model_family in {HARD_GATE_TWO_EXPERT, HARD_GATE_TWO_EXPERT_MIXED}:
         raw_snapshot = {name: float(latest_row.iloc[0][name]) for name in latest_row.columns if name != "date"}
         return latest_row.copy(), raw_snapshot
     train_x = train_frame[feature_names].to_numpy(dtype=np.float32)
@@ -319,7 +444,7 @@ def score_latest_row(model_artifacts: dict[str, Any], feature_names: list[str], 
 
 def predict_probabilities(model_artifacts: dict[str, Any], matrix) -> np.ndarray:
     model_family = str(model_artifacts["model_family"])
-    if model_family == HARD_GATE_TWO_EXPERT_MIXED:
+    if model_family in {HARD_GATE_TWO_EXPERT, HARD_GATE_TWO_EXPERT_MIXED}:
         return score_hard_gate_two_expert_mixed_probabilities(model_artifacts, matrix)
     model = model_artifacts["model"]
     if model_family == "xgboost":
@@ -334,7 +459,7 @@ def predict_probabilities(model_artifacts: dict[str, Any], matrix) -> np.ndarray
 def build_history_probabilities(
     model_artifacts: dict[str, Any], splits: Mapping[str, DatasetSplit], feature_names: list[str]
 ) -> np.ndarray:
-    if str(model_artifacts["model_family"]) == HARD_GATE_TWO_EXPERT_MIXED:
+    if str(model_artifacts["model_family"]) in {HARD_GATE_TWO_EXPERT, HARD_GATE_TWO_EXPERT_MIXED}:
         return np.concatenate(
             [
                 np.asarray(model_artifacts["validation_probabilities"], dtype=np.float32),
@@ -527,6 +652,8 @@ def main() -> None:
     model_rationale = build_model_rationale(raw_snapshot)
     rule_rationale = build_rule_rationale(probability, float(threshold), rule_summary)
     bullish = predicted_label == 1
+    live_operator_line_id = resolve_live_operator_line_id(feature_names, str(model_artifacts["model_family"]))
+    live_provenance = build_live_provenance(model_artifacts, live_operator_line_id)
 
     output = {
         "signal_summary": {
@@ -578,6 +705,10 @@ def main() -> None:
             if key in {"ret_20", "ret_60", "drawdown_20", "volume_vs_20", "rsi_14", "sma_gap_20", "sma_gap_60"}
         },
     }
+    if live_operator_line_id:
+        output["live_operator_line_id"] = live_operator_line_id
+    if live_provenance:
+        output["live_provenance"] = live_provenance
     latest_prediction_path = Path(ac.get_latest_prediction_path())
     latest_prediction_path.parent.mkdir(parents=True, exist_ok=True)
     latest_prediction_path.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")

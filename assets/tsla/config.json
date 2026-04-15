@@ -7,6 +7,8 @@
   "label_mode": "future-return-top-bottom-30pct",
   "default_chart_signal_mode": "execution",
   "live_model_family": "xgboost",
+  "live_operator_line_id": "xgboost_tb30_distance_live",
+  "live_label_mode": "future-return-top-bottom-30pct",
   "live_extra_features": [
     "distance_to_252_high"
   ],

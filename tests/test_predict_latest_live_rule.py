@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import json
+import tempfile
 import unittest
+from contextlib import ExitStack
+from pathlib import Path
 from unittest import mock
 
 import numpy as np
+import pandas as pd
 
 import predict_latest as pl
 
@@ -44,6 +49,10 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
         with mock.patch.object(pl.ac, "get_live_model_family", return_value="hard_gate_two_expert_mixed"):
             self.assertEqual(pl.get_live_model_family(), "hard_gate_two_expert_mixed")
 
+    def test_get_live_model_family_accepts_hard_gate_two_expert(self) -> None:
+        with mock.patch.object(pl.ac, "get_live_model_family", return_value="hard_gate_two_expert"):
+            self.assertEqual(pl.get_live_model_family(), "hard_gate_two_expert")
+
     def test_fit_model_uses_xgboost_path_when_configured(self) -> None:
         fake_splits = {"train": mock.Mock(), "validation": mock.Mock(), "test": mock.Mock()}
         expected = {"model_family": "xgboost", "threshold": 0.7}
@@ -65,6 +74,17 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
         self.assertIs(result, expected)
         fit_mixed.assert_called_once_with(fake_prices)
 
+    def test_fit_model_uses_hard_gate_two_expert_path_when_configured(self) -> None:
+        fake_splits = {"train": mock.Mock(), "validation": mock.Mock(), "test": mock.Mock()}
+        fake_prices = mock.Mock()
+        expected = {"model_family": "hard_gate_two_expert", "threshold": 0.63}
+        with mock.patch.object(pl, "get_live_model_family", return_value="hard_gate_two_expert"):
+            with mock.patch.object(pl, "fit_hard_gate_two_expert_model", return_value=expected) as fit_hard_gate:
+                result = pl.fit_model(fake_splits, ["distance_to_252_high"], raw_prices=fake_prices)
+
+        self.assertIs(result, expected)
+        fit_hard_gate.assert_called_once_with(fake_prices)
+
     def test_predict_probabilities_uses_xgboost_classifier_predict_proba(self) -> None:
         model = mock.Mock()
         model.predict_proba.return_value = np.array([[0.4, 0.6], [0.3, 0.7]], dtype=np.float32)
@@ -74,6 +94,394 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
             probabilities = pl.predict_probabilities(artifacts, np.ones((2, 1), dtype=np.float32))
 
         np.testing.assert_allclose(probabilities, np.array([0.6, 0.7], dtype=np.float32))
+
+    def test_main_writes_configured_live_operator_line_id_when_actual_live_path_matches(self) -> None:
+        latest_live = pd.DataFrame(
+            [
+                {
+                    "date": pd.Timestamp("2026-04-15"),
+                    "open": 100.0,
+                    "high": 102.0,
+                    "low": 99.0,
+                    "close": 101.0,
+                }
+            ]
+        )
+        splits = {
+            "test": mock.Mock(frame=pd.DataFrame({"date": [pd.Timestamp("2026-03-31")]})),
+        }
+        model_artifacts = {
+            "model_family": "logistic",
+            "threshold": 0.5,
+            "train_frame": pd.DataFrame({"baseline_feature": [1.0]}),
+            "feature_names": ["baseline_feature", "ret_60", "sma_gap_60", "atr_pct_20"],
+            "default_interactions": [],
+            "live_label_mode": "drop-neutral",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            prediction_path = Path(tmp) / "latest_prediction.json"
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(pl.tr, "set_seed"))
+                stack.enter_context(mock.patch.object(pl.tr, "get_env_int", return_value=pl.tr.SEED))
+                stack.enter_context(mock.patch.object(pl.tr, "FEATURE_COLUMNS", ["baseline_feature"]))
+                stack.enter_context(mock.patch.object(pl, "download_asset_prices", return_value="raw_prices"))
+                stack.enter_context(mock.patch.object(pl, "add_price_features", return_value="price_features"))
+                stack.enter_context(mock.patch.object(pl, "add_relative_strength_features", return_value="relative_features"))
+                stack.enter_context(mock.patch.object(pl, "add_context_features", return_value=latest_live))
+                stack.enter_context(mock.patch.object(pl.tr, "load_splits", return_value=splits))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl,
+                        "build_feature_names",
+                        return_value=["baseline_feature", "ret_60", "sma_gap_60", "atr_pct_20"],
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl, "fit_model", return_value=model_artifacts))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl,
+                        "score_latest_row",
+                        return_value=(
+                            np.array([[1.0]], dtype=np.float32),
+                            {"ret_60": 0.1, "sma_gap_60": -0.05, "atr_pct_20": 0.02},
+                        ),
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl, "predict_probabilities", return_value=np.array([0.7], dtype=np.float32)))
+                stack.enter_context(
+                    mock.patch.object(pl, "build_history_probabilities", return_value=np.array([0.2, 0.4, 0.6], dtype=np.float32))
+                )
+                stack.enter_context(mock.patch.object(pl, "classify_signal", return_value=("bullish", {"confidence_gap": 0.2})))
+                stack.enter_context(mock.patch.object(pl, "apply_buy_point_overlay", return_value=("bullish", {"buy_point_ok": True})))
+                stack.enter_context(mock.patch.object(pl, "get_rule_top_pct", return_value=20.0))
+                stack.enter_context(mock.patch.object(pl, "summarize_rule", return_value={"rule_name": "top_20pct_reference", "selected": True}))
+                stack.enter_context(mock.patch.object(pl, "build_model_rationale", return_value=["reason"]))
+                stack.enter_context(mock.patch.object(pl, "build_rule_rationale", return_value="rule rationale"))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl.ac,
+                        "load_asset_config",
+                        return_value={"asset_key": "nvda", "live_operator_line_id": "ret_60_sma_gap_60_atr_pct_20"},
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl.ac, "get_asset_symbol", return_value="NVDA"))
+                stack.enter_context(mock.patch.object(pl.ac, "get_latest_prediction_path", return_value=prediction_path))
+                pl.main()
+
+            payload = json.loads(prediction_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["live_operator_line_id"], "ret_60_sma_gap_60_atr_pct_20")
+
+    def test_main_omits_live_operator_line_id_when_actual_live_path_differs_from_config(self) -> None:
+        latest_live = pd.DataFrame(
+            [
+                {
+                    "date": pd.Timestamp("2026-04-15"),
+                    "open": 100.0,
+                    "high": 102.0,
+                    "low": 99.0,
+                    "close": 101.0,
+                }
+            ]
+        )
+        splits = {
+            "test": mock.Mock(frame=pd.DataFrame({"date": [pd.Timestamp("2026-03-31")]})),
+        }
+        model_artifacts = {
+            "model_family": "logistic",
+            "threshold": 0.5,
+            "train_frame": pd.DataFrame({"baseline_feature": [1.0]}),
+            "feature_names": ["baseline_feature", "ret_60", "sma_gap_60"],
+            "default_interactions": [],
+            "live_label_mode": "drop-neutral",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            prediction_path = Path(tmp) / "latest_prediction.json"
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(pl.tr, "set_seed"))
+                stack.enter_context(mock.patch.object(pl.tr, "get_env_int", return_value=pl.tr.SEED))
+                stack.enter_context(mock.patch.object(pl.tr, "FEATURE_COLUMNS", ["baseline_feature"]))
+                stack.enter_context(mock.patch.object(pl, "download_asset_prices", return_value="raw_prices"))
+                stack.enter_context(mock.patch.object(pl, "add_price_features", return_value="price_features"))
+                stack.enter_context(mock.patch.object(pl, "add_relative_strength_features", return_value="relative_features"))
+                stack.enter_context(mock.patch.object(pl, "add_context_features", return_value=latest_live))
+                stack.enter_context(mock.patch.object(pl.tr, "load_splits", return_value=splits))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl,
+                        "build_feature_names",
+                        return_value=["baseline_feature", "ret_60", "sma_gap_60"],
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl, "fit_model", return_value=model_artifacts))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl,
+                        "score_latest_row",
+                        return_value=(
+                            np.array([[1.0]], dtype=np.float32),
+                            {"ret_60": 0.1, "sma_gap_60": -0.05},
+                        ),
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl, "predict_probabilities", return_value=np.array([0.7], dtype=np.float32)))
+                stack.enter_context(
+                    mock.patch.object(pl, "build_history_probabilities", return_value=np.array([0.2, 0.4, 0.6], dtype=np.float32))
+                )
+                stack.enter_context(mock.patch.object(pl, "classify_signal", return_value=("bullish", {"confidence_gap": 0.2})))
+                stack.enter_context(mock.patch.object(pl, "apply_buy_point_overlay", return_value=("bullish", {"buy_point_ok": True})))
+                stack.enter_context(mock.patch.object(pl, "get_rule_top_pct", return_value=20.0))
+                stack.enter_context(mock.patch.object(pl, "summarize_rule", return_value={"rule_name": "top_20pct_reference", "selected": True}))
+                stack.enter_context(mock.patch.object(pl, "build_model_rationale", return_value=["reason"]))
+                stack.enter_context(mock.patch.object(pl, "build_rule_rationale", return_value="rule rationale"))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl.ac,
+                        "load_asset_config",
+                        return_value={"asset_key": "nvda", "live_operator_line_id": "ret_60_sma_gap_60_atr_pct_20"},
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl.ac, "get_asset_symbol", return_value="NVDA"))
+                stack.enter_context(mock.patch.object(pl.ac, "get_latest_prediction_path", return_value=prediction_path))
+                pl.main()
+
+            payload = json.loads(prediction_path.read_text(encoding="utf-8"))
+
+        self.assertNotIn("live_operator_line_id", payload)
+
+    def test_main_writes_explicit_slv_live_operator_line_for_hard_gate_two_expert_path(self) -> None:
+        latest_live = pd.DataFrame(
+            [
+                {
+                    "date": pd.Timestamp("2026-04-15"),
+                    "open": 100.0,
+                    "high": 102.0,
+                    "low": 99.0,
+                    "close": 101.0,
+                }
+            ]
+        )
+        splits = {
+            "test": mock.Mock(frame=pd.DataFrame({"date": [pd.Timestamp("2026-03-31")]})),
+        }
+        model_artifacts = {
+            "model_family": "hard_gate_two_expert",
+            "threshold": 0.5,
+            "train_frame": pd.DataFrame({"baseline_feature": [1.0]}),
+            "left_expert": "gdx_relative_dual",
+            "right_expert": "gdx_context",
+            "outer_gate_feature": "price_ratio_benchmark_z_20",
+            "outer_gate_threshold": 0.141332,
+            "feature_names": [
+                "baseline_feature",
+                "ret_60",
+                "sma_gap_60",
+                "distance_to_252_high",
+                "rs_vs_benchmark_60",
+                "price_ratio_benchmark_z_20",
+                "atr_pct_20_percentile",
+            ],
+            "default_interactions": [],
+            "live_label_mode": "future-return-top-bottom-15pct",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            prediction_path = Path(tmp) / "latest_prediction.json"
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(pl.tr, "set_seed"))
+                stack.enter_context(mock.patch.object(pl.tr, "get_env_int", return_value=pl.tr.SEED))
+                stack.enter_context(mock.patch.object(pl.tr, "FEATURE_COLUMNS", ["baseline_feature"]))
+                stack.enter_context(mock.patch.object(pl, "download_asset_prices", return_value="raw_prices"))
+                stack.enter_context(mock.patch.object(pl, "add_price_features", return_value="price_features"))
+                stack.enter_context(mock.patch.object(pl, "add_relative_strength_features", return_value="relative_features"))
+                stack.enter_context(mock.patch.object(pl, "add_context_features", return_value=latest_live))
+                stack.enter_context(mock.patch.object(pl.tr, "load_splits", return_value=splits))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl,
+                        "build_feature_names",
+                        return_value=[
+                            "baseline_feature",
+                            "ret_60",
+                            "sma_gap_60",
+                            "distance_to_252_high",
+                            "rs_vs_benchmark_60",
+                            "price_ratio_benchmark_z_20",
+                            "atr_pct_20_percentile",
+                        ],
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl, "fit_model", return_value=model_artifacts))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl,
+                        "score_latest_row",
+                        return_value=(
+                            latest_live.copy(),
+                            {
+                                "ret_60": 0.1,
+                                "sma_gap_60": -0.05,
+                                "distance_to_252_high": -0.1,
+                                "rs_vs_benchmark_60": 0.2,
+                                "price_ratio_benchmark_z_20": 0.3,
+                                "atr_pct_20_percentile": 0.4,
+                            },
+                        ),
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl, "predict_probabilities", return_value=np.array([0.7], dtype=np.float32)))
+                stack.enter_context(
+                    mock.patch.object(pl, "build_history_probabilities", return_value=np.array([0.2, 0.4, 0.6], dtype=np.float32))
+                )
+                stack.enter_context(mock.patch.object(pl, "classify_signal", return_value=("bullish", {"confidence_gap": 0.2})))
+                stack.enter_context(mock.patch.object(pl, "apply_buy_point_overlay", return_value=("bullish", {"buy_point_ok": True})))
+                stack.enter_context(mock.patch.object(pl, "get_rule_top_pct", return_value=15.0))
+                stack.enter_context(mock.patch.object(pl, "summarize_rule", return_value={"rule_name": "top_15pct_reference", "selected": True}))
+                stack.enter_context(mock.patch.object(pl, "build_model_rationale", return_value=["reason"]))
+                stack.enter_context(mock.patch.object(pl, "build_rule_rationale", return_value="rule rationale"))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl.ac,
+                        "load_asset_config",
+                        return_value={
+                            "asset_key": "slv",
+                            "benchmark_symbol": "GDX",
+                            "live_model_family": "hard_gate_two_expert",
+                            "live_operator_line_id": "hard_gate_two_expert_gdx_live",
+                            "live_label_mode": "future-return-top-bottom-15pct",
+                        },
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl.ac, "get_asset_symbol", return_value="SLV"))
+                stack.enter_context(mock.patch.object(pl.ac, "get_latest_prediction_path", return_value=prediction_path))
+                pl.main()
+
+            payload = json.loads(prediction_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["live_operator_line_id"], "hard_gate_two_expert_gdx_live")
+        self.assertEqual(payload["model_summary"]["model_family"], "hard_gate_two_expert")
+        self.assertEqual(payload["model_summary"]["label_mode"], "future-return-top-bottom-15pct")
+        self.assertEqual(payload["live_provenance"]["benchmark_symbol"], "GDX")
+        self.assertEqual(payload["live_provenance"]["outer_gate_feature"], "price_ratio_benchmark_z_20")
+        self.assertEqual(payload["live_provenance"]["operator_line_id"], "hard_gate_two_expert_gdx_live")
+
+    def test_main_writes_explicit_tsla_live_operator_line_for_xgboost_path(self) -> None:
+        latest_live = pd.DataFrame(
+            [
+                {
+                    "date": pd.Timestamp("2026-04-15"),
+                    "open": 100.0,
+                    "high": 102.0,
+                    "low": 99.0,
+                    "close": 101.0,
+                    "distance_to_252_high": -0.18,
+                }
+            ]
+        )
+        splits = {
+            "test": mock.Mock(frame=pd.DataFrame({"date": [pd.Timestamp("2026-03-31")]})),
+        }
+        model_artifacts = {
+            "model_family": "xgboost",
+            "threshold": 0.5,
+            "train_frame": pd.DataFrame({"baseline_feature": [1.0]}),
+            "feature_names": ["baseline_feature", "distance_to_252_high"],
+            "default_interactions": [],
+            "live_label_mode": "future-return-top-bottom-30pct",
+            "xgboost_params": {
+                "n_estimators": 150,
+                "max_depth": 2,
+                "learning_rate": 0.05,
+            },
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            prediction_path = Path(tmp) / "latest_prediction.json"
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(pl.tr, "set_seed"))
+                stack.enter_context(mock.patch.object(pl.tr, "get_env_int", return_value=pl.tr.SEED))
+                stack.enter_context(mock.patch.object(pl.tr, "FEATURE_COLUMNS", ["baseline_feature"]))
+                stack.enter_context(mock.patch.object(pl, "download_asset_prices", return_value="raw_prices"))
+                stack.enter_context(mock.patch.object(pl, "add_price_features", return_value="price_features"))
+                stack.enter_context(mock.patch.object(pl, "add_relative_strength_features", return_value="relative_features"))
+                stack.enter_context(mock.patch.object(pl, "add_context_features", return_value=latest_live))
+                stack.enter_context(mock.patch.object(pl.tr, "load_splits", return_value=splits))
+                stack.enter_context(mock.patch.object(pl, "build_feature_names", return_value=["baseline_feature", "distance_to_252_high"]))
+                stack.enter_context(mock.patch.object(pl, "fit_model", return_value=model_artifacts))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl,
+                        "score_latest_row",
+                        return_value=(
+                            np.array([[1.0]], dtype=np.float32),
+                            {"distance_to_252_high": -0.18},
+                        ),
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl, "predict_probabilities", return_value=np.array([0.8123], dtype=np.float32)))
+                stack.enter_context(
+                    mock.patch.object(pl, "build_history_probabilities", return_value=np.array([0.2, 0.4, 0.6], dtype=np.float32))
+                )
+                stack.enter_context(mock.patch.object(pl, "classify_signal", return_value=("bullish", {"confidence_gap": 0.3123})))
+                stack.enter_context(mock.patch.object(pl, "apply_buy_point_overlay", return_value=("bullish", {"buy_point_ok": True})))
+                stack.enter_context(mock.patch.object(pl, "get_rule_top_pct", return_value=30.0))
+                stack.enter_context(mock.patch.object(pl, "summarize_rule", return_value={"rule_name": "top_30pct_reference", "selected": True}))
+                stack.enter_context(mock.patch.object(pl, "build_model_rationale", return_value=["reason"]))
+                stack.enter_context(mock.patch.object(pl, "build_rule_rationale", return_value="rule rationale"))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl.ac,
+                        "load_asset_config",
+                        return_value={
+                            "asset_key": "tsla",
+                            "live_model_family": "xgboost",
+                            "live_label_mode": "future-return-top-bottom-30pct",
+                            "live_operator_line_id": "xgboost_tb30_distance_live",
+                            "live_extra_features": ["distance_to_252_high"],
+                            "live_reference_top_pct": 30,
+                            "live_xgboost_params": {
+                                "n_estimators": 150,
+                                "max_depth": 2,
+                                "learning_rate": 0.05,
+                            },
+                        },
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl.ac, "get_live_model_family", return_value="xgboost"))
+                stack.enter_context(mock.patch.object(pl.ac, "get_asset_symbol", return_value="TSLA"))
+                stack.enter_context(mock.patch.object(pl.ac, "get_latest_prediction_path", return_value=prediction_path))
+                pl.main()
+
+            payload = json.loads(prediction_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["live_operator_line_id"], "xgboost_tb30_distance_live")
+        self.assertEqual(payload["model_summary"]["model_family"], "xgboost")
+        self.assertEqual(payload["model_summary"]["label_mode"], "future-return-top-bottom-30pct")
+
+    def test_nvda_config_declares_live_operator_line_and_features(self) -> None:
+        config_path = Path(__file__).resolve().parents[1] / "assets" / "nvda" / "config.json"
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(config["live_operator_line_id"], "ret_60_sma_gap_60_atr_pct_20")
+        self.assertEqual(config["live_extra_features"], ["ret_60", "sma_gap_60", "atr_pct_20"])
+        self.assertEqual(config["upper_barrier"], 0.15)
+        self.assertEqual(config["lower_barrier"], -0.08)
+
+    def test_slv_config_declares_live_hard_gate_two_expert_path(self) -> None:
+        config_path = Path(__file__).resolve().parents[1] / "assets" / "slv" / "config.json"
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(config["live_model_family"], "hard_gate_two_expert")
+        self.assertEqual(config["live_operator_line_id"], "hard_gate_two_expert_gdx_live")
+        self.assertEqual(config["live_label_mode"], "future-return-top-bottom-15pct")
+        self.assertEqual(config["benchmark_symbol"], "GDX")
+
+    def test_tsla_config_declares_live_xgboost_path(self) -> None:
+        config_path = Path(__file__).resolve().parents[1] / "assets" / "tsla" / "config.json"
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(config["live_model_family"], "xgboost")
+        self.assertEqual(config["live_operator_line_id"], "xgboost_tb30_distance_live")
+        self.assertEqual(config["live_label_mode"], "future-return-top-bottom-30pct")
+        self.assertEqual(config["live_extra_features"], ["distance_to_252_high"])
 
 
 if __name__ == "__main__":
