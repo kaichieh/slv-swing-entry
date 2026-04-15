@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-tsla	TSLA	xgboost_tb30_distance_live	binary_live_model	execution_preference	inactive	inactive_wait	0	2026-04-15	0.4165	False	0.698			Preferred line is inactive; continue monitoring without action.
+tsla	TSLA	xgboost_tb30_distance_live	binary_live_model	execution_preference	inactive	watchlist_wait	1	2026-04-15	0.4263	False	0.696	2026-04-08	7	Preferred line is valid but currently waiting below cutoff.
