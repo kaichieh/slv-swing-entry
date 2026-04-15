@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass
+from http.client import RemoteDisconnected
 from io import StringIO
 from pathlib import Path
 from typing import cast
@@ -229,7 +230,7 @@ def normalize_ohlcv_frame(frame: pd.DataFrame) -> pd.DataFrame:
         raise RuntimeError(f"Downloaded dataset missing columns: {missing}")
     normalized = normalized[expected].copy()
     normalized["date"] = pd.to_datetime(normalized["date"])
-    normalized = normalized.sort_values("date").drop_duplicates(subset="date", keep="last").reset_index(drop=True)
+    normalized = cast(pd.DataFrame, normalized.set_index("date", drop=False).sort_index().drop_duplicates(subset="date", keep="last").reset_index(drop=True))
     return normalized
 
 
@@ -277,15 +278,28 @@ def download_prices_from_stooq(url: str) -> pd.DataFrame:
     return normalize_ohlcv_frame(frame)
 
 
+def should_fallback_to_cached_prices(exc: Exception) -> bool:
+    if isinstance(exc, (HTTPError, URLError, TimeoutError, pd.errors.EmptyDataError, pd.errors.ParserError, RemoteDisconnected)):
+        return True
+    if isinstance(exc, ValueError):
+        return True
+    if isinstance(exc, RuntimeError):
+        message = str(exc)
+        return message.startswith("Downloaded dataset missing columns:") or message.endswith("dataset from stooq is empty.")
+    return False
+
+
 def download_symbol_prices(symbol: str, stooq_url: str, cache_path: str) -> pd.DataFrame:
     ensure_cache_dir()
     Path(cache_path).parent.mkdir(parents=True, exist_ok=True)
     try:
         frame = download_prices_from_yahoo(symbol)
-    except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError):
+    except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError, RemoteDisconnected):
         try:
             frame = download_prices_from_stooq(stooq_url)
-        except (HTTPError, URLError, TimeoutError, pd.errors.EmptyDataError):
+        except Exception as exc:
+            if not should_fallback_to_cached_prices(exc):
+                raise
             if not os.path.exists(cache_path):
                 raise
             frame = pd.read_csv(cache_path)
@@ -316,16 +330,11 @@ def download_slv_prices() -> pd.DataFrame:
 def add_relative_strength_features(frame: pd.DataFrame, benchmark_symbol: str) -> pd.DataFrame:
     if not benchmark_symbol:
         return frame
-    benchmark = add_price_features(download_benchmark_prices(benchmark_symbol))[
+    benchmark_source = add_price_features(download_benchmark_prices(benchmark_symbol))[
         ["date", "close", "ret_20", "ret_60", "ret_120"]
-    ].rename(
-        columns={
-            "close": "benchmark_close",
-            "ret_20": "benchmark_ret_20",
-            "ret_60": "benchmark_ret_60",
-            "ret_120": "benchmark_ret_120",
-        }
-    )
+    ].copy()
+    benchmark = benchmark_source.copy()
+    benchmark.columns = ["date", "benchmark_close", "benchmark_ret_20", "benchmark_ret_60", "benchmark_ret_120"]
     df = frame.merge(benchmark, on="date", how="left")
     ratio = df["close"] / df["benchmark_close"]
     df["ret_20_vs_benchmark"] = df["ret_20"] - df["benchmark_ret_20"]
@@ -338,14 +347,15 @@ def add_relative_strength_features(frame: pd.DataFrame, benchmark_symbol: str) -
 
 def add_context_features(frame: pd.DataFrame) -> pd.DataFrame:
     df = frame.copy()
-    close = df["close"]
-    high = df["high"]
-    low = df["low"]
+    close = cast(pd.Series, df["close"])
+    high = cast(pd.Series, df["high"])
+    low = cast(pd.Series, df["low"])
     eps = 1e-6
 
     df["rolling_vol_60"] = df["ret_1"].rolling(60).std()
-    df["slope_20"] = np.log(close).diff().rolling(20).mean()
-    df["slope_60"] = np.log(close).diff().rolling(60).mean()
+    close_log = pd.Series(np.log(close), index=close.index)
+    df["slope_20"] = close_log.diff().rolling(20).mean()
+    df["slope_60"] = close_log.diff().rolling(60).mean()
     rolling_high_252 = close.rolling(252).max()
     rolling_high_20 = high.rolling(20).max()
     rolling_low_20 = low.rolling(20).min()
