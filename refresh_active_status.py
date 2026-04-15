@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 
@@ -56,7 +57,7 @@ def build_iwm(asset_dir: Path) -> pd.DataFrame:
                 "latest_selected": bool(row["latest_selected"]),
                 "cutoff": float(row["cutoff"]),
                 "last_selected_date": fmt_date(row["last_selected_date"]),
-                "usage_note": notes[row["model_name"]],
+                "usage_note": notes[str(row["model_name"])],
             }
         )
     return pd.DataFrame(rows)
@@ -88,6 +89,8 @@ def build_spy(asset_dir: Path) -> pd.DataFrame:
 def build_tlt(asset_dir: Path) -> pd.DataFrame:
     recent = read_tsv(asset_dir / "regression_recent.tsv")
     latest = latest_row(recent)
+    latest_selected = bool(latest["selected"])
+    selected_mask = recent["selected"].fillna(False).astype(bool)
     return pd.DataFrame(
         [
             {
@@ -95,13 +98,13 @@ def build_tlt(asset_dir: Path) -> pd.DataFrame:
                 "lane_type": "regression_watchlist",
                 "role": "research_primary",
                 "preferred": True,
-                "status": "inactive" if not bool(latest["selected"]) else "active",
+                "status": "inactive" if not latest_selected else "active",
                 "recent_selected_count": int(recent["selected"].sum()),
                 "latest_date": fmt_date(latest["date"]),
                 "latest_value": float(latest["predicted_return"]),
-                "latest_selected": bool(latest["selected"]),
+                "latest_selected": latest_selected,
                 "cutoff": float(latest["bucket_cutoff"]),
-                "last_selected_date": fmt_date(recent.loc[recent["selected"], "date"].max()) if recent["selected"].any() else "",
+                "last_selected_date": fmt_date(recent.loc[selected_mask, "date"].max()) if bool(selected_mask.any()) else "",
                 "usage_note": "Research-only volatility-style ranking line. Do not treat as a live operator yet.",
             }
         ]
@@ -187,6 +190,37 @@ def build_qqq(asset_dir: Path) -> pd.DataFrame:
 
 
 def build_tsla(asset_dir: Path) -> pd.DataFrame:
+    if ac.get_live_model_family("tsla") == "xgboost":
+        latest_prediction_path = ac.get_latest_prediction_path("tsla")
+        if not latest_prediction_path.exists():
+            raise FileNotFoundError(f"Missing TSLA latest prediction file: {latest_prediction_path}")
+        payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+        signal_rows = read_signal_rows_from_cache(latest_prediction_path.parent, "tsla", 60)
+        selected_rows = signal_rows.loc[signal_rows["signal"].astype(str) != "no_entry"]
+        recent_selected_count = int(len(selected_rows))
+        latest_signal = str(payload["signal_summary"]["signal"])
+        last_selected_date = ""
+        if not selected_rows.empty:
+            last_selected_date = fmt_date(selected_rows.iloc[-1]["date"])
+        return pd.DataFrame(
+            [
+                {
+                    "line_id": "xgboost_tb30_distance_live",
+                    "lane_type": "binary_live_model",
+                    "role": "execution_preference",
+                    "preferred": True,
+                    "status": "active" if latest_signal != "no_entry" else "inactive",
+                    "recent_selected_count": recent_selected_count,
+                    "latest_date": str(payload["latest_raw_date"]),
+                    "latest_value": float(payload["signal_summary"]["predicted_probability"]),
+                    "latest_selected": latest_signal != "no_entry",
+                    "cutoff": float(payload["signal_summary"]["decision_threshold"]),
+                    "last_selected_date": last_selected_date,
+                    "usage_note": "Primary TSLA live line uses XGBoost with the future-return-top-bottom-30pct label and distance_to_252_high feature.",
+                }
+            ]
+        )
+
     pref = read_tsv(asset_dir / "operator_preference_summary.tsv")
     usage = read_tsv(asset_dir / "operator_usage_summary.tsv")
     usage_map = {str(row["model_name"]): row for _, row in usage.iterrows()}
@@ -423,10 +457,10 @@ def build_base_status(asset_dir: Path) -> pd.DataFrame:
             promotion_gate = row.get("promotion_gate")
             description = str(row.get("description", "")).strip()
             result_status = str(row.get("status", "")).strip()
-            if pd.notna(headline):
-                latest_value = float(headline)
-            if pd.notna(promotion_gate):
-                cutoff = float(promotion_gate)
+            if bool(pd.notna(headline)):
+                latest_value = float(cast(float | int | str, headline))
+            if bool(pd.notna(promotion_gate)):
+                cutoff = float(cast(float | int | str, promotion_gate))
             if result_status:
                 status = result_status.lower().replace(" ", "_")
             if description:
@@ -467,13 +501,14 @@ def main() -> None:
         output = build_base_status(asset_dir)
     output_path = asset_dir / "active_status_summary.tsv"
     output.to_csv(output_path, sep="\t", index=False)
+    preferred_mask = output["preferred"].fillna(False).astype(bool)
     print(
         json.dumps(
             {
                 "asset_key": asset_key,
                 "output_path": str(output_path),
                 "rows": len(output),
-                "preferred_line": str(output.loc[output["preferred"], "line_id"].iloc[0]) if output["preferred"].any() else None,
+                "preferred_line": str(output.loc[preferred_mask, "line_id"].iloc[0]) if bool(preferred_mask.any()) else None,
             },
             indent=2,
         )
