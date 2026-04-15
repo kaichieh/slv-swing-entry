@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 from html import escape
+from pathlib import Path
 from typing import cast
 
 import numpy as np
@@ -57,6 +58,103 @@ def get_env_int(name: str, default: int) -> int:
 def _normalize_default_chart_signal_mode(value: object) -> str:
     mode = str(value).strip().lower()
     return mode if mode in {"raw", "execution"} else "raw"
+
+
+def _payload_raw_model_signal(payload: dict[str, object]) -> str:
+    signal_summary = cast(dict[str, object], payload.get("signal_summary", {}))
+    explicit_signal = str(signal_summary.get("raw_model_signal", "")).strip()
+    if explicit_signal:
+        return explicit_signal
+    model_signal_summary = cast(dict[str, object], payload.get("model_signal_summary", {}))
+    return str(model_signal_summary.get("signal", "")).strip()
+
+
+def _rounded_payload_value(value: object, digits: int) -> float:
+    return round(float(cast(float | int | str, value)), digits)
+
+
+def _joined_payload_lines(value: object) -> str:
+    if isinstance(value, list):
+        return " | ".join(str(item).strip() for item in value if str(item).strip())
+    return str(value).strip()
+
+
+def _apply_latest_prediction_overlay(latest_row: dict[str, object], payload: dict[str, object]) -> dict[str, object]:
+    signal_summary = cast(dict[str, object], payload.get("signal_summary", {}))
+    buy_point_summary = cast(dict[str, object], payload.get("buy_point_summary", {}))
+    rule_summary = cast(dict[str, object], payload.get("rule_summary", {}))
+    rationale_summary = cast(dict[str, object], payload.get("rationale_summary", {}))
+    latest_feature_snapshot = cast(dict[str, object], payload.get("latest_feature_snapshot", {}))
+
+    if payload.get("latest_raw_date") is not None:
+        latest_row["date"] = str(payload["latest_raw_date"])
+    if signal_summary.get("signal") is not None:
+        latest_row["signal"] = str(signal_summary["signal"])
+
+    raw_model_signal = _payload_raw_model_signal(payload)
+    if raw_model_signal:
+        latest_row["raw_model_signal"] = raw_model_signal
+    if buy_point_summary.get("buy_point_ok") is not None:
+        latest_row["buy_point_ok"] = bool(buy_point_summary["buy_point_ok"])
+    if buy_point_summary.get("buy_point_warnings") is not None:
+        latest_row["buy_point_warnings"] = _joined_payload_lines(buy_point_summary["buy_point_warnings"])
+    if signal_summary.get("predicted_probability") is not None:
+        latest_row["probability"] = _rounded_payload_value(signal_summary["predicted_probability"], 4)
+    if signal_summary.get("decision_threshold") is not None:
+        latest_row["threshold"] = _rounded_payload_value(signal_summary["decision_threshold"], 4)
+    if signal_summary.get("confidence_gap") is not None:
+        latest_row["confidence_gap"] = _rounded_payload_value(signal_summary["confidence_gap"], 4)
+    if payload.get("latest_close") is not None:
+        latest_row["close"] = _rounded_payload_value(payload["latest_close"], 2)
+    if rule_summary.get("selected") is not None:
+        latest_row["rule_selected"] = bool(rule_summary["selected"])
+    if rule_summary.get("cutoff") is not None:
+        latest_row["rule_cutoff"] = _rounded_payload_value(rule_summary["cutoff"], 4)
+    if rule_summary.get("rule_name") is not None:
+        latest_row["rule_name"] = str(rule_summary["rule_name"])
+    if rule_summary.get("percentile_rank") is not None:
+        latest_row["percentile_rank"] = _rounded_payload_value(rule_summary["percentile_rank"], 4)
+    if rationale_summary.get("model_reasons") is not None:
+        latest_row["model_rationale"] = _joined_payload_lines(rationale_summary["model_reasons"])
+    if rationale_summary.get("rule_reason") is not None:
+        latest_row["rule_rationale"] = str(rationale_summary["rule_reason"])
+
+    for field_name, digits in {
+        "ret_20": 4,
+        "ret_60": 4,
+        "drawdown_20": 4,
+        "sma_gap_20": 4,
+        "sma_gap_60": 4,
+        "volume_vs_20": 4,
+        "rsi_14": 2,
+    }.items():
+        if latest_feature_snapshot.get(field_name) is not None:
+            latest_row[field_name] = _rounded_payload_value(latest_feature_snapshot[field_name], digits)
+    return latest_row
+
+
+def build_authoritative_latest_signal_row(
+    latest_row: dict[str, object], payload: dict[str, object]
+) -> dict[str, object]:
+    return _apply_latest_prediction_overlay(dict(latest_row), payload)
+
+
+def synchronize_latest_signal_row(
+    rows: list[dict[str, object]], payload: dict[str, object] | None = None
+) -> list[dict[str, object]]:
+    synced_rows = [dict(row) for row in rows]
+    if not synced_rows:
+        return synced_rows
+
+    effective_payload = payload
+    if effective_payload is None:
+        latest_prediction_path = Path(ac.get_latest_prediction_path())
+        if not latest_prediction_path.exists():
+            return synced_rows
+        effective_payload = cast(dict[str, object], json.loads(latest_prediction_path.read_text(encoding="utf-8")))
+
+    synced_rows[-1] = build_authoritative_latest_signal_row(synced_rows[-1], effective_payload)
+    return synced_rows
 
 
 def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[str, object]]:
@@ -167,10 +265,11 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
 def main() -> None:
     lookback_days = get_env_int("AR_CHART_LOOKBACK_DAYS", DEFAULT_LOOKBACK_DAYS)
     rows, meta = build_chart_rows(lookback_days)
+    rows_for_output = synchronize_latest_signal_row(rows)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-    pd.DataFrame(rows).to_csv(ROWS_OUTPUT_PATH, sep="\t", index=False)
+    pd.DataFrame(rows_for_output).to_csv(ROWS_OUTPUT_PATH, sep="\t", index=False)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(build_html(rows, meta))
+        f.write(build_html(rows_for_output, meta))
     print(f"Saved chart to: {OUTPUT_PATH}")
     print(f"Saved rows to: {ROWS_OUTPUT_PATH}")
     print(f"Bars rendered: {len(rows)}")
