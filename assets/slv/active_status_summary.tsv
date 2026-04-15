@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-baseline_threshold	binary_operator	research_primary	True	active	52	2026-04-15	0.4736	True	0.396	2026-04-15	Research-only SLV line. Keep the baseline signal as context while the operating rule remains unadopted.
+hard_gate_two_expert_gdx_live	binary_operator	primary	True	inactive	47	2026-04-15	0.5601	False	0.44	2026-04-13	Primary SLV live line uses the adopted GDX-relative hard-gate two-expert breakthrough.
