@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-baseline_threshold	binary_operator	research_primary	True	active	55	2026-04-09	0.4516	True	0.406	2026-04-09	Research-only SLV line. Keep the baseline signal as context while the operating rule remains unadopted.
+baseline_threshold	binary_operator	research_primary	True	active	52	2026-04-15	0.4736	True	0.396	2026-04-15	Research-only SLV line. Keep the baseline signal as context while the operating rule remains unadopted.

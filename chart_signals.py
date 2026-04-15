@@ -132,18 +132,25 @@ def build_chart_payload(rows: list[dict[str, object]], meta: dict[str, object]) 
         config.get("default_chart_signal_mode", "raw")
     )
     symbol = ac.get_asset_symbol()
+    title = f"{symbol} {algorithm_name}"
+    subtitle = (
+        f"Generated date: {meta['latest_date']} · Latest date: {meta['latest_date']} · Lookback: {meta['lookback_days']}"
+    )
     reference_rule = rows[-1]["rule_name"] if rows else f"top_{meta['rule_top_pct']:g}%_reference"
 
     return {
+        "variant": "signal",
         "asset_key": ac.get_asset_key(),
         "symbol": symbol,
         "algorithm_name": algorithm_name,
-        "algorithm_label": f"{symbol} {algorithm_name}",
+        "algorithm_label": title,
         "model_family": algorithm_name,
         "label_mode": label_mode,
         "reference_rule": str(reference_rule),
         "default_chart_signal_mode": default_chart_signal_mode,
         "generated_date": meta["latest_date"],
+        "title": title,
+        "subtitle": subtitle,
         "latest_summary": {
             "latest_date": meta["latest_date"],
             "lookback_days": meta["lookback_days"],
