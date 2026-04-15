@@ -37,6 +37,125 @@ def read_signal_rows_from_cache(cache_dir: Path, asset_key: str, lookback_days: 
     return frame.tail(lookback_days).reset_index(drop=True)
 
 
+def _normalize_feature_names(raw: object) -> tuple[str, ...]:
+    values: list[str] = []
+    if isinstance(raw, str):
+        values = [part.strip() for part in raw.split(",") if part.strip()]
+    elif isinstance(raw, (list, tuple, set)):
+        values = [str(part).strip() for part in raw if str(part).strip()]
+    return tuple(sorted(dict.fromkeys(values)))
+
+
+def _normalize_xgboost_params(raw: object) -> dict[str, int | float]:
+    if not isinstance(raw, dict):
+        return {}
+
+    normalized: dict[str, int | float] = {}
+    if "n_estimators" in raw:
+        normalized["n_estimators"] = int(cast(int | float | str, raw["n_estimators"]))
+    if "max_depth" in raw:
+        normalized["max_depth"] = int(cast(int | float | str, raw["max_depth"]))
+    if "learning_rate" in raw:
+        normalized["learning_rate"] = float(cast(int | float | str, raw["learning_rate"]))
+    return normalized
+
+
+def _payload_raw_model_signal(payload: dict[str, object]) -> str:
+    signal_summary = cast(dict[str, object], payload.get("signal_summary", {}))
+    explicit_signal = str(signal_summary.get("raw_model_signal", "")).strip()
+    if explicit_signal:
+        return explicit_signal
+    model_signal_summary = cast(dict[str, object], payload.get("model_signal_summary", {}))
+    return str(model_signal_summary.get("signal", "")).strip()
+
+
+def _rounded_or_none(value: object, digits: int) -> float | None:
+    if value is None:
+        return None
+    is_missing = pd.isna(value)
+    if isinstance(is_missing, bool) and is_missing:
+        return None
+    return round(float(cast(float | int | str, value)), digits)
+
+
+def _is_missing_scalar(value: object) -> bool:
+    is_missing = pd.isna(value)
+    return bool(is_missing) if isinstance(is_missing, bool) else False
+
+
+def _latest_signal_numeric_digits(field_name: str) -> int:
+    return 2 if field_name in {"close", "rsi_14"} else 4
+
+
+def validate_latest_signal_cache(payload: dict[str, object], signal_rows: pd.DataFrame, asset_key: str) -> None:
+    latest_signal_row = latest_row(signal_rows)
+    mismatches: list[str] = []
+
+    authoritative_row = cs.build_authoritative_latest_signal_row(latest_signal_row.to_dict(), payload)
+    authoritative_fields = [
+        "date",
+        "close",
+        "signal",
+        "raw_model_signal",
+        "buy_point_ok",
+        "buy_point_warnings",
+        "probability",
+        "threshold",
+        "confidence_gap",
+        "rule_selected",
+        "rule_cutoff",
+        "rule_name",
+        "percentile_rank",
+        "model_rationale",
+        "rule_rationale",
+        "ret_20",
+        "ret_60",
+        "drawdown_20",
+        "sma_gap_20",
+        "sma_gap_60",
+        "volume_vs_20",
+        "rsi_14",
+    ]
+
+    for field_name in authoritative_fields:
+        expected = authoritative_row.get(field_name)
+        actual = latest_signal_row.get(field_name)
+        expected_missing = expected is None or _is_missing_scalar(expected)
+        actual_missing = _is_missing_scalar(actual)
+        if expected_missing and actual_missing:
+            continue
+        if field_name == "buy_point_ok" or field_name == "rule_selected":
+            if bool(actual) != bool(expected):
+                mismatches.append(f"{field_name} row={bool(actual)} payload={bool(expected)}")
+            continue
+        if field_name in {
+            "close",
+            "probability",
+            "threshold",
+            "confidence_gap",
+            "rule_cutoff",
+            "percentile_rank",
+            "ret_20",
+            "ret_60",
+            "drawdown_20",
+            "sma_gap_20",
+            "sma_gap_60",
+            "volume_vs_20",
+            "rsi_14",
+        }:
+            digits = _latest_signal_numeric_digits(field_name)
+            if _rounded_or_none(actual, digits) != _rounded_or_none(expected, digits):
+                mismatches.append(f"{field_name} row={actual} payload={expected}")
+            continue
+        actual_text = fmt_date(actual) if field_name == "date" else str(actual).strip()
+        expected_text = fmt_date(expected) if field_name == "date" else str(expected).strip()
+        if actual_text != expected_text:
+            mismatches.append(f"{field_name} row={actual_text} payload={expected_text}")
+
+    if mismatches:
+        raise ValueError(f"Latest signal cache drift detected for {asset_key}: {'; '.join(mismatches)}")
+
+
 def build_iwm(asset_dir: Path) -> pd.DataFrame:
     usage = read_tsv(asset_dir / "operator_usage_summary.tsv")
     rows: list[dict[str, object]] = []
@@ -138,6 +257,9 @@ def build_xle(asset_dir: Path) -> pd.DataFrame:
 
 
 def build_nvda(asset_dir: Path) -> pd.DataFrame:
+    preferred_line = str(
+        ac.load_asset_config("nvda").get("live_operator_line_id", "ret_60_sma_gap_60_atr_pct_20")
+    ).strip() or "ret_60_sma_gap_60_atr_pct_20"
     pref = read_tsv(asset_dir / "operator_preference_summary.tsv")
     usage = read_tsv(asset_dir / "operator_usage_summary.tsv")
     usage_map = {str(row["model_name"]): row for _, row in usage.iterrows()}
@@ -149,19 +271,173 @@ def build_nvda(asset_dir: Path) -> pd.DataFrame:
             {
                 "line_id": key,
                 "lane_type": "binary_watchlist",
-                "role": "primary" if key == "binary_top12_5" else "sidecar",
-                "preferred": key == "binary_top12_5",
-                "status": "watchlist_ready" if key == "binary_top12_5" else "secondary",
+                "role": "primary" if key == preferred_line else "sidecar",
+                "preferred": key == preferred_line,
+                "status": "watchlist_ready" if key == preferred_line else "secondary",
                 "recent_selected_count": int(usage_row["recent_selected_count"]),
                 "latest_date": fmt_date(usage_row["latest_date"]),
                 "latest_value": float(usage_row["latest_score"]),
                 "latest_selected": bool(usage_row["latest_selected"]),
                 "cutoff": float(usage_row["cutoff"]) if usage_row is not None else float(row["cutoff"]),
                 "last_selected_date": fmt_date(usage_row["last_selected_date"]),
-                "usage_note": "Best practical NVDA overlay. Keep as the default watchlist lane." if key == "binary_top12_5" else "Tighter side rule; recent activity matches the primary line but trade profile is weaker.",
+                "usage_note": "Best current NVDA watchlist candidate. Keep this return-gap line as the default lane." if key == preferred_line else "Secondary NVDA watchlist candidate; keep for comparison rather than the default lane.",
             }
         )
+    latest_prediction_path = ac.get_latest_prediction_path("nvda")
+    if latest_prediction_path.exists():
+        payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+        if not nvda_live_cache_matches_preferred_line(payload, preferred_line):
+            raise ValueError(f"NVDA preferred line '{preferred_line}' cannot be validated from live cache provenance.")
+        preferred_live_row = build_nvda_preferred_live_row(preferred_line, payload, latest_prediction_path.parent)
+        rows = [row for row in rows if not bool(row["preferred"])]
+        rows.insert(0, preferred_live_row)
+    elif not any(bool(row["preferred"]) for row in rows):
+        latest_prediction_path = ac.get_latest_prediction_path("nvda")
+        raise FileNotFoundError(f"Missing NVDA latest prediction file: {latest_prediction_path}")
     return pd.DataFrame(rows)
+
+
+def build_nvda_preferred_live_row(preferred_line: str, payload: dict[str, object], cache_dir: Path) -> dict[str, object]:
+    signal_rows = read_signal_rows_from_cache(cache_dir, "nvda", 60)
+    validate_latest_signal_cache(payload, signal_rows, "nvda")
+    selected_rows = signal_rows.loc[signal_rows["signal"].astype(str) != "no_entry"]
+    signal_summary = cast(dict[str, object], payload["signal_summary"])
+    latest_signal = str(signal_summary["signal"])
+    return {
+        "line_id": preferred_line,
+        "lane_type": "binary_watchlist",
+        "role": "primary",
+        "preferred": True,
+        "status": "watchlist_ready",
+        "recent_selected_count": int(len(selected_rows)),
+        "latest_date": str(payload["latest_raw_date"]),
+        "latest_value": float(cast(float | int | str, signal_summary["predicted_probability"])),
+        "latest_selected": latest_signal != "no_entry",
+        "cutoff": float(cast(float | int | str, signal_summary["decision_threshold"])),
+        "last_selected_date": fmt_date(selected_rows.iloc[-1]["date"]) if not selected_rows.empty else "",
+        "usage_note": "Best current NVDA watchlist candidate. Keep this return-gap line as the default lane.",
+    }
+
+
+def nvda_live_cache_matches_preferred_line(payload: dict[str, object], preferred_line: str) -> bool:
+    explicit_line = str(payload.get("live_operator_line_id", "")).strip()
+    if explicit_line:
+        return explicit_line == preferred_line
+
+    expected_feature_map = {
+        "ret_60_sma_gap_60_atr_pct_20": {"ret_60", "sma_gap_60", "atr_pct_20"},
+    }
+    expected_features = expected_feature_map.get(preferred_line)
+    if expected_features is None:
+        return False
+
+    top_level_features = payload.get("model_extra_features", [])
+    if not isinstance(top_level_features, list):
+        top_level_features = []
+    model_summary = cast(dict[str, object], payload.get("model_summary", {}))
+    summary_features = model_summary.get("model_extra_features", [])
+    if not isinstance(summary_features, list):
+        summary_features = []
+
+    payload_features = {
+        str(feature).strip()
+        for feature in [*top_level_features, *summary_features]
+        if str(feature).strip()
+    }
+    return payload_features == expected_features
+
+
+def get_tsla_live_preferences() -> dict[str, object]:
+    config = ac.load_asset_config("tsla")
+    reference_top_pct = int(cast(int | float | str, config.get("live_reference_top_pct", 30)))
+    return {
+        "preferred_line": "xgboost_tb30_distance_live",
+        "model_family": str(config.get("live_model_family", config.get("model_family", "logistic"))).strip(),
+        "label_mode": str(config.get("live_label_mode", config.get("label_mode", ""))).strip(),
+        "reference_rule": f"top_{reference_top_pct}pct",
+        "extra_features": _normalize_feature_names(config.get("live_extra_features", [])),
+        "xgboost_params": _normalize_xgboost_params(config.get("live_xgboost_params", {})),
+    }
+
+
+def tsla_live_cache_matches_preferred_line(payload: dict[str, object], tsla_preferences: dict[str, object]) -> bool:
+    model_summary = cast(dict[str, object], payload.get("model_summary", {}))
+    model_family = str(model_summary.get("model_family", "")).strip()
+    label_mode = str(model_summary.get("label_mode", "")).strip()
+    if model_family != str(tsla_preferences["model_family"]) or label_mode != str(tsla_preferences["label_mode"]):
+        return False
+
+    explicit_line = str(payload.get("live_operator_line_id", "")).strip()
+    if not explicit_line:
+        return False
+    if explicit_line != str(tsla_preferences["preferred_line"]):
+        return False
+
+    reference_rule = str(model_summary.get("reference_percentile_rule", "")).strip()
+    if reference_rule != str(tsla_preferences["reference_rule"]):
+        return False
+
+    payload_feature_names = list(cast(tuple[str, ...], _normalize_feature_names(payload.get("model_extra_features", []))))
+    payload_feature_names.extend(_normalize_feature_names(model_summary.get("model_extra_features", [])))
+    payload_features = _normalize_feature_names(payload_feature_names)
+    if payload_features != cast(tuple[str, ...], tsla_preferences["extra_features"]):
+        return False
+
+    payload_xgboost_params = _normalize_xgboost_params(model_summary.get("xgboost_params", {}))
+    return payload_xgboost_params == cast(dict[str, int | float], tsla_preferences["xgboost_params"])
+
+
+def get_slv_live_preferences() -> dict[str, str]:
+    config = ac.load_asset_config("slv")
+    preferred_line = str(config.get("live_operator_line_id", "")).strip()
+    model_family = str(config.get("live_model_family", "")).strip()
+    label_mode = str(config.get("live_label_mode", config.get("label_mode", ""))).strip()
+    benchmark_symbol = str(config.get("benchmark_symbol", "")).strip().upper()
+    return {
+        "preferred_line": preferred_line,
+        "model_family": model_family,
+        "label_mode": label_mode,
+        "benchmark_symbol": benchmark_symbol,
+    }
+
+
+def normalize_slv_live_preferences(slv_preferences: dict[str, str]) -> dict[str, str]:
+    preferred_line = str(
+        slv_preferences.get("preferred_line", slv_preferences.get("live_operator_line_id", ""))
+    ).strip()
+    model_family = str(slv_preferences.get("model_family", slv_preferences.get("live_model_family", ""))).strip()
+    label_mode = str(slv_preferences.get("label_mode", slv_preferences.get("live_label_mode", ""))).strip()
+    benchmark_symbol = str(slv_preferences.get("benchmark_symbol", "")).strip().upper()
+    return {
+        "preferred_line": preferred_line,
+        "model_family": model_family,
+        "label_mode": label_mode,
+        "benchmark_symbol": benchmark_symbol,
+    }
+
+
+def slv_live_cache_matches_preferred_line(payload: dict[str, object], slv_preferences: dict[str, str]) -> bool:
+    normalized_preferences = normalize_slv_live_preferences(slv_preferences)
+    preferred_line = normalized_preferences["preferred_line"]
+    model_summary = cast(dict[str, object], payload.get("model_summary", {}))
+    model_family = str(model_summary.get("model_family", "")).strip()
+    label_mode = str(model_summary.get("label_mode", "")).strip()
+    if model_family != normalized_preferences["model_family"] or label_mode != normalized_preferences["label_mode"]:
+        return False
+
+    explicit_line = str(payload.get("live_operator_line_id", "")).strip()
+    if explicit_line != preferred_line:
+        return False
+
+    live_provenance = cast(dict[str, object], payload.get("live_provenance", {}))
+    provenance_line = str(live_provenance.get("operator_line_id", "")).strip()
+    provenance_benchmark = str(live_provenance.get("benchmark_symbol", "")).strip().upper()
+    outer_gate_feature = str(live_provenance.get("outer_gate_feature", "")).strip()
+    return (
+        provenance_line == preferred_line
+        and provenance_benchmark == normalized_preferences["benchmark_symbol"]
+        and "benchmark" in outer_gate_feature
+    )
 
 
 def build_qqq(asset_dir: Path) -> pd.DataFrame:
@@ -192,11 +468,16 @@ def build_qqq(asset_dir: Path) -> pd.DataFrame:
 
 def build_tsla(asset_dir: Path) -> pd.DataFrame:
     if ac.get_live_model_family("tsla") == "xgboost":
+        tsla_preferences = get_tsla_live_preferences()
         latest_prediction_path = ac.get_latest_prediction_path("tsla")
         if not latest_prediction_path.exists():
             raise FileNotFoundError(f"Missing TSLA latest prediction file: {latest_prediction_path}")
         payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+        preferred_line = str(tsla_preferences["preferred_line"])
+        if not tsla_live_cache_matches_preferred_line(payload, tsla_preferences):
+            raise ValueError(f"TSLA preferred line '{preferred_line}' cannot be validated from live cache provenance.")
         signal_rows = read_signal_rows_from_cache(latest_prediction_path.parent, "tsla", 60)
+        validate_latest_signal_cache(payload, signal_rows, "tsla")
         selected_rows = signal_rows.loc[signal_rows["signal"].astype(str) != "no_entry"]
         recent_selected_count = int(len(selected_rows))
         latest_signal = str(payload["signal_summary"]["signal"])
@@ -206,7 +487,7 @@ def build_tsla(asset_dir: Path) -> pd.DataFrame:
         return pd.DataFrame(
             [
                 {
-                    "line_id": "xgboost_tb30_distance_live",
+                    "line_id": preferred_line,
                     "lane_type": "binary_live_model",
                     "role": "execution_preference",
                     "preferred": True,
@@ -217,7 +498,7 @@ def build_tsla(asset_dir: Path) -> pd.DataFrame:
                     "latest_selected": latest_signal != "no_entry",
                     "cutoff": float(payload["signal_summary"]["decision_threshold"]),
                     "last_selected_date": last_selected_date,
-                    "usage_note": "Primary TSLA live line uses XGBoost with the future-return-top-bottom-30pct label and distance_to_252_high feature.",
+                    "usage_note": "Primary TSLA live line stays on the adopted tuned XGBoost TB30 distance_to_252_high strategy.",
                 }
             ]
         )
@@ -418,21 +699,26 @@ BUILDERS["gld"] = build_gld
 
 
 def build_slv(asset_dir: Path) -> pd.DataFrame:
+    slv_preferences = get_slv_live_preferences()
+    preferred_line = slv_preferences["preferred_line"]
     latest_prediction_path = ac.get_latest_prediction_path("slv")
     if not latest_prediction_path.exists():
         raise FileNotFoundError(f"Missing SLV latest prediction file: {latest_prediction_path}")
     payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+    if not slv_live_cache_matches_preferred_line(payload, slv_preferences):
+        raise ValueError(f"SLV preferred line '{preferred_line}' cannot be validated from live cache provenance.")
     rows = read_signal_rows_from_cache(latest_prediction_path.parent, "slv", 60)
+    validate_latest_signal_cache(payload, rows, "slv")
     selected_rows = rows.loc[rows["signal"].astype(str) != "no_entry"]
     recent_selected_count = int(len(selected_rows))
-    latest_signal_row = latest_row(rows)
     signal = str(payload["signal_summary"]["signal"])
+    benchmark_symbol = slv_preferences["benchmark_symbol"] or "benchmark"
     return pd.DataFrame(
         [
             {
-                "line_id": "baseline_threshold",
+                "line_id": preferred_line,
                 "lane_type": "binary_operator",
-                "role": "research_primary",
+                "role": "primary",
                 "preferred": True,
                 "status": "active" if signal != "no_entry" else "inactive",
                 "recent_selected_count": recent_selected_count,
@@ -440,8 +726,8 @@ def build_slv(asset_dir: Path) -> pd.DataFrame:
                 "latest_value": float(payload["signal_summary"]["predicted_probability"]),
                 "latest_selected": signal != "no_entry",
                 "cutoff": float(payload["signal_summary"]["decision_threshold"]),
-                "last_selected_date": str(latest_signal_row["date"]) if signal != "no_entry" else "",
-                "usage_note": "Research-only SLV line. Keep the baseline signal as context while the operating rule remains unadopted.",
+                "last_selected_date": fmt_date(selected_rows.iloc[-1]["date"]) if not selected_rows.empty else "",
+                "usage_note": f"Primary SLV live line uses the adopted {benchmark_symbol}-relative hard-gate two-expert breakthrough.",
             }
         ]
     )
