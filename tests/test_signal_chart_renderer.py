@@ -6,7 +6,7 @@ import signal_chart_renderer as scr
 
 
 class SignalChartRendererTests(unittest.TestCase):
-    def test_render_html_shows_algorithm_header_and_hover_fields(self) -> None:
+    def test_render_html_preserves_hover_tooltip_chart_contract(self) -> None:
         payload = {
             "asset_key": "gld",
             "symbol": "GLD",
@@ -54,9 +54,24 @@ class SignalChartRendererTests(unittest.TestCase):
         self.assertIn("hard_gate_two_expert_mixed", html)
         self.assertIn("future-return-top-bottom-10pct", html)
         self.assertIn("top_20pct", html)
-        self.assertIn("model_reason=", html)
-        self.assertIn("rule_reason=", html)
-        self.assertIn("buy_point_note=", html)
+        self.assertIn('<div id="chart">', html)
+        self.assertIn("svg.setAttribute('id', 'chartSvg')", html)
+        self.assertIn('<div id="tooltip" class="tooltip"></div>', html)
+        self.assertIn('id="modeExecution"', html)
+        self.assertIn('id="modeRaw"', html)
+        self.assertIn('id="modeNote"', html)
+        self.assertIn('<button id="modeExecution" class="mode-button active" type="button">execution signal</button>', html)
+        self.assertIn('Current view: execution signal after buy-point overlay.', html)
+        self.assertIn("rect.addEventListener('mousemove'", html)
+        self.assertIn("rect.addEventListener('mouseleave'", html)
+        self.assertIn('buy_point blocked', html)
+        self.assertIn('chart_mode=${mode}', html)
+        self.assertIn('model_reason=${row.model_rationale}', html)
+        self.assertIn('rule_reason=${row.rule_rationale}', html)
+        self.assertIn("buy_point_note=${row.buy_point_warnings || 'clean'}", html)
+        self.assertIn('model_signal=${row.raw_model_signal}', html)
+        self.assertIn('"raw_model_signal": "weak_bullish"', html)
+        self.assertIn("${row.rule_name}=${row.rule_selected ? 'yes' : 'no'}", html)
 
 
 if __name__ == "__main__":
