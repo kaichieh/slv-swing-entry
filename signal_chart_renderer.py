@@ -21,6 +21,7 @@ def render_html(payload: dict[str, object]) -> str:
         if initial_mode == "execution"
         else "Current view: raw model signal before buy-point overlay."
     )
+    signal_mode_label = escape(initial_mode)
     latest_summary = cast(dict[str, object], payload.get("latest_summary", {}))
     latest_date = escape(str(latest_summary.get("latest_date", "")))
     lookback_days = escape(str(latest_summary.get("lookback_days", "")))
@@ -50,6 +51,10 @@ def render_html(payload: dict[str, object]) -> str:
         ".wrap { max-width: 1400px; margin: 0 auto; padding: 24px; }"
         ".card { background: var(--panel); border: 1px solid #e7e0d4; border-radius: 18px; box-shadow: 0 18px 60px rgba(31, 41, 55, 0.08); padding: 20px 20px 12px; }"
         "h1 { margin: 0 0 8px; font-size: 28px; }"
+        ".meta-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px 16px; margin: 6px 0 14px; padding: 14px 16px; border: 1px solid #e7e0d4; border-radius: 14px; background: #faf7f1; }"
+        ".meta-item { display: flex; flex-direction: column; gap: 4px; }"
+        ".meta-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }"
+        ".meta-value { font-size: 14px; font-weight: 600; word-break: break-word; }"
         ".sub { color: var(--muted); margin-bottom: 14px; }"
         ".legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; font-size: 14px; }"
         ".mode-bar { display: flex; gap: 10px; margin: 6px 0 14px; flex-wrap: wrap; align-items: center; }"
@@ -68,6 +73,14 @@ def render_html(payload: dict[str, object]) -> str:
         '<div class="wrap">'
         '<div class="card">'
         f"<h1>{algorithm_label}</h1>"
+        '<div class="meta-header">'
+        f'<div class="meta-item"><span class="meta-label">Algorithm:</span><span class="meta-value">{algorithm_name}</span></div>'
+        f'<div class="meta-item"><span class="meta-label">Model family:</span><span class="meta-value">{model_family}</span></div>'
+        f'<div class="meta-item"><span class="meta-label">Label mode:</span><span class="meta-value">{label_mode}</span></div>'
+        f'<div class="meta-item"><span class="meta-label">Reference rule:</span><span class="meta-value">{reference_rule}</span></div>'
+        f'<div class="meta-item"><span class="meta-label">Signal mode:</span><span class="meta-value">{signal_mode_label}</span></div>'
+        f'<div class="meta-item"><span class="meta-label">Generated from:</span><span class="meta-value">{generated_date}</span></div>'
+        '</div>'
         f'<div class="sub">Generated date: {generated_date} · Latest date: {latest_date} · Lookback: {lookback_days}</div>'
         '<div class="mode-bar">'
         f'<button id="modeExecution" class="mode-button{mode_execution_active}" type="button">execution signal</button>'
