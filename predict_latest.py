@@ -6,8 +6,10 @@ Default live config starts from the baseline feature set only.
 
 from __future__ import annotations
 
+import importlib
 import json
 from pathlib import Path
+from typing import Any, Mapping, cast
 
 import numpy as np
 
@@ -15,6 +17,7 @@ import asset_config as ac
 import train as tr
 from prepare import (
     BENCHMARK_SYMBOL,
+    DatasetSplit,
     add_context_features,
     add_price_features,
     add_relative_strength_features,
@@ -26,6 +29,13 @@ WEAK_BULLISH_QUANTILE = 0.70
 BULLISH_QUANTILE = 0.90
 VERY_STRONG_BULLISH_QUANTILE = 0.97
 RULE_TOP_PCT = 20.0
+
+try:
+    _XGBOOST_MODULE = importlib.import_module("xgboost")
+    _XGBOOST_IMPORT_ERROR: Exception | None = None
+except Exception as exc:  # pragma: no cover - exercised through runtime path/tests
+    _XGBOOST_MODULE = None
+    _XGBOOST_IMPORT_ERROR = exc
 
 
 def build_feature_names() -> list[str]:
@@ -43,13 +53,27 @@ def get_rule_top_pct() -> float:
     if configured is None:
         return RULE_TOP_PCT
     try:
-        value = float(configured)
+        value = float(cast(float | int | str, configured))
     except (TypeError, ValueError):
         return RULE_TOP_PCT
     return value if 0.0 < value < 100.0 else RULE_TOP_PCT
 
 
-def fit_model(splits: dict[str, object], feature_names: list[str]) -> tuple[np.ndarray, float]:
+def require_xgboost() -> Any:
+    if _XGBOOST_MODULE is not None:
+        return _XGBOOST_MODULE
+    detail = f": {_XGBOOST_IMPORT_ERROR}" if _XGBOOST_IMPORT_ERROR is not None else ""
+    raise ModuleNotFoundError(f"xgboost is required for the XGBoost live path{detail}")
+
+
+def get_live_model_family() -> str:
+    family = ac.get_live_model_family()
+    if family not in {"logistic", "xgboost"}:
+        raise ValueError(f"Unsupported live_model_family '{family}'")
+    return family
+
+
+def fit_logistic_model(splits: Mapping[str, DatasetSplit], feature_names: list[str]) -> dict[str, Any]:
     train_x = splits["train"].frame[feature_names].to_numpy(dtype=np.float32)
     validation_x = splits["validation"].frame[feature_names].to_numpy(dtype=np.float32)
     train_y = splits["train"].labels
@@ -96,20 +120,121 @@ def fit_model(splits: dict[str, object], feature_names: list[str]) -> tuple[np.n
         if epochs_without_improvement >= patience_limit:
             break
 
-    return best_weights, best_threshold
+    return {
+        "model_family": "logistic",
+        "model": best_weights,
+        "threshold": float(best_threshold),
+        "train_frame": splits["train"].frame,
+        "feature_names": feature_names,
+        "default_interactions": ["drawdown_20:volume_vs_20"],
+    }
 
 
-def score_latest_row(feature_names: list[str], train_frame, latest_row) -> tuple[np.ndarray, dict[str, float]]:
+def fit_xgboost_model(splits: Mapping[str, DatasetSplit], feature_names: list[str]) -> dict[str, Any]:
+    xgb = require_xgboost()
+    train_x = splits["train"].frame[feature_names].to_numpy(dtype=np.float32)
+    validation_x = splits["validation"].frame[feature_names].to_numpy(dtype=np.float32)
+    train_y = splits["train"].labels.astype(np.float32)
+    validation_y = splits["validation"].labels.astype(np.float32)
+    params = ac.get_live_xgboost_params()
+    n_estimators = int(params.get("n_estimators", 200))
+    max_depth = int(params.get("max_depth", 3))
+    learning_rate = float(params.get("learning_rate", 0.05))
+
+    if hasattr(xgb, "DMatrix") and hasattr(xgb, "train"):
+        train_matrix = xgb.DMatrix(train_x, label=train_y)
+        validation_matrix = xgb.DMatrix(validation_x, label=validation_y)
+        model = xgb.train(
+            {
+                "objective": "binary:logistic",
+                "eval_metric": "logloss",
+                "max_depth": max_depth,
+                "eta": learning_rate,
+                "subsample": 1.0,
+                "colsample_bytree": 1.0,
+                "lambda": 1.0,
+                "seed": tr.SEED,
+            },
+            train_matrix,
+            num_boost_round=n_estimators,
+        )
+        validation_probabilities = np.asarray(model.predict(validation_matrix), dtype=np.float32)
+    else:
+        model = xgb.XGBClassifier(
+            objective="binary:logistic",
+            eval_metric="logloss",
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            learning_rate=learning_rate,
+            subsample=1.0,
+            colsample_bytree=1.0,
+            reg_lambda=1.0,
+            random_state=tr.SEED,
+        )
+        model.fit(train_x, train_y)
+        validation_probabilities = np.asarray(model.predict_proba(validation_x)[:, 1], dtype=np.float32)
+
+    threshold = tr.select_threshold(validation_probabilities, validation_y)
+    return {
+        "model_family": "xgboost",
+        "model": model,
+        "threshold": float(threshold),
+        "train_frame": splits["train"].frame,
+        "feature_names": feature_names,
+        "xgboost_params": {
+            "n_estimators": n_estimators,
+            "max_depth": max_depth,
+            "learning_rate": learning_rate,
+        },
+        "default_interactions": [],
+    }
+
+
+def fit_model(splits: Mapping[str, DatasetSplit], feature_names: list[str]) -> dict[str, Any]:
+    family = get_live_model_family()
+    if family == "xgboost":
+        return fit_xgboost_model(splits, feature_names)
+    return fit_logistic_model(splits, feature_names)
+
+
+def score_latest_row(model_artifacts: dict[str, Any], feature_names: list[str], train_frame, latest_row) -> tuple[np.ndarray, dict[str, float]]:
+    model_family = str(model_artifacts["model_family"])
     train_x = train_frame[feature_names].to_numpy(dtype=np.float32)
     latest_x = latest_row[feature_names].to_numpy(dtype=np.float32)
+    raw_snapshot = {name: float(latest_row.iloc[0][name]) for name in latest_row.columns if name != "date"}
+    if model_family == "xgboost":
+        return latest_x, raw_snapshot
     mean = train_x.mean(axis=0, keepdims=True)
     std = train_x.std(axis=0, keepdims=True)
     std = np.where(std < 1e-6, 1.0, std)
     standardized_latest = (latest_x - mean) / std
     _, _, latest_augmented = tr.add_interaction_terms(train_x[:1], train_x[:1], standardized_latest, feature_names)
     latest_augmented = tr.add_bias(latest_augmented)
-    raw_snapshot = {name: float(latest_row.iloc[0][name]) for name in latest_row.columns if name != "date"}
     return latest_augmented, raw_snapshot
+
+
+def predict_probabilities(model_artifacts: dict[str, Any], matrix: np.ndarray) -> np.ndarray:
+    model_family = str(model_artifacts["model_family"])
+    model = model_artifacts["model"]
+    if model_family == "xgboost":
+        xgb = require_xgboost()
+        dmatrix = getattr(xgb, "DMatrix", None)
+        if callable(dmatrix) and hasattr(model, "predict"):
+            return np.asarray(model.predict(dmatrix(matrix)), dtype=np.float32)
+        return np.asarray(model.predict_proba(matrix)[:, 1], dtype=np.float32)
+    return tr.sigmoid(matrix @ model)
+
+
+def build_history_probabilities(
+    model_artifacts: dict[str, Any], splits: Mapping[str, DatasetSplit], feature_names: list[str]
+) -> np.ndarray:
+    history_probs: list[np.ndarray] = []
+    train_frame = model_artifacts["train_frame"]
+    for split_name in ("validation", "test"):
+        split_frame = splits[split_name].frame
+        matrix, _ = score_latest_row(model_artifacts, feature_names, train_frame, split_frame)
+        history_probs.append(predict_probabilities(model_artifacts, matrix))
+    return np.concatenate(history_probs)
 
 
 def classify_signal(probability: float, threshold: float, historical_probabilities: np.ndarray) -> tuple[str, dict[str, float]]:
@@ -271,19 +396,16 @@ def main() -> None:
     live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
     splits = tr.load_splits()
     feature_names = build_feature_names()
-    weights, threshold = fit_model(splits, feature_names)
-    validation_history, test_history = score_latest_row(feature_names, splits["train"].frame, splits["validation"].frame), score_latest_row(
-        feature_names, splits["train"].frame, splits["test"].frame
-    )
+    model_artifacts = fit_model(splits, feature_names)
+    threshold = float(model_artifacts["threshold"])
+    train_frame = model_artifacts["train_frame"]
 
     latest_live = live_features.iloc[[-1]].copy()
-    latest_vector, raw_snapshot = score_latest_row(feature_names, splits["train"].frame, latest_live)
-    probability = float(tr.sigmoid(latest_vector @ weights)[0])
+    latest_vector, raw_snapshot = score_latest_row(model_artifacts, feature_names, train_frame, latest_live)
+    probability = float(predict_probabilities(model_artifacts, latest_vector)[0])
     predicted_label = int(probability >= threshold)
 
-    validation_probs = tr.sigmoid(validation_history[0] @ weights)
-    test_probs = tr.sigmoid(test_history[0] @ weights)
-    historical_probabilities = np.concatenate([validation_probs, test_probs])
+    historical_probabilities = build_history_probabilities(model_artifacts, splits, feature_names)
     raw_signal, band_info = classify_signal(probability, float(threshold), historical_probabilities)
     signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot)
     rule_top_pct = get_rule_top_pct()
@@ -325,11 +447,12 @@ def main() -> None:
         "latest_close": round(float(latest_live["close"].iloc[0]), 2),
         "trained_until_label_date": splits["test"].frame["date"].iloc[-1].strftime("%Y-%m-%d"),
         "model_summary": {
-            "model_family": "logistic_regression",
+            "model_family": str(model_artifacts["model_family"]),
             "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
-            "default_interactions": ["drawdown_20:volume_vs_20"],
+            "default_interactions": list(model_artifacts.get("default_interactions", [])),
             "live_decision_rule": "threshold_plus_buy_point_overlay",
             "reference_percentile_rule": f"top_{rule_top_pct:g}pct",
+            "xgboost_params": model_artifacts.get("xgboost_params", {}),
         },
         "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
         "latest_feature_snapshot": {

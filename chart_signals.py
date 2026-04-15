@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 from html import escape
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -15,12 +16,14 @@ import asset_config as ac
 import train as tr
 from predict_latest import (
     apply_buy_point_overlay,
+    build_history_probabilities,
     build_feature_names,
     build_model_rationale,
     build_rule_rationale,
     classify_signal,
     fit_model,
     get_rule_top_pct,
+    predict_probabilities,
     score_latest_row,
     summarize_rule,
 )
@@ -50,40 +53,34 @@ def get_env_int(name: str, default: int) -> int:
     return int(value) if value is not None else default
 
 
-def build_history_probabilities(weights: np.ndarray, splits: dict[str, object], feature_names: list[str]) -> np.ndarray:
-    history_probs: list[np.ndarray] = []
-    train_frame = splits["train"].frame
-    for split_name in ("validation", "test"):
-        split_frame = splits[split_name].frame
-        matrix, _ = score_latest_row(feature_names, train_frame, split_frame)
-        history_probs.append(tr.sigmoid(matrix @ weights))
-    return np.concatenate(history_probs)
-
-
 def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[str, object]]:
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
     raw_prices = download_asset_prices()
     live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
     splits = load_splits()
     feature_names = build_feature_names()
-    weights, threshold = fit_model(splits, feature_names)
-    history_probabilities = build_history_probabilities(weights, splits, feature_names)
+    model_artifacts = fit_model(splits, feature_names)
+    threshold = float(model_artifacts["threshold"])
+    history_probabilities = build_history_probabilities(model_artifacts, splits, feature_names)
     rule_top_pct = get_rule_top_pct()
 
-    train_frame = splits["train"].frame
+    train_frame = model_artifacts["train_frame"]
     scored = live_features.dropna(subset=feature_names).copy()
     scored = scored.tail(lookback_days).reset_index(drop=True)
 
     rows: list[dict[str, object]] = []
     for idx in range(len(scored)):
         row = scored.iloc[[idx]]
-        vector, snapshot = score_latest_row(feature_names, train_frame, row)
-        probability = float(tr.sigmoid(vector @ weights)[0])
+        vector, snapshot = score_latest_row(model_artifacts, feature_names, train_frame, row)
+        probability = float(predict_probabilities(model_artifacts, vector)[0])
         raw_signal, band_info = classify_signal(probability, float(threshold), history_probabilities)
         signal, buy_point_summary = apply_buy_point_overlay(raw_signal, snapshot)
         rule_info = summarize_rule(probability, history_probabilities, rule_top_pct)
         rationale_text = " | ".join(build_model_rationale(snapshot))
         rule_text = build_rule_rationale(probability, float(threshold), rule_info)
+        buy_point_warnings = cast(list[str], buy_point_summary["buy_point_warnings"])
+        rule_cutoff = float(cast(float | int | str, rule_info["cutoff"]))
+        percentile_rank = float(cast(float | int | str, rule_info["percentile_rank"]))
         rows.append(
             {
                 "date": row["date"].iloc[0].strftime("%Y-%m-%d"),
@@ -91,14 +88,14 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
                 "signal": signal,
                 "raw_model_signal": raw_signal,
                 "buy_point_ok": bool(buy_point_summary["buy_point_ok"]),
-                "buy_point_warnings": " | ".join(buy_point_summary["buy_point_warnings"]),
+                "buy_point_warnings": " | ".join(buy_point_warnings),
                 "probability": round(probability, 4),
                 "threshold": round(float(threshold), 4),
                 "confidence_gap": band_info["confidence_gap"],
                 "rule_selected": bool(rule_info["selected"]),
-                "rule_cutoff": round(float(rule_info["cutoff"]), 4),
+                "rule_cutoff": round(rule_cutoff, 4),
                 "rule_name": str(rule_info["rule_name"]),
-                "percentile_rank": round(float(rule_info["percentile_rank"]), 4),
+                "percentile_rank": round(percentile_rank, 4),
                 "model_rationale": rationale_text,
                 "rule_rationale": rule_text,
                 "ret_20": round(float(snapshot.get("ret_20", 0.0)), 4),

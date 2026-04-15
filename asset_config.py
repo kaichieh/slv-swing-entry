@@ -171,6 +171,28 @@ def get_live_extra_features(asset_key: str | None = None) -> tuple[str, ...]:
     return ()
 
 
+def get_live_model_family(asset_key: str | None = None) -> str:
+    config = load_asset_config(asset_key)
+    value = str(config.get("live_model_family", "logistic")).strip().lower()
+    return value if value else "logistic"
+
+
+def get_live_xgboost_params(asset_key: str | None = None) -> dict[str, int | float]:
+    config = load_asset_config(asset_key)
+    raw = config.get("live_xgboost_params", {})
+    if not isinstance(raw, dict):
+        return {}
+
+    params: dict[str, int | float] = {}
+    if "n_estimators" in raw:
+        params["n_estimators"] = int(raw["n_estimators"])
+    if "max_depth" in raw:
+        params["max_depth"] = int(raw["max_depth"])
+    if "learning_rate" in raw:
+        params["learning_rate"] = float(raw["learning_rate"])
+    return params
+
+
 def get_cache_dir(asset_key: str | None = None) -> Path:
     key = asset_key or get_asset_key()
     return REPO_DIR / ".cache" / f"{key}-swing-entry"
