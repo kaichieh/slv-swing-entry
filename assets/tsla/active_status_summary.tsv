@@ -1,4 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-adopted_top10	binary_operator	model_overlay	False	secondary	0	2026-03-18	0.41363	False	0.589892	nan	Keep as model-reference overlay, not the main execution rule.
-adopted_top20	binary_operator	model_overlay	False	secondary	0			False	0.559831	nan	Keep as model-reference overlay, not the main execution rule.
-fallback_top15	binary_operator	execution_preference	True	preferred_overlay	0	2026-03-18	0.391317	False	0.619859	nan	Preferred conservative execution overlay for TSLA.
+xgboost_tb30_distance_live	binary_live_model	execution_preference	True	inactive	0	2026-04-14	0.5733	False	0.7		Primary TSLA live line uses XGBoost with the future-return-top-bottom-30pct label and distance_to_252_high feature.

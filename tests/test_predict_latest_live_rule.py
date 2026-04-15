@@ -31,6 +31,35 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
         text = pl.build_rule_rationale(0.51, 0.50, rule_summary)
         self.assertIn("7.5%", text)
 
+    def test_get_live_model_family_defaults_to_logistic(self) -> None:
+        with mock.patch.object(pl.ac, "get_live_model_family", return_value="logistic"):
+            self.assertEqual(pl.get_live_model_family(), "logistic")
+
+    def test_get_live_model_family_rejects_unknown_value(self) -> None:
+        with mock.patch.object(pl.ac, "get_live_model_family", return_value="svm"):
+            with self.assertRaisesRegex(ValueError, "Unsupported live_model_family"):
+                pl.get_live_model_family()
+
+    def test_fit_model_uses_xgboost_path_when_configured(self) -> None:
+        fake_splits = {"train": mock.Mock(), "validation": mock.Mock(), "test": mock.Mock()}
+        expected = {"model_family": "xgboost", "threshold": 0.7}
+        with mock.patch.object(pl, "get_live_model_family", return_value="xgboost"):
+            with mock.patch.object(pl, "fit_xgboost_model", return_value=expected) as fit_xgboost:
+                result = pl.fit_model(fake_splits, ["distance_to_252_high"])
+
+        self.assertIs(result, expected)
+        fit_xgboost.assert_called_once_with(fake_splits, ["distance_to_252_high"])
+
+    def test_predict_probabilities_uses_xgboost_classifier_predict_proba(self) -> None:
+        model = mock.Mock()
+        model.predict_proba.return_value = np.array([[0.4, 0.6], [0.3, 0.7]], dtype=np.float32)
+        artifacts = {"model_family": "xgboost", "model": model}
+
+        with mock.patch.object(pl, "require_xgboost", return_value=mock.Mock(DMatrix=None)):
+            probabilities = pl.predict_probabilities(artifacts, np.ones((2, 1), dtype=np.float32))
+
+        np.testing.assert_allclose(probabilities, np.array([0.6, 0.7], dtype=np.float32))
+
 
 if __name__ == "__main__":
     unittest.main()

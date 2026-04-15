@@ -2,8 +2,18 @@
   "asset_key": "tsla",
   "symbol": "TSLA",
   "horizon_days": 60,
-  "upper_barrier": 0.12,
-  "lower_barrier": -0.06,
-  "label_mode": "drop-neutral",
-  "default_chart_signal_mode": "execution"
+  "upper_barrier": 0.15,
+  "lower_barrier": -0.08,
+  "label_mode": "future-return-top-bottom-30pct",
+  "default_chart_signal_mode": "execution",
+  "live_model_family": "xgboost",
+  "live_extra_features": [
+    "distance_to_252_high"
+  ],
+  "live_reference_top_pct": 30,
+  "live_xgboost_params": {
+    "n_estimators": 150,
+    "max_depth": 2,
+    "learning_rate": 0.05
+  }
 }

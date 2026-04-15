@@ -25,7 +25,7 @@ class RefreshActiveStatusGldTests(unittest.TestCase):
                 "trend_quality_20",
             ],
         }
-        chart_rows = [
+        signal_rows = [
             {"date": "2026-03-28", "signal": "no_entry"},
             {"date": "2026-03-31", "signal": "weak_bullish"},
             {"date": "2026-04-01", "signal": "bullish"},
@@ -37,7 +37,7 @@ class RefreshActiveStatusGldTests(unittest.TestCase):
         self.addCleanup(lambda: prediction_path.unlink(missing_ok=True))
 
         with patch.object(ras.ac, "get_latest_prediction_path", return_value=prediction_path):
-            with patch.object(ras.cs, "build_chart_rows", return_value=(chart_rows, {})):
+            with patch.object(ras, "read_signal_rows_from_cache", return_value=ras.pd.DataFrame(signal_rows)):
                 frame = ras.build_gld(tmpdir)
 
         row = frame.iloc[0]

@@ -1,12 +1,13 @@
 # TSLA Program
 
-This asset tracks the strongest current binary swing-entry candidate in the repo. The main job now is to decide whether the adopted TSLA line can become a durable operating default.
+This asset tracks the strongest current binary swing-entry candidate in the repo. The main job now is to validate whether the new TSLA XGBoost line can stay strong enough across rolling windows to justify long-term default status.
 
 ## Current Research Direction
 
 - baseline reference: `60d +12%/-6% drop-neutral`
-- adopted candidate: `60d +15%/-8% + ret_60 + sma_gap_60 + distance_to_252_high`
-- focus on rule quality and walk-forward stability rather than basic feature discovery
+- adopted candidate: `future-return-top-bottom-30pct + distance_to_252_high + xgboost`
+- live settings: `n_estimators=150`, `max_depth=2`, `learning_rate=0.05`
+- focus on walk-forward robustness and operator behavior now that the headline target has been cleared
 
 ## Working Style
 
