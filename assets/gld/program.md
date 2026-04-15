@@ -5,10 +5,10 @@ This asset is part of the cross-asset batch universe under the `Macro ETFs` buck
 ## Current Research Direction
 
 - baseline reference: `60d +8%/-4% drop-neutral`
-- strongest tracked static-split winner: `future-return-top-bottom-10pct` with `hard_gate_two_expert_mixed`
-- current winning gate mixes `dual_context` and `context_no_atr` using `atr_pct_20_percentile >= 0.75`
-- establish a clean baseline before trying asset-specific feature ideas
-- compare this line against the rest of the first-round universe for predictability and stability
+- official live default: `future-return-top-bottom-10pct` with `hard_gate_two_expert_mixed`
+- the live path mixes `dual_context` and `context_no_atr` using `atr_pct_20_percentile >= 0.75`
+- Monitor Board now reads the production GLD state from this live path through `predict_latest.py -> refresh_active_status.py -> refresh_monitor_snapshot.py -> refresh_monitor_board.py`
+- older rolling-vol and context-stack operator files remain historical comparison material, not the current live default
 
 ## Working Style
 

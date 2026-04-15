@@ -4,5 +4,8 @@
   "horizon_days": 60,
   "upper_barrier": 0.08,
   "lower_barrier": -0.04,
-  "label_mode": "drop-neutral"
+  "label_mode": "drop-neutral",
+  "default_chart_signal_mode": "execution",
+  "live_model_family": "hard_gate_two_expert_mixed",
+  "live_label_mode": "future-return-top-bottom-10pct"
 }

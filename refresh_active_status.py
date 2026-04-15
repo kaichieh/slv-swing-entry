@@ -376,8 +376,16 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
     recent_selected_count = int(len(selected_rows))
     selected_dates = [str(value) for value in selected_rows["date"].tolist()]
     live_extra_features = tuple(str(name) for name in payload.get("model_extra_features", []) if str(name).strip())
-    reference_rule = str(payload.get("model_summary", {}).get("reference_percentile_rule", "top_20pct"))
-    if len(live_extra_features) > 2:
+    model_summary = payload.get("model_summary", {})
+    reference_rule = str(model_summary.get("reference_percentile_rule", "top_20pct"))
+    model_family = str(model_summary.get("model_family", "logistic"))
+    live_label_mode = str(model_summary.get("label_mode", "drop-neutral"))
+    latest_signal = str(payload.get("signal_summary", {}).get("signal", "no_entry"))
+    latest_selected = latest_signal != "no_entry"
+    if model_family == "hard_gate_two_expert_mixed":
+        line_id = "hard_gate_two_expert_mixed_live"
+        feature_note = f"hard-gate mixed two-expert {live_label_mode} path"
+    elif len(live_extra_features) > 2:
         line_id = "context_stack_live"
         feature_note = "context-stack extras"
     elif live_extra_features:
@@ -393,11 +401,11 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
                 "lane_type": "binary_operator",
                 "role": "primary",
                 "preferred": True,
-                "status": "active" if bool(payload["signal_summary"]["predicted_label"]) else "inactive",
+                "status": "active" if latest_selected else "inactive",
                 "recent_selected_count": recent_selected_count,
                 "latest_date": str(payload["latest_raw_date"]),
                 "latest_value": float(payload["signal_summary"]["predicted_probability"]),
-                "latest_selected": bool(payload["signal_summary"]["predicted_label"]),
+                "latest_selected": latest_selected,
                 "cutoff": float(payload["signal_summary"]["decision_threshold"]),
                 "last_selected_date": selected_dates[-1] if selected_dates else "",
                 "usage_note": f"Current GLD live line uses {feature_note} with the threshold-plus-buy-point overlay; {reference_rule} remains the reference rule.",

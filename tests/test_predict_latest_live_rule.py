@@ -40,6 +40,10 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Unsupported live_model_family"):
                 pl.get_live_model_family()
 
+    def test_get_live_model_family_accepts_hard_gate_two_expert_mixed(self) -> None:
+        with mock.patch.object(pl.ac, "get_live_model_family", return_value="hard_gate_two_expert_mixed"):
+            self.assertEqual(pl.get_live_model_family(), "hard_gate_two_expert_mixed")
+
     def test_fit_model_uses_xgboost_path_when_configured(self) -> None:
         fake_splits = {"train": mock.Mock(), "validation": mock.Mock(), "test": mock.Mock()}
         expected = {"model_family": "xgboost", "threshold": 0.7}
@@ -49,6 +53,17 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
 
         self.assertIs(result, expected)
         fit_xgboost.assert_called_once_with(fake_splits, ["distance_to_252_high"])
+
+    def test_fit_model_uses_hard_gate_two_expert_mixed_path_when_configured(self) -> None:
+        fake_splits = {"train": mock.Mock(), "validation": mock.Mock(), "test": mock.Mock()}
+        fake_prices = mock.Mock()
+        expected = {"model_family": "hard_gate_two_expert_mixed", "threshold": 0.51}
+        with mock.patch.object(pl, "get_live_model_family", return_value="hard_gate_two_expert_mixed"):
+            with mock.patch.object(pl, "fit_hard_gate_two_expert_mixed_model", return_value=expected) as fit_mixed:
+                result = pl.fit_model(fake_splits, ["distance_to_252_high"], raw_prices=fake_prices)
+
+        self.assertIs(result, expected)
+        fit_mixed.assert_called_once_with(fake_prices)
 
     def test_predict_probabilities_uses_xgboost_classifier_predict_proba(self) -> None:
         model = mock.Mock()

@@ -8,7 +8,9 @@ import asset_config as ac
 
 
 def normalize_date(value: object) -> pd.Timestamp | None:
-    if value is None or pd.isna(value):
+    if value is None:
+        return None
+    if bool(pd.isna(value)):
         return None
     text = str(value).strip()
     if not text or text.lower() == "nan":
@@ -50,9 +52,15 @@ def build_snapshot() -> pd.DataFrame:
     status = str(row["status"])
     role = str(row["role"])
     action = decide_action(status, latest_selected, recent_selected_count, lane_type, role)
+    latest_value = None if pd.isna(row["latest_value"]) else float(row["latest_value"])
+    cutoff = None if pd.isna(row["cutoff"]) else float(row["cutoff"])
+    if action == "watchlist_wait" and status == "inactive" and latest_value is not None and cutoff is not None and latest_value >= cutoff:
+        action = "watchlist_blocked"
 
     if latest_selected:
         action_note = "Preferred line is currently selected."
+    elif action == "watchlist_blocked":
+        action_note = "Preferred line clears threshold, but the buy-point overlay blocks entry today."
     elif action == "reference_only":
         action_note = "Keep as market/reference context only."
     elif action == "research_only":
@@ -74,9 +82,9 @@ def build_snapshot() -> pd.DataFrame:
                 "action": action,
                 "recent_selected_count": recent_selected_count,
                 "latest_date": "" if latest_date is None else latest_date.strftime("%Y-%m-%d"),
-                "latest_value": None if pd.isna(row["latest_value"]) else float(row["latest_value"]),
+                "latest_value": latest_value,
                 "latest_selected": latest_selected,
-                "cutoff": None if pd.isna(row["cutoff"]) else float(row["cutoff"]),
+                "cutoff": cutoff,
                 "last_selected_date": "" if last_selected_date is None else last_selected_date.strftime("%Y-%m-%d"),
                 "days_since_last_selected": days_since_last,
                 "action_note": action_note,

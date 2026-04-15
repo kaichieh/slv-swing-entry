@@ -41,6 +41,7 @@ def refresh_asset(asset_key: str) -> None:
         run_step("predict_latest.py", asset_key)
         run_step("chart_signals.py", asset_key)
     run_step("refresh_active_status.py", asset_key)
+    run_step("render_active_status.py", asset_key)
     run_step("refresh_monitor_snapshot.py", asset_key)
     elapsed = time.perf_counter() - start
     print(f"[{asset_key}] done in {elapsed:.1f}s", flush=True)
