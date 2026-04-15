@@ -123,9 +123,17 @@ def _build_research_action_note(followup_round: int | None) -> str:
     return "Priority research candidate."
 
 
+def has_real_chart(asset_key: str) -> bool:
+    if ac.uses_regression_chart(asset_key):
+        return ac.get_regression_recent_chart_path(asset_key).exists()
+    return ac.get_chart_output_path(asset_key).exists()
+
+
 def load_operating_board() -> pd.DataFrame:
     frames: list[pd.DataFrame] = []
     for key in ac.MONITOR_BOARD_ASSET_KEYS:
+        if not has_real_chart(key):
+            continue
         path = ac.get_monitor_snapshot_path(key)
         if not path.exists():
             continue
@@ -144,6 +152,8 @@ def load_operating_board() -> pd.DataFrame:
 def load_priority_research_board() -> pd.DataFrame:
     records: list[dict[str, object]] = []
     for key in ac.MONITOR_PRIORITY_RESEARCH_ASSET_KEYS:
+        if not has_real_chart(key):
+            continue
         operator_row, validation_row, followup_round = _load_followup_rows(key)
         snapshot_row = _load_snapshot_row(key)
         base_row: pd.Series | None = operator_row if operator_row is not None else validation_row if validation_row is not None else snapshot_row
@@ -205,6 +215,8 @@ def load_board() -> pd.DataFrame:
     operating = load_operating_board()
     research = load_priority_research_board()
     board = pd.concat([operating, research], ignore_index=True, sort=False)
+    if "research_score" not in board.columns:
+        board["research_score"] = float("nan")
     board["sort_priority"] = board["action"].map(lambda value: MIXED_ACTION_PRIORITY.get(str(value), 99))
     board["research_sort_score"] = board["research_score"].fillna(-1.0)
     return board.sort_values(["sort_priority", "research_sort_score", "symbol"], ascending=[True, False, True]).drop(
