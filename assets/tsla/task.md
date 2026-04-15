@@ -73,11 +73,22 @@
 
 - [x] Test whether the new context indicators can clean up TSLA without giving up too much core quality. Performance: on the existing `60d +15%/-8%` label, the stack `ret_60 + sma_gap_60 + distance_to_252_high + trend_quality_20 + percent_up_days_20 + distance_from_60d_low` reached `validation_f1=0.4930`, `validation_bal_acc=0.6445`, `test_f1=0.5188`, and `test_bal_acc=0.5980`. It did improve balance versus the raw baseline-style lines, but it still lost too much test `f1` versus the adopted combo `ret_60 + sma_gap_60 + distance_to_252_high`, so TSLA did not get a real replacement candidate from the new indicator family.
 
+## Round 14 XGBoost Cutover
+
+- [x] Test whether TSLA needs a different model family rather than more logistic feature stacking. Performance: the logistic and regime paths still topped out around `headline_score=0.5962`, so they did not offer a credible route to `0.75`.
+- [x] Expand TSLA into the XGBoost family with top-bottom labels. Performance: `future-return-top-bottom-20pct + distance_to_252_high` reached `headline_score=0.6806`, which confirmed that the model-family change mattered more than more linear stacking.
+- [x] Sweep the wider top-bottom label range for the new TSLA path. Performance: `future-return-top-bottom-30pct + distance_to_252_high + xgboost` reached `validation_f1=0.6431`, `validation_bal_acc=0.7815`, `test_f1=0.7746`, `test_bal_acc=0.7915`, `headline_score=0.7541`, and `test_positive_rate=0.4225`, becoming the first TSLA line to clear the headline target.
+- [x] Verify that the threshold-clearing XGBoost result is reproducible before adopting it. Performance: the default `tb30 + distance_to_252_high + xgboost` run repeated at the same `headline_score=0.7541`, so the result did not depend on a one-off rerun.
+- [x] Tune the winning TSLA XGBoost line once the baseline path was confirmed. Performance: `n_estimators=150`, `max_depth=2`, and `learning_rate=0.05` lifted the same `tb30 + distance_to_252_high` line to `validation_f1=0.6431`, `validation_bal_acc=0.7815`, `test_f1=0.7931`, `test_bal_acc=0.8080`, and `headline_score=0.7664`.
+- [x] Switch the checked-in TSLA live method to the new XGBoost path. Performance: `assets/tsla/config.json` now points TSLA at `future-return-top-bottom-30pct`, `distance_to_252_high`, and the tuned XGBoost live settings, while the live/chart code reads the configured model family instead of assuming logistic only.
+- [x] Re-check walk-forward behavior after the XGBoost breakthrough. Performance: the path clears the static `headline_score` target, but fold stability is still mixed (`fold_1 test_bal_acc=0.5693`, `fold_2=0.6501`, `fold_3=0.7810` on the tuned `tb30 + distance_to_252_high` path), so this is a research success and live-method cutover, not proof of a regime-invariant production strategy.
+
 ## Notes
 
-- TSLA is no longer purely label-limited; `distance_to_252_high` unlocked a meaningful separation signal.
-- The current adopted TSLA path is `60d +15%/-8% + ret_60 + sma_gap_60 + distance_to_252_high`.
-- If we need a more conservative TSLA operating overlay later, `ret_60 + distance_to_252_high + top_15pct` is now the cleanest fallback candidate.
+- TSLA is no longer purely label-limited; `distance_to_252_high` unlocked the winning separation signal, but it only crossed the headline threshold once the asset moved to XGBoost.
+- The current adopted TSLA path is `future-return-top-bottom-30pct + distance_to_252_high + xgboost` with tuned live params `150 / depth 2 / lr 0.05`.
+- The older `60d +15%/-8% + ret_60 + sma_gap_60 + distance_to_252_high` line is now historical context only; it no longer defines the live TSLA method.
+- If we need a more conservative TSLA operating overlay later, `ret_60 + distance_to_252_high + top_15pct` remains the cleanest logistic-era fallback candidate.
 - The near-absence of `strong_bullish / very_strong_bullish` in the TSLA HTML is not a chart bug by itself. A full `1260`-bar audit showed that the raw model did generate `77` `strong_bullish` bars and `34` `very_strong_bullish` bars, but the final rendered execution signal kept only `122` `bullish`, `932` `weak_bullish`, and `206` `no_entry`, with `0` surviving `strong_bullish` or `very_strong_bullish` bars.
 - The reason is the buy-point overlay. Across the chart window, `557` bars were downgraded (`raw_model_signal != signal`), so the current HTML is showing the filtered execution stance rather than raw model-conviction colors. That behavior is directionally consistent with TSLA's current role: the line is usable, but the execution layer is deliberately conservative.
 - If we want the chart to communicate both conviction and execution in the future, the next UI decision should be whether to expose `raw_model_signal` as a separate visual layer instead of compressing everything into the post-overlay signal alone.
