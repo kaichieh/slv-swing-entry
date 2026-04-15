@@ -52,6 +52,12 @@ class ChartSignalsPayloadTests(unittest.TestCase):
                 ):
                     payload = cs.build_chart_payload(rows, meta)
 
+        self.assertEqual(payload["variant"], "signal")
+        self.assertEqual(payload["title"], "GLD hard_gate_two_expert_mixed")
+        self.assertEqual(
+            payload["subtitle"],
+            "Generated date: 2026-04-14 · Latest date: 2026-04-14 · Lookback: 1260",
+        )
         self.assertEqual(payload["algorithm_name"], "hard_gate_two_expert_mixed")
         self.assertEqual(payload["label_mode"], "future-return-top-bottom-10pct")
         self.assertEqual(payload["default_chart_signal_mode"], "execution")
