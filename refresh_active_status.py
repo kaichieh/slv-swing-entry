@@ -371,10 +371,10 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
     if not latest_prediction_path.exists():
         raise FileNotFoundError(f"Missing GLD latest prediction file: {latest_prediction_path}")
     payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
-    chart_rows, _meta = cs.build_chart_rows(60)
-    selected_rows = [row for row in chart_rows if str(row.get("signal", "")) != "no_entry"]
+    rows = read_signal_rows_from_cache(latest_prediction_path.parent, "gld", 60)
+    selected_rows = rows.loc[rows["signal"].astype(str) != "no_entry"]
     recent_selected_count = int(len(selected_rows))
-    selected_dates = [str(row.get("date", "")) for row in selected_rows]
+    selected_dates = [str(value) for value in selected_rows["date"].tolist()]
     live_extra_features = tuple(str(name) for name in payload.get("model_extra_features", []) if str(name).strip())
     reference_rule = str(payload.get("model_summary", {}).get("reference_percentile_rule", "top_20pct"))
     if len(live_extra_features) > 2:
