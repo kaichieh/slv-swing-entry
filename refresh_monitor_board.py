@@ -11,6 +11,7 @@ import asset_config as ac
 ACTION_PRIORITY = {
     "selected_now": 0,
     "watchlist_wait": 1,
+    "watchlist_blocked": 1,
     "inactive_wait": 2,
     "reference_only": 3,
     "research_only": 4,
@@ -19,6 +20,7 @@ ACTION_PRIORITY = {
 MIXED_ACTION_PRIORITY = {
     "selected_now": 0,
     "watchlist_wait": 1,
+    "watchlist_blocked": 1,
     "priority_research": 2,
     "inactive_wait": 3,
     "reference_only": 4,
@@ -383,7 +385,9 @@ def render_role_card(row: pd.Series) -> str:
 def build_html(board: pd.DataFrame) -> str:
     counts = board["action"].value_counts().to_dict()
     summary = " | ".join(f"{key}={value}" for key, value in counts.items())
-    today_board = board.loc[board["action"].isin(["selected_now", "watchlist_wait", "priority_research", "inactive_wait"])].copy()
+    today_board = board.loc[
+        board["action"].isin(["selected_now", "watchlist_wait", "watchlist_blocked", "priority_research", "inactive_wait"])
+    ].copy()
     today_cards = "\n".join(render_today_card(row) for _, row in today_board.iterrows())
     role_cards = "\n".join(render_role_card(row) for _, row in board.iterrows())
     today_legend = "".join(
