@@ -45,11 +45,62 @@ class PrepareNewFeaturesTests(unittest.TestCase):
         payload = "DATE,VIXCLS\n2020-01-02,13.45\n2020-01-01,12.50\n2020-01-02,14.00\n"
 
         with mock.patch.object(prepare, "fetch_text", return_value=payload):
-            normalized = prepare.download_vix_prices("https://fred.example/vix.csv")
+            with mock.patch.object(prepare, "VIX_CACHE_PATH", "unused_vix_cache.csv"):
+                normalized = prepare.download_vix_prices("https://fred.example/vix.csv")
 
         self.assertEqual(list(normalized.columns), ["date", "close"])
         self.assertEqual(list(normalized["date"]), list(pd.to_datetime(["2020-01-01", "2020-01-02"])))
         self.assertEqual(list(normalized["close"]), [12.5, 14.0])
+
+    def test_download_vix_prices_falls_back_to_cached_csv_on_timeout(self) -> None:
+        cache_path = os.path.join(self._testMethodName + "_cache", "vixcls.csv")
+        cache_dir = os.path.dirname(cache_path)
+        os.makedirs(cache_dir, exist_ok=True)
+        try:
+            pd.DataFrame(
+                {
+                    "date": ["2020-01-01", "2020-01-02"],
+                    "close": [12.5, 13.45],
+                }
+            ).to_csv(cache_path, index=False)
+
+            with mock.patch.object(prepare, "fetch_text", side_effect=TimeoutError("timed out")):
+                with mock.patch.object(prepare, "VIX_CACHE_PATH", cache_path):
+                    normalized = prepare.download_vix_prices("https://fred.example/vix.csv")
+
+            self.assertEqual(list(normalized.columns), ["date", "close"])
+            self.assertEqual(list(normalized["date"]), list(pd.to_datetime(["2020-01-01", "2020-01-02"])))
+            self.assertEqual(list(normalized["close"]), [12.5, 13.45])
+        finally:
+            if os.path.exists(cache_path):
+                os.remove(cache_path)
+            if os.path.isdir(cache_dir):
+                os.rmdir(cache_dir)
+
+    def test_download_vix_prices_falls_back_to_cached_csv_on_connection_reset(self) -> None:
+        cache_path = os.path.join(self._testMethodName + "_cache", "vixcls.csv")
+        cache_dir = os.path.dirname(cache_path)
+        os.makedirs(cache_dir, exist_ok=True)
+        try:
+            pd.DataFrame(
+                {
+                    "date": ["2020-01-01", "2020-01-02"],
+                    "close": [12.5, 13.45],
+                }
+            ).to_csv(cache_path, index=False)
+
+            with mock.patch.object(prepare, "fetch_text", side_effect=ConnectionResetError("reset")):
+                with mock.patch.object(prepare, "VIX_CACHE_PATH", cache_path):
+                    normalized = prepare.download_vix_prices("https://fred.example/vix.csv")
+
+            self.assertEqual(list(normalized.columns), ["date", "close"])
+            self.assertEqual(list(normalized["date"]), list(pd.to_datetime(["2020-01-01", "2020-01-02"])))
+            self.assertEqual(list(normalized["close"]), [12.5, 13.45])
+        finally:
+            if os.path.exists(cache_path):
+                os.remove(cache_path)
+            if os.path.isdir(cache_dir):
+                os.rmdir(cache_dir)
 
     def test_normalize_vix_frame_accepts_fred_observation_date_column(self) -> None:
         frame = pd.DataFrame(
@@ -64,6 +115,50 @@ class PrepareNewFeaturesTests(unittest.TestCase):
         self.assertEqual(list(normalized.columns), ["date", "close"])
         self.assertEqual(list(normalized["date"]), list(pd.to_datetime(["2020-01-01", "2020-01-02"])))
         self.assertEqual(list(normalized["close"]), [12.5, 13.45])
+
+    def test_download_vix3m_prices_normalizes_fred_vxvcls_shape(self) -> None:
+        payload = "observation_date,VXVCLS\n2020-01-02,18.45\n2020-01-01,17.50\n2020-01-02,19.00\n"
+
+        with mock.patch.object(prepare, "fetch_text", return_value=payload):
+            with mock.patch.object(prepare, "VIX3M_CACHE_PATH", "unused_vix3m_cache.csv"):
+                normalized = prepare.download_vix3m_prices("https://fred.example/vxv.csv")
+
+        self.assertEqual(list(normalized.columns), ["date", "close"])
+        self.assertEqual(list(normalized["date"]), list(pd.to_datetime(["2020-01-01", "2020-01-02"])))
+        self.assertEqual(list(normalized["close"]), [17.5, 19.0])
+
+    def test_add_vix_term_structure_features_adds_ratio_spread_and_percentile(self) -> None:
+        frame = make_price_frame().iloc[60:140].reset_index(drop=True)
+        frame = prepare.add_context_features(prepare.add_price_features(frame))
+        frame = prepare.add_vix_features(frame, self.make_vix_frame())
+        vix3m = pd.DataFrame(
+            {
+                "date": frame["date"],
+                "close": np.linspace(20.0, 40.0, len(frame)),
+            }
+        )
+
+        enriched = prepare.add_vix_term_structure_features(frame, vix3m)
+
+        self.assertIn("vix3m_close_lag1", enriched.columns)
+        self.assertIn("vix_vxv_ratio_lag1", enriched.columns)
+        self.assertIn("vix_vxv_spread_lag1", enriched.columns)
+        self.assertIn("vix_vxv_ratio_pct_63", enriched.columns)
+        self.assertIn("vix_vxv_ratio_pct_63_rolling_max_3", enriched.columns)
+        last = enriched.dropna(subset=["vix3m_close_lag1", "vix_vxv_ratio_lag1", "vix_vxv_spread_lag1", "vix_vxv_ratio_pct_63"]).iloc[-1]
+        self.assertGreater(last["vix3m_close_lag1"], 0.0)
+        self.assertGreater(last["vix_vxv_ratio_lag1"], 0.0)
+        self.assertTrue(0.0 <= last["vix_vxv_ratio_pct_63"] <= 1.0)
+
+    def test_term_structure_columns_are_selectable_experimental_features(self) -> None:
+        for column in [
+            "vix3m_close_lag1",
+            "vix_vxv_ratio_lag1",
+            "vix_vxv_spread_lag1",
+            "vix_vxv_ratio_pct_63",
+            "vix_vxv_ratio_pct_63_rolling_max_3",
+        ]:
+            self.assertIn(column, prepare.EXPERIMENTAL_FEATURE_COLUMNS)
 
     def test_add_vix_features_aligns_backward_without_lookahead(self) -> None:
         asset = make_price_frame().iloc[:5].copy()
@@ -158,6 +253,32 @@ class PrepareNewFeaturesTests(unittest.TestCase):
         self.assertGreater(len(baseline), len(with_selected_experimental))
         self.assertIn("atr_pct_20_percentile", baseline.columns)
         self.assertIn("atr_pct_20_percentile", with_selected_experimental.columns)
+
+    def test_add_features_skips_vix_pipeline_when_no_vix_features_selected(self) -> None:
+        raw = make_price_frame()
+
+        with mock.patch.object(prepare, "BENCHMARK_SYMBOL", ""):
+            with mock.patch.dict(os.environ, {"AR_EXTRA_BASE_FEATURES": ""}, clear=False):
+                with mock.patch.object(prepare, "download_vix_prices") as download_vix_prices:
+                    with mock.patch.object(prepare, "add_vix_features") as add_vix_features:
+                        prepare.add_features(raw)
+
+        download_vix_prices.assert_not_called()
+        add_vix_features.assert_not_called()
+
+    def test_add_features_uses_vix_pipeline_when_vix_feature_selected(self) -> None:
+        raw = make_price_frame()
+        vix = self.make_vix_frame()
+        enriched = prepare.add_context_features(prepare.add_price_features(raw)).assign(vix_close_lag1=20.0)
+
+        with mock.patch.object(prepare, "BENCHMARK_SYMBOL", ""):
+            with mock.patch.dict(os.environ, {"AR_EXTRA_BASE_FEATURES": "vix_close_lag1"}, clear=False):
+                with mock.patch.object(prepare, "download_vix_prices", return_value=vix) as download_vix_prices:
+                    with mock.patch.object(prepare, "add_vix_features", return_value=enriched) as add_vix_features:
+                        prepare.add_features(raw)
+
+        download_vix_prices.assert_called_once_with()
+        self.assertEqual(add_vix_features.call_count, 1)
 
 
 if __name__ == "__main__":

@@ -63,6 +63,9 @@ FEATURE_COLUMNS = [
 
 DEFAULT_EXTRA_BASE_FEATURES = ac.get_live_extra_features()
 VIX_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS"
+VIX_CACHE_PATH = str(Path(CACHE_DIR).parent / "vixcls.csv")
+VIX3M_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VXVCLS"
+VIX3M_CACHE_PATH = str(Path(CACHE_DIR).parent / "vxvcls.csv")
 
 EXPERIMENTAL_FEATURE_COLUMNS = [
     "ret_60",
@@ -103,6 +106,11 @@ EXPERIMENTAL_FEATURE_COLUMNS = [
     "vix_z_20",
     "vix_percentile_20",
     "vix_high_regime_flag",
+    "vix3m_close_lag1",
+    "vix_vxv_ratio_lag1",
+    "vix_vxv_spread_lag1",
+    "vix_vxv_ratio_pct_63",
+    "vix_vxv_ratio_pct_63_rolling_max_3",
 ]
 
 
@@ -323,14 +331,50 @@ def download_prices_from_stooq(url: str) -> pd.DataFrame:
 
 
 def download_vix_prices(url: str = VIX_CSV_URL) -> pd.DataFrame:
-    frame = pd.read_csv(StringIO(fetch_text(url)))
-    if frame.empty:
-        raise RuntimeError("Downloaded VIX dataset is empty.")
-    return normalize_vix_frame(frame)
+    ensure_cache_dir()
+    try:
+        frame = pd.read_csv(StringIO(fetch_text(url)))
+        if frame.empty:
+            raise RuntimeError("Downloaded VIX dataset is empty.")
+        normalized = normalize_vix_frame(frame)
+        normalized.to_csv(VIX_CACHE_PATH, index=False)
+        return normalized
+    except Exception as exc:
+        if not should_fallback_to_cached_prices(exc):
+            raise
+        if not os.path.exists(VIX_CACHE_PATH):
+            raise
+        cached = pd.read_csv(VIX_CACHE_PATH)
+        if cached.empty:
+            raise RuntimeError("Cached VIX dataset is empty.")
+        return normalize_vix_frame(cached)
+
+
+def download_vix3m_prices(url: str = VIX3M_CSV_URL) -> pd.DataFrame:
+    ensure_cache_dir()
+    try:
+        try:
+            frame = pd.read_csv(url)
+        except Exception:
+            frame = pd.read_csv(StringIO(fetch_text(url)))
+        if frame.empty:
+            raise RuntimeError("Downloaded VIX3M dataset is empty.")
+        normalized = normalize_vix_frame(frame)
+        normalized.to_csv(VIX3M_CACHE_PATH, index=False)
+        return normalized
+    except Exception as exc:
+        if not should_fallback_to_cached_prices(exc):
+            raise
+        if not os.path.exists(VIX3M_CACHE_PATH):
+            raise
+        cached = pd.read_csv(VIX3M_CACHE_PATH)
+        if cached.empty:
+            raise RuntimeError("Cached VIX3M dataset is empty.")
+        return normalize_vix_frame(cached)
 
 
 def should_fallback_to_cached_prices(exc: Exception) -> bool:
-    if isinstance(exc, (HTTPError, URLError, TimeoutError, pd.errors.EmptyDataError, pd.errors.ParserError, RemoteDisconnected)):
+    if isinstance(exc, (HTTPError, URLError, TimeoutError, ConnectionResetError, pd.errors.EmptyDataError, pd.errors.ParserError, RemoteDisconnected)):
         return True
     if isinstance(exc, ValueError):
         return True
@@ -455,9 +499,30 @@ def add_vix_features(frame: pd.DataFrame, vix_frame: pd.DataFrame) -> pd.DataFra
     return merged
 
 
+def add_vix_term_structure_features(frame: pd.DataFrame, vix3m_frame: pd.DataFrame) -> pd.DataFrame:
+    if "vix_close_lag1" not in frame.columns:
+        raise RuntimeError("VIX term structure features require add_vix_features to run first.")
+    df = frame.copy().sort_values("date").reset_index(drop=True)
+    vix3m = normalize_vix_frame(vix3m_frame).rename(columns={"close": "vix3m_close"})
+    merged = pd.merge_asof(df, vix3m, on="date", direction="backward")
+    merged["vix3m_close_lag1"] = cast(pd.Series, merged["vix3m_close"]).shift(1)
+    merged["vix_vxv_ratio_lag1"] = merged["vix_close_lag1"] / (merged["vix3m_close_lag1"] + 1e-10)
+    merged["vix_vxv_spread_lag1"] = merged["vix_close_lag1"] - merged["vix3m_close_lag1"]
+    ratio = cast(pd.Series, merged["vix_vxv_ratio_lag1"])
+    merged["vix_vxv_ratio_pct_63"] = ratio.rolling(63).rank(pct=True)
+    merged["vix_vxv_ratio_pct_63_rolling_max_3"] = (
+        cast(pd.Series, merged["vix_vxv_ratio_pct_63"]).rolling(3).max()
+    )
+    return merged
+
+
 def get_selected_experimental_feature_columns() -> list[str]:
     configured = set(get_env_csv("AR_EXTRA_BASE_FEATURES", DEFAULT_EXTRA_BASE_FEATURES))
     return [column for column in EXPERIMENTAL_FEATURE_COLUMNS if column in configured]
+
+
+def selected_vix_features_requested() -> bool:
+    return any(column.startswith("vix_") for column in get_selected_experimental_feature_columns())
 
 
 def build_barrier_labels(
@@ -577,7 +642,8 @@ def add_features(frame: pd.DataFrame) -> pd.DataFrame:
     df = add_price_features(frame)
     df = add_relative_strength_features(df, BENCHMARK_SYMBOL)
     df = add_context_features(df)
-    df = add_vix_features(df, download_vix_prices())
+    if selected_vix_features_requested():
+        df = add_vix_features(df, download_vix_prices())
     labels, realized_returns = build_barrier_labels(
         df,
         int(config["horizon_days"]),
