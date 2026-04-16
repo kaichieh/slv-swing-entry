@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import os
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -45,6 +46,7 @@ def main() -> None:
     live_frame = pr.add_price_features(live_raw)
     live_frame = pr.add_relative_strength_features(live_frame, pr.BENCHMARK_SYMBOL)
     live_frame = pr.add_context_features(live_frame)
+    live_frame = pr.add_vix_features(live_frame, pr.download_vix_prices())
     _live_labels, live_realized_returns = pr.build_barrier_labels(live_frame, 60, 0.08, -0.04)
     live_frame["future_return_60"] = live_realized_returns
     live_frame = live_frame.replace([np.inf, -np.inf], np.nan)
@@ -85,20 +87,28 @@ def main() -> None:
     recent_frame["selected"] = selected.to_numpy(dtype=bool)
     recent_frame["prediction_percentile"] = percentile
 
-    output = recent_frame[
-        [
-            "date",
-            "close",
-            "predicted_return",
-            "future_return_60",
-            "prediction_percentile",
-            "bucket_direction",
-            "bucket_pct",
-            "bucket_cutoff",
-            "selected",
+    output = cast(
+        pd.DataFrame,
+        recent_frame.loc[
+            :,
+            [
+                "date",
+                "close",
+                "predicted_return",
+                "future_return_60",
+                "prediction_percentile",
+                "bucket_direction",
+                "bucket_pct",
+                "bucket_cutoff",
+                "selected",
+            ],
         ]
-    ].tail(lookback)
+        .tail(lookback)
+        .reset_index(drop=True),
+    )
     output.to_csv(OUTPUT_PATH, sep="\t", index=False)
+
+    latest_row = cast(pd.Series | None, output.iloc[-1] if len(output) else None)
 
     summary = {
         "asset_key": ac.get_asset_key(),
@@ -107,9 +117,9 @@ def main() -> None:
         "bucket_pct": bucket_pct,
         "bucket_cutoff": cutoff,
         "lookback_rows": len(output),
-        "latest_date": output["date"].iloc[-1].strftime("%Y-%m-%d") if len(output) else None,
-        "latest_predicted_return": float(output["predicted_return"].iloc[-1]) if len(output) else None,
-        "latest_selected": bool(output["selected"].iloc[-1]) if len(output) else False,
+        "latest_date": cast(pd.Timestamp, latest_row["date"]).strftime("%Y-%m-%d") if latest_row is not None else None,
+        "latest_predicted_return": float(latest_row["predicted_return"]) if latest_row is not None else None,
+        "latest_selected": bool(latest_row["selected"]) if latest_row is not None else False,
     }
     print(json.dumps(summary, indent=2))
 

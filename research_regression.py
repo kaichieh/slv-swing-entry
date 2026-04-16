@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import asdict, dataclass
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -59,8 +60,8 @@ def get_top_pcts() -> tuple[float, ...]:
 def load_raw_prices() -> pd.DataFrame:
     raw_path = ac.get_raw_data_path()
     if raw_path.exists():
-        frame = pd.read_csv(raw_path)
-        frame = frame[frame["date"].astype(str).str.contains("-")].copy()
+        frame = cast(pd.DataFrame, pd.read_csv(raw_path))
+        frame = cast(pd.DataFrame, frame[frame["date"].astype(str).str.contains("-")].copy())
         return pr.normalize_ohlcv_frame(frame)
     return pr.download_asset_prices()
 
@@ -136,6 +137,7 @@ def build_dataset() -> tuple[pd.DataFrame, list[str]]:
     frame = pr.add_price_features(raw)
     frame = pr.add_relative_strength_features(frame, pr.BENCHMARK_SYMBOL)
     frame = pr.add_context_features(frame)
+    frame = pr.add_vix_features(frame, pr.download_vix_prices())
     _labels, realized_returns = pr.build_barrier_labels(frame, 60, 0.08, -0.04)
     frame["future_return_60"] = realized_returns
     feature_names = build_feature_names(frame)
