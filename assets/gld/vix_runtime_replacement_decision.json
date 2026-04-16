@@ -1,11 +1,12 @@
 {
   "decision": {
-    "status": "adopted",
+    "status": "historical_adopted_superseded",
     "replaced_line": "hard_gate_two_expert_mixed_live",
     "replacement_line": "gld_mixed_vix_vxv_term_panic_live",
     "replacement_scope": "runtime_operator",
     "core_model_changed": false,
-    "reason": "The VIX/VIX3M term-panic line is the only GLD+VIX runtime path that remained positive in direct live-rule comparison and walk-forward comparison, while all stronger VIX-core replacement candidates failed."
+    "reason": "The VIX/VIX3M term-panic line was the only GLD+VIX runtime path that remained positive in direct live-rule comparison and walk-forward comparison, while all stronger VIX-core replacement candidates failed.",
+    "historical_note": "This runtime/operator adoption was later superseded by the baseline live-line switch to gld_current_live_mixed_live."
   },
   "replacement_gate": {
     "must_improve_like_for_like_live_rule": true,
@@ -34,6 +35,6 @@
   "negative_research_context": {
     "core_candidate_screen": "assets/gld/vix_core_candidate_screen.json",
     "frontier_compare": "assets/gld/vix_replacement_frontier_compare.json",
-    "summary": "No VIX-driven GLD core replacement candidate survived. The adopted GLD+VIX outcome is therefore the runtime/operator replacement line only."
+    "summary": "No VIX-driven GLD core replacement candidate survived. The adopted GLD+VIX outcome was therefore the runtime/operator replacement line only, before the later baseline switch to gld_current_live_mixed_live."
   }
 }

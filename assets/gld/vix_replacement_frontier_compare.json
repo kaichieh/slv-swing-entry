@@ -1,6 +1,6 @@
 {
   "summary": {
-    "conclusion": "No GLD+VIX frontier candidate replaced the current live line. The strongest surviving path remains the current mixed live line plus the VIX/VIX3M term-panic overlay.",
+    "conclusion": "Historical GLD+VIX frontier comparison: no GLD+VIX candidate replaced the then-current mixed live line, and the strongest surviving GLD+VIX path in that comparison was the mixed live line plus the VIX/VIX3M term-panic overlay before the later baseline switch to gld_current_live_mixed_live.",
     "comparison_type": "like-for-like live-rule comparison with and without term overlay"
   },
   "test_split": {
