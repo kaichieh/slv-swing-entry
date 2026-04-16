@@ -19,17 +19,55 @@ import train as tr
 
 class PredictLatestLiveRuleTests(unittest.TestCase):
     def test_apply_buy_point_overlay_blocks_gld_under_term_panic(self) -> None:
-        signal, details = pl.apply_buy_point_overlay(
-            "bullish",
-            {"vix_vxv_ratio_pct_63_rolling_max_3": 0.96},
-            asset_key="gld",
-        )
+        with mock.patch.object(
+            pl.ac,
+            "load_asset_config",
+            return_value={
+                "asset_key": "gld",
+                "live_model_family": "hard_gate_two_expert_mixed",
+                "live_operator_line_id": "gld_mixed_vix_vxv_term_panic_live",
+                "live_term_panic_feature": "vix_vxv_ratio_pct_63_rolling_max_3",
+                "live_term_panic_threshold": 0.9,
+            },
+        ):
+            signal, details = pl.apply_buy_point_overlay(
+                "bullish",
+                {"vix_vxv_ratio_pct_63_rolling_max_3": 0.96},
+                asset_key="gld",
+            )
 
         details = cast(dict[str, object], details)
         self.assertEqual(signal, "no_entry")
         self.assertFalse(details["buy_point_ok"])
         warnings = cast(list[str], details["buy_point_warnings"])
         self.assertIn("term panic", warnings[0])
+
+    def test_apply_buy_point_overlay_skips_gld_term_panic_for_baseline_line(self) -> None:
+        with mock.patch.object(
+            pl.ac,
+            "load_asset_config",
+            return_value={
+                "asset_key": "gld",
+                "live_operator_line_id": "gld_current_live_mixed_live",
+                "live_term_panic_feature": "vix_vxv_ratio_pct_63_rolling_max_3",
+                "live_term_panic_threshold": 0.9,
+            },
+        ):
+            signal, details = pl.apply_buy_point_overlay(
+                "bullish",
+                {
+                    "vix_vxv_ratio_pct_63_rolling_max_3": 0.96,
+                    "rsi_14": 40.0,
+                    "drawdown_20": -0.1,
+                    "ret_20": 0.0,
+                    "sma_gap_20": 0.0,
+                },
+                asset_key="gld",
+            )
+
+        details = cast(dict[str, object], details)
+        self.assertEqual(signal, "bullish")
+        self.assertTrue(details["buy_point_ok"])
 
     def test_fit_hard_gate_two_expert_model_preserves_winner_features_without_selected_extras(self) -> None:
         frame = pd.DataFrame(
@@ -489,7 +527,19 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
                 stack.enter_context(mock.patch.object(pl, "summarize_rule", return_value={"rule_name": "top_20pct_reference", "selected": True}))
                 stack.enter_context(mock.patch.object(pl, "build_model_rationale", return_value=["reason"]))
                 stack.enter_context(mock.patch.object(pl, "build_rule_rationale", return_value="rule rationale"))
-                stack.enter_context(mock.patch.object(pl.ac, "load_asset_config", return_value={"asset_key": "gld", "live_model_family": pl.HARD_GATE_TWO_EXPERT_MIXED}))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl.ac,
+                        "load_asset_config",
+                        return_value={
+                            "asset_key": "gld",
+                            "live_model_family": pl.HARD_GATE_TWO_EXPERT_MIXED,
+                            "live_operator_line_id": "gld_mixed_vix_vxv_term_panic_live",
+                            "live_term_panic_feature": "vix_vxv_ratio_pct_63_rolling_max_3",
+                            "live_term_panic_threshold": 0.9,
+                        },
+                    )
+                )
                 stack.enter_context(mock.patch.object(pl.ac, "get_asset_symbol", return_value="GLD"))
                 stack.enter_context(mock.patch.object(pl.ac, "get_latest_prediction_path", return_value=prediction_path))
                 pl.main()
@@ -499,6 +549,57 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
         download_vix3m_prices.assert_called_once_with()
         add_vix_term_structure_features.assert_called_once_with(live_with_vix, "vix3m_prices")
         pd.testing.assert_frame_equal(score_latest_row.call_args.args[3], live_with_term)
+
+    def test_main_skips_term_structure_features_for_gld_baseline_live_line(self) -> None:
+        latest_live = pd.DataFrame([
+            {"date": pd.Timestamp("2026-04-15"), "open": 100.0, "high": 102.0, "low": 99.0, "close": 101.0, "baseline_feature": 1.0}
+        ])
+        splits = {"test": mock.Mock(frame=pd.DataFrame({"date": [pd.Timestamp("2026-03-31")]}))}
+        model_artifacts = {
+            "model_family": pl.HARD_GATE_TWO_EXPERT_MIXED,
+            "threshold": 0.5,
+            "train_frame": pd.DataFrame({"baseline_feature": [1.0]}),
+            "feature_names": ["baseline_feature"],
+            "default_interactions": [],
+            "live_label_mode": "future-return-top-bottom-10pct",
+        }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            prediction_path = Path(tmp) / "latest_prediction.json"
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(pl.tr, "set_seed"))
+                stack.enter_context(mock.patch.object(pl.tr, "get_env_int", return_value=pl.tr.SEED))
+                stack.enter_context(mock.patch.object(pl.tr, "FEATURE_COLUMNS", ["baseline_feature"]))
+                stack.enter_context(mock.patch.object(pl, "download_asset_prices", return_value="raw_prices"))
+                stack.enter_context(mock.patch.object(pl, "add_price_features", return_value="price_features"))
+                stack.enter_context(mock.patch.object(pl, "add_relative_strength_features", return_value="relative_features"))
+                stack.enter_context(mock.patch.object(pl, "add_context_features", return_value=latest_live))
+                download_vix_prices = stack.enter_context(mock.patch.object(pl, "download_vix_prices", return_value="vix_prices", create=True))
+                add_vix_features = stack.enter_context(mock.patch.object(pl, "add_vix_features", return_value=latest_live, create=True))
+                download_vix3m_prices = stack.enter_context(mock.patch.object(pl, "download_vix3m_prices", return_value="vix3m_prices", create=True))
+                add_vix_term_structure_features = stack.enter_context(mock.patch.object(pl, "add_vix_term_structure_features", return_value=latest_live, create=True))
+                stack.enter_context(mock.patch.object(pl.tr, "load_splits", return_value=splits))
+                stack.enter_context(mock.patch.object(pl, "build_feature_names", return_value=["baseline_feature"]))
+                stack.enter_context(mock.patch.object(pl, "fit_model", return_value=model_artifacts))
+                score_latest_row = stack.enter_context(mock.patch.object(pl, "score_latest_row", return_value=(np.array([[1.0]], dtype=np.float32), {"baseline_feature": 1.0})))
+                stack.enter_context(mock.patch.object(pl, "predict_probabilities", return_value=np.array([0.7], dtype=np.float32)))
+                stack.enter_context(mock.patch.object(pl, "build_history_probabilities", return_value=np.array([0.2, 0.4, 0.6], dtype=np.float32)))
+                stack.enter_context(mock.patch.object(pl, "classify_signal", return_value=("bullish", {"confidence_gap": 0.2})))
+                stack.enter_context(mock.patch.object(pl, "apply_buy_point_overlay", return_value=("bullish", {"buy_point_ok": True})))
+                stack.enter_context(mock.patch.object(pl, "get_rule_top_pct", return_value=20.0))
+                stack.enter_context(mock.patch.object(pl, "summarize_rule", return_value={"rule_name": "top_20pct_reference", "selected": True}))
+                stack.enter_context(mock.patch.object(pl, "build_model_rationale", return_value=["reason"]))
+                stack.enter_context(mock.patch.object(pl, "build_rule_rationale", return_value="rule rationale"))
+                stack.enter_context(mock.patch.object(pl.ac, "load_asset_config", return_value={"asset_key": "gld", "live_model_family": pl.HARD_GATE_TWO_EXPERT_MIXED, "live_operator_line_id": "gld_current_live_mixed_live"}))
+                stack.enter_context(mock.patch.object(pl.ac, "get_asset_symbol", return_value="GLD"))
+                stack.enter_context(mock.patch.object(pl.ac, "get_latest_prediction_path", return_value=prediction_path))
+                pl.main()
+
+        download_vix_prices.assert_not_called()
+        add_vix_features.assert_not_called()
+        download_vix3m_prices.assert_not_called()
+        add_vix_term_structure_features.assert_not_called()
+        pd.testing.assert_frame_equal(score_latest_row.call_args.args[3], latest_live)
 
     def test_get_rule_top_pct_prefers_asset_config(self) -> None:
         with mock.patch.object(pl.ac, "load_asset_config", return_value={"live_reference_top_pct": 7.5}):
@@ -948,6 +1049,157 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
         self.assertEqual(payload["live_provenance"]["outer_gate_feature"], "atr_pct_20_percentile")
         self.assertEqual(payload["live_provenance"]["decision_overlay"], "vix_vxv_term_panic_block")
         self.assertEqual(payload["live_provenance"]["term_panic_feature"], "vix_vxv_ratio_pct_63_rolling_max_3")
+
+    def test_fit_hard_gate_two_expert_mixed_model_uses_baseline_module_for_baseline_line(self) -> None:
+        frame = pd.DataFrame(
+            {
+                "date": [pd.Timestamp("2026-03-01"), pd.Timestamp("2026-03-02")],
+                tr.TARGET_COLUMN: [1.0, 0.0],
+                "above_200dma_flag": [1.0, 0.0],
+                "ret_60": [0.1, 0.2],
+                "baseline_only_left": [0.3, 0.1],
+                "baseline_only_right": [-0.2, -0.1],
+            }
+        )
+        fake_rb = types.SimpleNamespace()
+        fake_rb.build_labeled_frame = mock.Mock(return_value=frame)
+        fake_rb.select_threshold_with_steps = mock.Mock(return_value=0.55)
+        fake_rb.split_frame = mock.Mock(
+            return_value={
+                "train": frame.iloc[[0]].reset_index(drop=True),
+                "validation": frame.iloc[[0]].reset_index(drop=True),
+                "test": frame.iloc[[1]].reset_index(drop=True),
+            }
+        )
+
+        def train_model_side_effect(_frame, _expert, **kwargs):
+            extra_features = list(kwargs["extra_features"])
+            return None, {
+                "feature_names": extra_features,
+                "validation_probabilities": np.array([0.7], dtype=np.float32),
+                "test_probabilities": np.array([0.6], dtype=np.float32),
+            }
+
+        fake_rb.train_model = mock.Mock(side_effect=train_model_side_effect)
+        fake_baseline = types.SimpleNamespace(
+            LEFT_EXPERT="baseline_left",
+            RIGHT_EXPERT="baseline_right",
+            LEFT_EXTRA_FEATURES=("ret_60", "baseline_only_left"),
+            RIGHT_EXTRA_FEATURES=("ret_60", "baseline_only_right"),
+            OUTER_GATE_FEATURE="above_200dma_flag",
+            OUTER_GATE_THRESHOLD=0.5,
+        )
+
+        with mock.patch.dict(
+            sys.modules,
+            {
+                "research_batch": fake_rb,
+                "research_gld_current_live_mixed_baseline": fake_baseline,
+            },
+        ):
+            with mock.patch.object(pl, "get_live_operator_line_id", return_value="gld_current_live_mixed_live"):
+                artifacts = pl.fit_hard_gate_two_expert_mixed_model(raw_prices=mock.sentinel.raw_prices)
+
+        left_call = fake_rb.train_model.call_args_list[0]
+        right_call = fake_rb.train_model.call_args_list[1]
+        self.assertEqual(left_call.kwargs["extra_features"], ("ret_60", "baseline_only_left"))
+        self.assertEqual(right_call.kwargs["extra_features"], ("ret_60", "baseline_only_right"))
+        self.assertEqual(artifacts["left_expert"], "baseline_left")
+        self.assertEqual(artifacts["right_expert"], "baseline_right")
+        self.assertEqual(artifacts["outer_gate_threshold"], 0.5)
+
+    def test_main_writes_explicit_gld_baseline_live_operator_line_without_term_panic_overlay(self) -> None:
+        latest_live = pd.DataFrame(
+            [
+                {
+                    "date": pd.Timestamp("2026-04-15"),
+                    "open": 100.0,
+                    "high": 102.0,
+                    "low": 99.0,
+                    "close": 101.0,
+                }
+            ]
+        )
+        splits = {"test": mock.Mock(frame=pd.DataFrame({"date": [pd.Timestamp("2026-03-31")]}))}
+        model_artifacts = {
+            "model_family": "hard_gate_two_expert_mixed",
+            "threshold": 0.5,
+            "train_frame": pd.DataFrame({"baseline_feature": [1.0]}),
+            "left_expert": "dual_context",
+            "right_expert": "context_no_atr",
+            "outer_gate_feature": "atr_pct_20_percentile",
+            "outer_gate_threshold": 0.7,
+            "feature_names": [
+                "baseline_feature",
+                "ret_60",
+                "sma_gap_60",
+                "trend_quality_20",
+                "percent_up_days_20",
+                "bollinger_bandwidth_20",
+                "distance_from_60d_low",
+                "atr_pct_20_percentile",
+                "above_200dma_flag",
+            ],
+            "default_interactions": [],
+            "live_label_mode": "future-return-top-bottom-10pct",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            prediction_path = Path(tmp) / "latest_prediction.json"
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(pl.tr, "set_seed"))
+                stack.enter_context(mock.patch.object(pl.tr, "get_env_int", return_value=pl.tr.SEED))
+                stack.enter_context(mock.patch.object(pl.tr, "FEATURE_COLUMNS", ["baseline_feature"]))
+                stack.enter_context(mock.patch.object(pl, "download_asset_prices", return_value="raw_prices"))
+                stack.enter_context(mock.patch.object(pl, "add_price_features", return_value="price_features"))
+                stack.enter_context(mock.patch.object(pl, "add_relative_strength_features", return_value="relative_features"))
+                stack.enter_context(mock.patch.object(pl, "add_context_features", return_value=latest_live))
+                stack.enter_context(mock.patch.object(pl, "download_vix_prices", return_value="vix_prices", create=True))
+                stack.enter_context(mock.patch.object(pl, "add_vix_features", return_value=latest_live, create=True))
+                stack.enter_context(mock.patch.object(pl, "download_vix3m_prices", return_value="vix3m_prices", create=True))
+                stack.enter_context(mock.patch.object(pl, "add_vix_term_structure_features", return_value=latest_live, create=True))
+                stack.enter_context(mock.patch.object(pl.tr, "load_splits", return_value=splits))
+                stack.enter_context(mock.patch.object(pl, "build_feature_names", return_value=["baseline_feature"]))
+                stack.enter_context(mock.patch.object(pl, "fit_model", return_value=model_artifacts))
+                stack.enter_context(mock.patch.object(pl, "score_latest_row", return_value=(latest_live.copy(), {"ret_60": 0.1})))
+                stack.enter_context(mock.patch.object(pl, "predict_probabilities", return_value=np.array([0.7], dtype=np.float32)))
+                stack.enter_context(mock.patch.object(pl, "build_history_probabilities", return_value=np.array([0.2, 0.4, 0.6], dtype=np.float32)))
+                stack.enter_context(mock.patch.object(pl, "classify_signal", return_value=("bullish", {"confidence_gap": 0.2})))
+                stack.enter_context(mock.patch.object(pl, "get_rule_top_pct", return_value=20.0))
+                stack.enter_context(mock.patch.object(pl, "summarize_rule", return_value={"rule_name": "top_20pct_reference", "selected": True}))
+                stack.enter_context(mock.patch.object(pl, "build_model_rationale", return_value=["reason"]))
+                stack.enter_context(mock.patch.object(pl, "build_rule_rationale", return_value="rule rationale"))
+                stack.enter_context(
+                    mock.patch.object(
+                        pl.ac,
+                        "load_asset_config",
+                        return_value={
+                            "asset_key": "gld",
+                            "live_model_family": "hard_gate_two_expert_mixed",
+                            "live_label_mode": "future-return-top-bottom-10pct",
+                            "live_operator_line_id": "gld_current_live_mixed_live",
+                            "live_left_expert": "dual_context",
+                            "live_right_expert": "context_no_atr",
+                            "live_outer_gate_feature": "atr_pct_20_percentile",
+                            "live_outer_gate_threshold": 0.7,
+                            "live_term_panic_feature": "vix_vxv_ratio_pct_63_rolling_max_3",
+                            "live_term_panic_threshold": 0.9,
+                        },
+                    )
+                )
+                stack.enter_context(mock.patch.object(pl.ac, "get_asset_symbol", return_value="GLD"))
+                stack.enter_context(mock.patch.object(pl.ac, "get_latest_prediction_path", return_value=prediction_path))
+                pl.main()
+
+            payload = json.loads(prediction_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["live_operator_line_id"], "gld_current_live_mixed_live")
+        self.assertEqual(payload["model_summary"]["live_decision_rule"], "threshold_plus_buy_point_overlay")
+        self.assertEqual(payload["live_provenance"]["operator_line_id"], "gld_current_live_mixed_live")
+        self.assertEqual(payload["live_provenance"]["left_expert"], "dual_context")
+        self.assertEqual(payload["live_provenance"]["right_expert"], "context_no_atr")
+        self.assertEqual(payload["live_provenance"]["outer_gate_feature"], "atr_pct_20_percentile")
+        self.assertNotIn("decision_overlay", payload["live_provenance"])
+        self.assertNotIn("term_panic_feature", payload["live_provenance"])
 
     def test_main_writes_explicit_tsla_live_operator_line_for_xgboost_path(self) -> None:
         latest_live = pd.DataFrame(
