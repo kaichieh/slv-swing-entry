@@ -4,6 +4,9 @@
 
 This experiment tested whether adding a shared VIX feature pack helps the current `monitor_board` asset set.
 
+> Later GLD-only follow-up superseded the initial GLD interpretation in this report.
+> The early shared daily-VIX pack looked positive for GLD in this coarse board-wide screen, but deeper GLD-specific follow-up did not find a surviving VIX-driven core replacement model. The only GLD+VIX path that remained justified was a VIX/VIX3M term-panic overlay line.
+
 - Scope: all 9 board assets (`gld`, `slv`, `iwm`, `spy`, `tlt`, `xle`, `nvda`, `qqq`, `tsla`)
 - Strategy shape: add VIX as a shared feature source, not as a new board renderer rule
 - VIX pack: `vix_close_lag1`, `vix_change_1`, `vix_change_5`, `vix_z_20`, `vix_percentile_20`, `vix_high_regime_flag`
@@ -30,7 +33,7 @@ Raw experiment output was saved to `.sisyphus/vix_experiment_results.json`.
 
 | Asset | Result | Key takeaways |
 |---|---|---|
-| GLD | Positive | Test top-rule avg return improved from **0.1346** to **0.1825** (`+0.0479`), and test balanced accuracy improved from **0.6442** to **0.7404** |
+| GLD | Early positive, later superseded | This board-wide daily-VIX pack improved GLD here, but later GLD-specific follow-up did **not** confirm a surviving VIX-driven core replacement model |
 | SLV | Negative | Test top-rule avg return dropped from **0.3531** to **0.2084** (`-0.1447`), hit rate fell from **1.00** to **0.75**, balance unchanged |
 | IWM | Mild positive | Test top-rule avg return rose from **0.0433** to **0.0445** (`+0.0011`), test balanced accuracy improved from **0.5378** to **0.5678** |
 | SPY | Mixed / weak | Avg return improved from **0.0238** to **0.0327**, but hit rate fell and balanced accuracy slipped slightly |
@@ -49,7 +52,7 @@ Raw experiment output was saved to `.sisyphus/vix_experiment_results.json`.
 
 ### Clear wins
 
-- **GLD**: strongest binary improvement with both return and class-balance gains
+- **GLD (early board-wide result only)**: the first shared daily-VIX pack improved GLD in this screen, but later GLD-only research superseded that interpretation
 - **TSLA**: strongest binary return improvement, though with a slight balance trade-off
 - **XLE**: cleanest regression improvement because both static and walk-forward metrics improved
 
@@ -69,7 +72,6 @@ Raw experiment output was saved to `.sisyphus/vix_experiment_results.json`.
 
 ### Promote / keep for deeper validation
 
-- **GLD**
 - **XLE**
 
 ### Positive, but validate more before any live promotion
@@ -100,9 +102,11 @@ Raw experiment output was saved to `.sisyphus/vix_experiment_results.json`.
 
 Adding VIX **did help some monitor-board assets, but not the board as a whole**.
 
+For **GLD specifically**, this report should now be read as historical context only: the later GLD-only follow-up replaced the original daily-VIX interpretation with a narrower conclusion — keep the non-VIX mixed core model, and only adopt a VIX/VIX3M term-panic overlay at runtime.
+
 The best evidence supports **asset-specific adoption**, not a blanket rollout:
 
-- Adopt or deepen validation on **GLD** and **XLE**
+- Adopt or deepen validation on **XLE**
 - Keep **TSLA** as a strong follow-up candidate, but validate more before any live promotion
 - Keep **IWM**, **SPY**, and **TLT** in research mode
 - Do not roll VIX into **SLV**, **QQQ**, or **NVDA** in the current form
