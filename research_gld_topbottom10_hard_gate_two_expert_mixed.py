@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -15,7 +16,7 @@ LABEL_MODE = "future-return-top-bottom-10pct"
 LEFT_EXPERT = "dual_context"
 RIGHT_EXPERT = "context_no_atr"
 OUTER_GATE_FEATURE = "atr_pct_20_percentile"
-OUTER_GATE_THRESHOLD = 0.75
+OUTER_GATE_THRESHOLD = 0.70
 
 LEFT_EXTRA_FEATURES = (
     "ret_60",
@@ -38,6 +39,21 @@ RIGHT_EXTRA_FEATURES = (
 )
 
 
+def append_selected_experimental_features(default_features: tuple[str, ...], available_columns) -> tuple[str, ...]:
+    selected = set(pr.get_env_csv("AR_EXTRA_BASE_FEATURES"))
+    feature_names = list(default_features)
+    for column in pr.EXPERIMENTAL_FEATURE_COLUMNS:
+        if column not in selected or column not in available_columns or column in feature_names:
+            continue
+        feature_names.append(column)
+    return tuple(feature_names)
+
+
+def selected_vix_features_requested() -> bool:
+    selected = set(pr.get_env_csv("AR_EXTRA_BASE_FEATURES"))
+    return any(column.startswith("vix_") for column in selected)
+
+
 def probabilities_to_logits(probabilities: np.ndarray) -> np.ndarray:
     clipped = np.clip(np.asarray(probabilities, dtype=np.float32), 1e-6, 1.0 - 1.0e-6)
     return np.log(clipped / (1.0 - clipped))
@@ -47,18 +63,22 @@ def evaluate_winning_algorithm() -> dict[str, float | str]:
     symbol = ac.get_asset_symbol(ASSET_KEY)
     raw = pr.download_symbol_prices(symbol, ac.stooq_url(symbol), str(ac.get_raw_data_path(ASSET_KEY)))
     frame = rb.build_labeled_frame(raw, label_mode=LABEL_MODE)
+    if selected_vix_features_requested():
+        frame = pr.add_vix_features(frame, pr.download_vix_prices())
+    left_extra_features = append_selected_experimental_features(LEFT_EXTRA_FEATURES, frame.columns)
+    right_extra_features = append_selected_experimental_features(RIGHT_EXTRA_FEATURES, frame.columns)
 
     _, left_artifacts = rb.train_model(
         frame,
         LEFT_EXPERT,
         model_family="regime_dual_logistic",
-        extra_features=LEFT_EXTRA_FEATURES,
+        extra_features=left_extra_features,
         gate_feature="above_200dma_flag",
     )
     _, right_artifacts = rb.train_model(
         frame,
         RIGHT_EXPERT,
-        extra_features=RIGHT_EXTRA_FEATURES,
+        extra_features=right_extra_features,
     )
 
     splits = rb.split_frame(frame)

@@ -53,7 +53,116 @@ class GldTopBottom10WinningResearchTests(unittest.TestCase):
         self.assertEqual(payload["asset"], "gld")
         self.assertEqual(download_mock.call_args.args[0], winner.ac.get_asset_symbol("gld"))
         self.assertEqual(Path(download_mock.call_args.args[2]), winner.ac.get_raw_data_path("gld"))
+        self.assertEqual(payload["outer_gate_threshold"], 0.7)
         self.assertEqual(payload["headline_score"], 0.8685)
+
+    def test_evaluate_winning_algorithm_appends_selected_vix_features_when_available(self) -> None:
+        payload_frame = pd.DataFrame(
+            {
+                "date": pd.date_range("2020-01-01", periods=6, freq="D"),
+                winner.pr.TARGET_COLUMN: [0, 1, 0, 1, 0, 1],
+                winner.rb.FUTURE_RETURN_COLUMN: [0.01, 0.02, -0.01, 0.03, -0.02, 0.04],
+                "atr_pct_20_percentile": [0.2, 0.9, 0.8, 0.1, 0.7, 0.95],
+            }
+        )
+        enriched_frame = payload_frame.assign(
+            vix_percentile_20=[0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+            vix_high_regime_flag=[0, 0, 0, 1, 1, 1],
+        )
+        left_artifacts = {
+            "validation_probabilities": [0.2, 0.8],
+            "test_probabilities": [0.3, 0.9],
+        }
+        right_artifacts = {
+            "validation_probabilities": [0.6, 0.4],
+            "test_probabilities": [0.7, 0.5],
+        }
+        with mock.patch.dict(
+            os.environ,
+            {"AR_ASSET": "slv", "AR_EXTRA_BASE_FEATURES": "vix_percentile_20,vix_high_regime_flag"},
+            clear=False,
+        ):
+            with mock.patch.object(winner.pr, "download_symbol_prices", return_value=payload_frame):
+                with mock.patch.object(winner.rb, "build_labeled_frame", return_value=payload_frame):
+                    with mock.patch.object(winner.pr, "download_vix_prices", return_value=pd.DataFrame({"date": [], "close": []})) as download_vix_prices:
+                        with mock.patch.object(winner.pr, "add_vix_features", return_value=enriched_frame) as add_vix_features:
+                            with mock.patch.object(
+                                winner.rb,
+                                "split_frame",
+                                return_value={"validation": enriched_frame.iloc[:2].copy(), "test": enriched_frame.iloc[2:4].copy()},
+                            ):
+                                with mock.patch.object(winner.rb, "train_model", side_effect=[(None, left_artifacts), (None, right_artifacts)]) as train_model:
+                                    with mock.patch.object(winner.rb, "select_threshold_with_steps", return_value=0.486):
+                                        with mock.patch.object(
+                                            winner.tr,
+                                            "compute_metrics",
+                                            side_effect=[
+                                                mock.Mock(f1=0.7377, balanced_accuracy=0.5224, positive_rate=0.9809),
+                                                mock.Mock(f1=0.9967, balanced_accuracy=0.9, positive_rate=0.9747),
+                                            ],
+                                        ):
+                                            winner.evaluate_winning_algorithm()
+
+        download_vix_prices.assert_called_once_with()
+        add_vix_features.assert_called_once_with(payload_frame, download_vix_prices.return_value)
+        left_call = train_model.call_args_list[0]
+        right_call = train_model.call_args_list[1]
+        self.assertEqual(
+            left_call.kwargs["extra_features"],
+            winner.LEFT_EXTRA_FEATURES + ("vix_percentile_20", "vix_high_regime_flag"),
+        )
+        self.assertEqual(
+            right_call.kwargs["extra_features"],
+            winner.RIGHT_EXTRA_FEATURES + ("vix_percentile_20", "vix_high_regime_flag"),
+        )
+
+    def test_evaluate_winning_algorithm_skips_vix_merge_without_selected_vix_features(self) -> None:
+        payload_frame = pd.DataFrame(
+            {
+                "date": pd.date_range("2020-01-01", periods=6, freq="D"),
+                winner.pr.TARGET_COLUMN: [0, 1, 0, 1, 0, 1],
+                winner.rb.FUTURE_RETURN_COLUMN: [0.01, 0.02, -0.01, 0.03, -0.02, 0.04],
+                "atr_pct_20_percentile": [0.2, 0.9, 0.8, 0.1, 0.7, 0.95],
+                "vix_percentile_20": [0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                "vix_high_regime_flag": [0, 0, 0, 1, 1, 1],
+            }
+        )
+        left_artifacts = {
+            "validation_probabilities": [0.2, 0.8],
+            "test_probabilities": [0.3, 0.9],
+        }
+        right_artifacts = {
+            "validation_probabilities": [0.6, 0.4],
+            "test_probabilities": [0.7, 0.5],
+        }
+        with mock.patch.dict(
+            os.environ,
+            {"AR_ASSET": "slv", "AR_EXTRA_BASE_FEATURES": ""},
+            clear=False,
+        ):
+            with mock.patch.object(winner.pr, "download_symbol_prices", return_value=payload_frame):
+                with mock.patch.object(winner.rb, "build_labeled_frame", return_value=payload_frame):
+                    with mock.patch.object(winner.pr, "download_vix_prices") as download_vix_prices:
+                        with mock.patch.object(winner.pr, "add_vix_features") as add_vix_features:
+                            with mock.patch.object(
+                                winner.rb,
+                                "split_frame",
+                                return_value={"validation": payload_frame.iloc[:2].copy(), "test": payload_frame.iloc[2:4].copy()},
+                            ):
+                                with mock.patch.object(winner.rb, "train_model", side_effect=[(None, left_artifacts), (None, right_artifacts)]):
+                                    with mock.patch.object(winner.rb, "select_threshold_with_steps", return_value=0.486):
+                                        with mock.patch.object(
+                                            winner.tr,
+                                            "compute_metrics",
+                                            side_effect=[
+                                                mock.Mock(f1=0.7377, balanced_accuracy=0.5224, positive_rate=0.9809),
+                                                mock.Mock(f1=0.9967, balanced_accuracy=0.9, positive_rate=0.9747),
+                                            ],
+                                        ):
+                                            winner.evaluate_winning_algorithm()
+
+        download_vix_prices.assert_not_called()
+        add_vix_features.assert_not_called()
 
     def test_main_writes_to_gld_cache_even_if_env_points_elsewhere(self) -> None:
         payload = {
