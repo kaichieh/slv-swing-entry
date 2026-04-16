@@ -1,0 +1,192 @@
+﻿{
+  "binary": [
+    {
+      "asset": "gld",
+      "model_family": "hard_gate_two_expert_mixed",
+      "baseline_test_top_avg_return": 0.13457681189925913,
+      "vix_test_top_avg_return": 0.18250880947434658,
+      "delta_test_top_avg_return": 0.047931997575087454,
+      "baseline_test_top_hit_rate": 1.0,
+      "vix_test_top_hit_rate": 1.0,
+      "delta_test_top_hit_rate": 0.0,
+      "baseline_test_bal_acc": 0.6442307692307692,
+      "vix_test_bal_acc": 0.7403846153846154,
+      "delta_test_bal_acc": 0.09615384615384626,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    },
+    {
+      "asset": "slv",
+      "model_family": "hard_gate_two_expert",
+      "baseline_test_top_avg_return": 0.35239992540176845,
+      "vix_test_top_avg_return": 0.20804774619198113,
+      "delta_test_top_avg_return": -0.14435217920978732,
+      "baseline_test_top_hit_rate": 1.0,
+      "vix_test_top_hit_rate": 0.75,
+      "delta_test_top_hit_rate": -0.25,
+      "baseline_test_bal_acc": 0.8984848484848484,
+      "vix_test_bal_acc": 0.8992424242424242,
+      "delta_test_bal_acc": 0.0007575757575757347,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    },
+    {
+      "asset": "iwm",
+      "model_family": "logistic",
+      "baseline_test_top_avg_return": 0.04330694405978761,
+      "vix_test_top_avg_return": 0.04444011983011773,
+      "delta_test_top_avg_return": 0.0011331757703301193,
+      "baseline_test_top_hit_rate": 0.7,
+      "vix_test_top_hit_rate": 0.7,
+      "delta_test_top_hit_rate": 0.0,
+      "baseline_test_bal_acc": 0.5377978665966233,
+      "vix_test_bal_acc": 0.5677961155131404,
+      "delta_test_bal_acc": 0.029998248916517034,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    },
+    {
+      "asset": "spy",
+      "model_family": "logistic",
+      "baseline_test_top_avg_return": 0.02379210525294867,
+      "vix_test_top_avg_return": 0.03267423125397344,
+      "delta_test_top_avg_return": 0.008882126001024768,
+      "baseline_test_top_hit_rate": 0.6923076923076923,
+      "vix_test_top_hit_rate": 0.6666666666666666,
+      "delta_test_top_hit_rate": -0.02564102564102566,
+      "baseline_test_bal_acc": 0.5019701004895053,
+      "vix_test_bal_acc": 0.5,
+      "delta_test_bal_acc": -0.0019701004895053,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    },
+    {
+      "asset": "nvda",
+      "model_family": "logistic",
+      "baseline_test_top_avg_return": 0.1771688375049011,
+      "vix_test_top_avg_return": 0.17400833059014162,
+      "delta_test_top_avg_return": -0.00316050691475947,
+      "baseline_test_top_hit_rate": 0.6923076923076923,
+      "vix_test_top_hit_rate": 0.6923076923076923,
+      "delta_test_top_hit_rate": 0.0,
+      "baseline_test_bal_acc": 0.5,
+      "vix_test_bal_acc": 0.5,
+      "delta_test_bal_acc": 0.0,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    },
+    {
+      "asset": "tsla",
+      "model_family": "xgboost",
+      "baseline_test_top_avg_return": 0.08636342240369155,
+      "vix_test_top_avg_return": 0.18096940630159905,
+      "delta_test_top_avg_return": 0.0946059838979075,
+      "baseline_test_top_hit_rate": 0.5,
+      "vix_test_top_hit_rate": 0.75,
+      "delta_test_top_hit_rate": 0.25,
+      "baseline_test_bal_acc": 0.7639905018611218,
+      "vix_test_bal_acc": 0.7422185855474266,
+      "delta_test_bal_acc": -0.02177191631369524,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    }
+  ],
+  "regression": [
+    {
+      "asset": "qqq",
+      "baseline_test_bottom15_avg_return": 0.05178323698014241,
+      "vix_test_bottom15_avg_return": 0.04912673077179892,
+      "delta_test_bottom15_avg_return": -0.002656506208343491,
+      "baseline_test_bottom15_hit_rate": 0.7450980392156863,
+      "vix_test_bottom15_hit_rate": 0.7908496732026143,
+      "delta_test_bottom15_hit_rate": 0.04575163398692805,
+      "baseline_walkforward_avg_test_bucket_return": 0.07003009434788761,
+      "vix_walkforward_avg_test_bucket_return": 0.04989563757111038,
+      "delta_walkforward_avg_test_bucket_return": -0.020134456776777228,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    },
+    {
+      "asset": "tlt",
+      "baseline_test_bottom15_avg_return": -0.005333510589041827,
+      "vix_test_bottom15_avg_return": 0.001479252157880197,
+      "delta_test_bottom15_avg_return": 0.006812762746922024,
+      "baseline_test_bottom15_hit_rate": 0.40298507462686567,
+      "vix_test_bottom15_hit_rate": 0.47761194029850745,
+      "delta_test_bottom15_hit_rate": 0.07462686567164178,
+      "baseline_walkforward_avg_test_bucket_return": 0.00014961767782200282,
+      "vix_walkforward_avg_test_bucket_return": -0.0031901614480095365,
+      "delta_walkforward_avg_test_bucket_return": -0.0033397791258315394,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    },
+    {
+      "asset": "xle",
+      "baseline_test_bottom15_avg_return": 0.03629956901132166,
+      "vix_test_bottom15_avg_return": 0.04498036881716178,
+      "delta_test_bottom15_avg_return": 0.00868079980584012,
+      "baseline_test_bottom15_hit_rate": 0.5612903225806452,
+      "vix_test_bottom15_hit_rate": 0.6387096774193548,
+      "delta_test_bottom15_hit_rate": 0.07741935483870965,
+      "baseline_walkforward_avg_test_bucket_return": 0.03406301449054649,
+      "vix_walkforward_avg_test_bucket_return": 0.05233283042346109,
+      "delta_walkforward_avg_test_bucket_return": 0.0182698159329146,
+      "vix_features_active": [
+        "vix_close_lag1",
+        "vix_change_1",
+        "vix_change_5",
+        "vix_z_20",
+        "vix_percentile_20",
+        "vix_high_regime_flag"
+      ]
+    }
+  ]
+}
