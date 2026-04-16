@@ -15,7 +15,7 @@ class RefreshMonitorBoardTests(unittest.TestCase):
                 {
                     "asset_key": "gld",
                     "symbol": "GLD",
-                    "preferred_line": "hard_gate_two_expert_mixed_live",
+                    "preferred_line": "gld_current_live_mixed_live",
                     "lane_type": "binary_operator",
                     "role": "primary",
                     "status": "inactive",
