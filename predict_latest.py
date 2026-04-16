@@ -36,13 +36,16 @@ RULE_TOP_PCT = 20.0
 HARD_GATE_TWO_EXPERT = "hard_gate_two_expert"
 HARD_GATE_TWO_EXPERT_MIXED = "hard_gate_two_expert_mixed"
 HARD_GATE_TWO_EXPERT_GDX_LIVE = "hard_gate_two_expert_gdx_live"
+GLD_CURRENT_LIVE_MIXED_LIVE = "gld_current_live_mixed_live"
+GLD_MIXED_VIX_TERM_PANIC_LIVE = "gld_mixed_vix_vxv_term_panic_live"
 LIVE_OPERATOR_FEATURE_MAP = {
     "ret_60_sma_gap_60_atr_pct_20": {"ret_60", "sma_gap_60", "atr_pct_20"},
     "xgboost_tb30_distance_live": {"distance_to_252_high"},
 }
 LIVE_OPERATOR_MODEL_FAMILY_MAP = {
     HARD_GATE_TWO_EXPERT_GDX_LIVE: HARD_GATE_TWO_EXPERT,
-    "gld_mixed_vix_vxv_term_panic_live": HARD_GATE_TWO_EXPERT_MIXED,
+    GLD_MIXED_VIX_TERM_PANIC_LIVE: HARD_GATE_TWO_EXPERT_MIXED,
+    GLD_CURRENT_LIVE_MIXED_LIVE: HARD_GATE_TWO_EXPERT_MIXED,
 }
 
 try:
@@ -121,6 +124,25 @@ def resolve_live_operator_line_id(feature_names: list[str], model_family: str) -
     return configured_line if actual_features == expected_features else ""
 
 
+def get_gld_mixed_live_source_module_name() -> str:
+    return (
+        "research_gld_current_live_mixed_baseline"
+        if get_live_operator_line_id() in {"", GLD_CURRENT_LIVE_MIXED_LIVE}
+        else "research_gld_topbottom10_hard_gate_two_expert_mixed"
+    )
+
+
+def uses_gld_term_panic_overlay(live_operator_line_id: str, model_family: str) -> bool:
+    return model_family == HARD_GATE_TWO_EXPERT_MIXED and live_operator_line_id == GLD_MIXED_VIX_TERM_PANIC_LIVE
+
+
+def active_gld_term_panic_overlay(asset_key: str) -> bool:
+    return asset_key == "gld" and uses_gld_term_panic_overlay(
+        ac.get_live_operator_line_id(asset_key),
+        ac.get_live_model_family(asset_key),
+    )
+
+
 def build_live_provenance(model_artifacts: Mapping[str, Any], live_operator_line_id: str) -> dict[str, object]:
     model_family = str(model_artifacts.get("model_family", "")).strip()
     if model_family not in {HARD_GATE_TWO_EXPERT, HARD_GATE_TWO_EXPERT_MIXED}:
@@ -133,7 +155,7 @@ def build_live_provenance(model_artifacts: Mapping[str, Any], live_operator_line
         "left_expert": str(model_artifacts.get("left_expert", "")),
         "right_expert": str(model_artifacts.get("right_expert", "")),
     }
-    if model_family == HARD_GATE_TWO_EXPERT_MIXED:
+    if uses_gld_term_panic_overlay(live_operator_line_id, model_family):
         settings = ac.get_live_term_panic_settings()
         if settings["feature"] and settings["threshold"] is not None:
             provenance["decision_overlay"] = "vix_vxv_term_panic_block"
@@ -232,7 +254,8 @@ def fit_hard_gate_two_expert_model(raw_prices) -> dict[str, Any]:
 
 def fit_hard_gate_two_expert_mixed_model(raw_prices) -> dict[str, Any]:
     import research_batch as rb
-    import research_gld_topbottom10_hard_gate_two_expert_mixed as winner
+
+    winner = importlib.import_module(get_gld_mixed_live_source_module_name())
 
     frame = rb.build_labeled_frame(raw_prices, label_mode=get_live_label_mode())
     if selected_vix_features_requested():
@@ -577,7 +600,7 @@ def apply_buy_point_overlay(signal: str, snapshot: dict[str, float], asset_key: 
     term_panic_feature = str(settings["feature"]) if settings["feature"] else ""
     term_panic_threshold = settings["threshold"]
     term_panic = (
-        asset_key == "gld"
+        active_gld_term_panic_overlay(asset_key)
         and bool(term_panic_feature)
         and term_panic_threshold is not None
         and float(snapshot.get(term_panic_feature, 0.0)) > float(cast(float | int | str, term_panic_threshold))
@@ -686,7 +709,7 @@ def main() -> None:
     feature_names = build_feature_names()
     if any(name.startswith("vix_") for name in feature_names):
         live_features = add_vix_features(live_features, download_vix_prices())
-    if asset_key == "gld" and get_live_model_family() == HARD_GATE_TWO_EXPERT_MIXED:
+    if active_gld_term_panic_overlay(asset_key):
         live_features = add_vix_features(live_features, download_vix_prices())
         live_features = add_vix_term_structure_features(live_features, download_vix3m_prices())
     model_artifacts = fit_model(splits, feature_names, raw_prices=raw_prices)
@@ -711,7 +734,7 @@ def main() -> None:
     live_provenance = build_live_provenance(model_artifacts, live_operator_line_id)
 
     live_decision_rule = "threshold_plus_buy_point_overlay"
-    if asset_key == "gld" and str(model_artifacts["model_family"]) == HARD_GATE_TWO_EXPERT_MIXED:
+    if asset_key == "gld" and uses_gld_term_panic_overlay(live_operator_line_id, str(model_artifacts["model_family"])):
         live_decision_rule = "threshold_plus_buy_point_overlay_plus_vix_vxv_term_panic_block"
 
     output = {

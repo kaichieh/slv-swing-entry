@@ -649,7 +649,7 @@ def build_followup_round4_status(asset_dir: Path) -> pd.DataFrame:
 
 def build_gld(asset_dir: Path) -> pd.DataFrame:
     config = ac.load_asset_config("gld")
-    preferred_line = str(config.get("live_operator_line_id", "")).strip() or "hard_gate_two_expert_mixed_live"
+    preferred_line = str(config.get("live_operator_line_id", "")).strip() or "gld_current_live_mixed_live"
     latest_prediction_path = ac.get_latest_prediction_path("gld")
     if not latest_prediction_path.exists():
         raise FileNotFoundError(f"Missing GLD latest prediction file: {latest_prediction_path}")
@@ -678,7 +678,13 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
         and round(float(cast(float | int | str, term_panic_threshold)), 6)
         == round(float(cast(float | int | str, expected_threshold)), 6)
     )
-    if explicit_line != preferred_line or provenance_line != preferred_line or not signature_matches or not overlay_matches:
+    baseline_matches = decision_overlay == "" and term_panic_feature == "" and term_panic_threshold is None
+    line_matches = False
+    if preferred_line == "gld_mixed_vix_vxv_term_panic_live":
+        line_matches = overlay_matches
+    elif preferred_line == "gld_current_live_mixed_live":
+        line_matches = baseline_matches
+    if explicit_line != preferred_line or provenance_line != preferred_line or not signature_matches or not line_matches:
         raise ValueError(f"GLD preferred line '{preferred_line}' cannot be validated from live cache provenance.")
     rows = read_signal_rows_from_cache(latest_prediction_path.parent, "gld", 60)
     selected_rows = rows.loc[rows["signal"].astype(str) != "no_entry"]

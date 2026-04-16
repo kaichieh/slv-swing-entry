@@ -5,7 +5,7 @@
       "Direct daily-VIX core paths underperformed the existing non-VIX GLD frontier.",
       "VIX/VIX3M term features inside the mixed core model underperformed the existing non-VIX GLD frontier.",
       "Manual GLD xgboost core candidates with VIX/VIX3M term features also underperformed the existing non-VIX GLD frontier.",
-      "The only surviving GLD+VIX path is the named VIX/VIX3M term-panic overlay line."
+      "The only surviving GLD+VIX path in this historical sweep was the named VIX/VIX3M term-panic overlay line, before the later baseline switch to gld_current_live_mixed_live."
     ]
   },
   "mixed_core_candidates": [

@@ -13,7 +13,7 @@ class RefreshMonitorSnapshotTests(unittest.TestCase):
         frame = pd.DataFrame(
             [
                 {
-                    "line_id": "hard_gate_two_expert_mixed_live",
+                    "line_id": "gld_current_live_mixed_live",
                     "lane_type": "binary_operator",
                     "role": "primary",
                     "preferred": True,

@@ -1,9 +1,9 @@
 asset_key	role	parent_model_name	model_name	extra_features	neg_weight	validation_f1	validation_bal_acc	test_f1	test_bal_acc	test_positive_rate	headline_score	walkforward_avg_test_bal_acc	round2_score
-gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_rolling_vol_60_plus_neg_weight_1_15	ret_60,sma_gap_60,rolling_vol_60	1.15	0.5841	0.5279	0.8173	0.6005	0.8537	0.6767	0.5393	0.9939
-gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_neg_weight_1_15	ret_60,sma_gap_60	1.15	0.5981	0.5544	0.816	0.594	0.8601	0.6797	0.5266	0.983
-gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_up_day_ratio_20_plus_neg_weight_1_15	ret_60,sma_gap_60,up_day_ratio_20	1.15	0.5929	0.5457	0.8136	0.5917	0.8569	0.6761	0.5278	0.9827
-gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_close_location_20_plus_neg_weight_1_15	ret_60,sma_gap_60,close_location_20	1.15	0.6015	0.5682	0.792	0.5787	0.8188	0.6675	0.5373	0.9769
-gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_atr_pct_20_plus_neg_weight_1_15	ret_60,sma_gap_60,atr_pct_20	1.15	0.5938	0.5589	0.791	0.5868	0.8045	0.6671	0.533	0.9762
-gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_rolling_return_120_plus_neg_weight_1_15	ret_60,sma_gap_60,rolling_return_120	1.15	0.575	0.533	0.8	0.5525	0.8792	0.654	0.5219	0.9756
-gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_distance_to_252_high_plus_neg_weight_1_15	ret_60,sma_gap_60,distance_to_252_high	1.15	0.5881	0.5391	0.8202	0.5841	0.8871	0.6748	0.5278	0.9629
+gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_rolling_vol_60_plus_neg_weight_1_15	ret_60,sma_gap_60,rolling_vol_60	1.15	0.5841	0.5279	0.8173	0.6005	0.8537	0.6767	0.5393	0.9953
+gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_neg_weight_1_15	ret_60,sma_gap_60	1.15	0.5981	0.5544	0.816	0.594	0.8601	0.6797	0.5266	0.9844
+gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_up_day_ratio_20_plus_neg_weight_1_15	ret_60,sma_gap_60,up_day_ratio_20	1.15	0.5929	0.5457	0.8136	0.5917	0.8569	0.6761	0.5278	0.9841
+gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_close_location_20_plus_neg_weight_1_15	ret_60,sma_gap_60,close_location_20	1.15	0.6015	0.5682	0.792	0.5787	0.8188	0.6675	0.5373	0.978
+gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_atr_pct_20_plus_neg_weight_1_15	ret_60,sma_gap_60,atr_pct_20	1.15	0.5938	0.5589	0.791	0.5868	0.8045	0.6671	0.533	0.9773
+gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_rolling_return_120_plus_neg_weight_1_15	ret_60,sma_gap_60,rolling_return_120	1.15	0.575	0.533	0.8	0.5525	0.8792	0.654	0.5219	0.9771
+gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_distance_to_252_high_plus_neg_weight_1_15	ret_60,sma_gap_60,distance_to_252_high	1.15	0.5881	0.5391	0.8202	0.5841	0.8871	0.6748	0.5278	0.9647
 gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60_plus_sma_gap_60_plus_above_200dma_flag_plus_neg_weight_1_15	ret_60,sma_gap_60,above_200dma_flag	1.15	0.5714	0.5027	0.8157	0.5224	0.9698	0.6476	0.5223	0.9588
