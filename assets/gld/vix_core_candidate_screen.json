@@ -1,0 +1,54 @@
+{
+  "summary": {
+    "conclusion": "No VIX-driven core GLD replacement candidate survived.",
+    "notes": [
+      "Direct daily-VIX core paths underperformed the existing non-VIX GLD frontier.",
+      "VIX/VIX3M term features inside the mixed core model underperformed the existing non-VIX GLD frontier.",
+      "Manual GLD xgboost core candidates with VIX/VIX3M term features also underperformed the existing non-VIX GLD frontier.",
+      "The only surviving GLD+VIX path is the named VIX/VIX3M term-panic overlay line."
+    ]
+  },
+  "mixed_core_candidates": [
+    {
+      "family": "hard_gate_two_expert_mixed",
+      "base_variant": "current_live_mixed",
+      "best_vix_term_addition": [],
+      "headline_score": 0.8732,
+      "validation_bal_acc": 0.643,
+      "test_bal_acc": 0.837,
+      "result": "non-vix baseline within this sweep remained best"
+    },
+    {
+      "family": "hard_gate_two_expert_mixed",
+      "base_variant": "row121_frontier_guess",
+      "best_vix_term_addition": [
+        "vix_vxv_ratio_pct_63_rolling_max_3"
+      ],
+      "headline_score": 0.7716,
+      "validation_bal_acc": 0.5312,
+      "test_bal_acc": 0.4958,
+      "result": "underperformed non-vix GLD frontier"
+    },
+    {
+      "family": "hard_gate_two_expert_mixed",
+      "base_variant": "row122_frontier",
+      "best_vix_term_addition": [],
+      "headline_score": 0.7706,
+      "validation_bal_acc": 0.5,
+      "test_bal_acc": 0.5,
+      "result": "underperformed non-vix GLD frontier"
+    }
+  ],
+  "xgboost_core_candidates": [
+    {
+      "family": "xgboost",
+      "best_vix_term_addition": [
+        "vix_vxv_spread_lag1"
+      ],
+      "headline_score": 0.6846,
+      "validation_bal_acc": 0.4509,
+      "test_bal_acc": 0.725,
+      "result": "underperformed non-vix GLD live and frontier candidates"
+    }
+  ]
+}

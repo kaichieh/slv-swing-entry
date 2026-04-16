@@ -1,0 +1,88 @@
+{
+  "summary": {
+    "conclusion": "No GLD+VIX frontier candidate replaced the current live line. The strongest surviving path remains the current mixed live line plus the VIX/VIX3M term-panic overlay.",
+    "comparison_type": "like-for-like live-rule comparison with and without term overlay"
+  },
+  "test_split": {
+    "current_live": {
+      "base": {
+        "selected_count": 2,
+        "avg_return": 0.2085,
+        "hit_rate": 1.0
+      },
+      "term_overlay": {
+        "selected_count": 2,
+        "avg_return": 0.2404,
+        "hit_rate": 1.0
+      }
+    },
+    "row121": {
+      "base": {
+        "selected_count": 2,
+        "avg_return": 0.1578,
+        "hit_rate": 1.0
+      },
+      "term_overlay": {
+        "selected_count": 2,
+        "avg_return": 0.2411,
+        "hit_rate": 1.0
+      }
+    },
+    "row122": {
+      "base": {
+        "selected_count": 2,
+        "avg_return": 0.2085,
+        "hit_rate": 1.0
+      },
+      "term_overlay": {
+        "selected_count": 2,
+        "avg_return": 0.2404,
+        "hit_rate": 1.0
+      }
+    }
+  },
+  "walkforward": {
+    "current_live": {
+      "base": {
+        "folds": 5,
+        "total_selected": 10,
+        "mean_avg_return": 0.0835,
+        "mean_hit_rate": 0.7
+      },
+      "term_overlay": {
+        "folds": 5,
+        "total_selected": 10,
+        "mean_avg_return": 0.1041,
+        "mean_hit_rate": 0.8
+      }
+    },
+    "row121": {
+      "base": {
+        "folds": 5,
+        "total_selected": 10,
+        "mean_avg_return": 0.0835,
+        "mean_hit_rate": 0.7
+      },
+      "term_overlay": {
+        "folds": 5,
+        "total_selected": 10,
+        "mean_avg_return": 0.0811,
+        "mean_hit_rate": 0.7
+      }
+    },
+    "row122": {
+      "base": {
+        "folds": 5,
+        "total_selected": 10,
+        "mean_avg_return": 0.0835,
+        "mean_hit_rate": 0.7
+      },
+      "term_overlay": {
+        "folds": 5,
+        "total_selected": 10,
+        "mean_avg_return": 0.1018,
+        "mean_hit_rate": 0.8
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "decision": {
+    "status": "adopted",
+    "replaced_line": "hard_gate_two_expert_mixed_live",
+    "replacement_line": "gld_mixed_vix_vxv_term_panic_live",
+    "replacement_scope": "runtime_operator",
+    "core_model_changed": false,
+    "reason": "The VIX/VIX3M term-panic line is the only GLD+VIX runtime path that remained positive in direct live-rule comparison and walk-forward comparison, while all stronger VIX-core replacement candidates failed."
+  },
+  "replacement_gate": {
+    "must_improve_like_for_like_live_rule": true,
+    "must_not_weaken_walkforward_mean_avg_return": true,
+    "must_remain_runtime_valid": true,
+    "must_preserve_monitor_visibility": true
+  },
+  "evidence": {
+    "previous_generic_runtime_line": {
+      "line_id": "hard_gate_two_expert_mixed_live",
+      "like_for_like_live_rule_avg_return": 0.0737,
+      "like_for_like_live_rule_selected_count": 3,
+      "like_for_like_live_rule_hit_rate": 0.6667,
+      "walkforward_mean_avg_return": 0.0905,
+      "walkforward_mean_hit_rate": 0.75
+    },
+    "replacement_runtime_line": {
+      "line_id": "gld_mixed_vix_vxv_term_panic_live",
+      "like_for_like_live_rule_avg_return": 0.1466,
+      "like_for_like_live_rule_selected_count": 2,
+      "like_for_like_live_rule_hit_rate": 1.0,
+      "walkforward_mean_avg_return": 0.1107,
+      "walkforward_mean_hit_rate": 0.75
+    }
+  },
+  "negative_research_context": {
+    "core_candidate_screen": "assets/gld/vix_core_candidate_screen.json",
+    "frontier_compare": "assets/gld/vix_replacement_frontier_compare.json",
+    "summary": "No VIX-driven GLD core replacement candidate survived. The adopted GLD+VIX outcome is therefore the runtime/operator replacement line only."
+  }
+}
