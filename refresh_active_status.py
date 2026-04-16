@@ -648,10 +648,38 @@ def build_followup_round4_status(asset_dir: Path) -> pd.DataFrame:
 
 
 def build_gld(asset_dir: Path) -> pd.DataFrame:
+    config = ac.load_asset_config("gld")
+    preferred_line = str(config.get("live_operator_line_id", "")).strip() or "hard_gate_two_expert_mixed_live"
     latest_prediction_path = ac.get_latest_prediction_path("gld")
     if not latest_prediction_path.exists():
         raise FileNotFoundError(f"Missing GLD latest prediction file: {latest_prediction_path}")
     payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+    explicit_line = str(payload.get("live_operator_line_id", "")).strip()
+    live_provenance = cast(dict[str, object], payload.get("live_provenance", {}))
+    provenance_line = str(live_provenance.get("operator_line_id", "")).strip()
+    settings = ac.get_live_term_panic_settings("gld")
+    signature = ac.get_live_mixed_signature("gld")
+    decision_overlay = str(live_provenance.get("decision_overlay", "")).strip()
+    term_panic_feature = str(live_provenance.get("term_panic_feature", "")).strip()
+    term_panic_threshold = live_provenance.get("term_panic_threshold")
+    expected_threshold = settings.get("threshold")
+    signature_matches = (
+        str(live_provenance.get("left_expert", "")).strip() == str(signature.get("left_expert", ""))
+        and str(live_provenance.get("right_expert", "")).strip() == str(signature.get("right_expert", ""))
+        and str(live_provenance.get("outer_gate_feature", "")).strip() == str(signature.get("outer_gate_feature", ""))
+        and round(float(cast(float | int | str, live_provenance.get("outer_gate_threshold", 0.0))), 6)
+        == round(float(cast(float | int | str, signature.get("outer_gate_threshold", 0.0))), 6)
+    )
+    overlay_matches = (
+        decision_overlay == "vix_vxv_term_panic_block"
+        and term_panic_feature == str(settings.get("feature", ""))
+        and expected_threshold is not None
+        and term_panic_threshold is not None
+        and round(float(cast(float | int | str, term_panic_threshold)), 6)
+        == round(float(cast(float | int | str, expected_threshold)), 6)
+    )
+    if explicit_line != preferred_line or provenance_line != preferred_line or not signature_matches or not overlay_matches:
+        raise ValueError(f"GLD preferred line '{preferred_line}' cannot be validated from live cache provenance.")
     rows = read_signal_rows_from_cache(latest_prediction_path.parent, "gld", 60)
     selected_rows = rows.loc[rows["signal"].astype(str) != "no_entry"]
     recent_selected_count = int(len(selected_rows))
@@ -661,10 +689,11 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
     reference_rule = str(model_summary.get("reference_percentile_rule", "top_20pct"))
     model_family = str(model_summary.get("model_family", "logistic"))
     live_label_mode = str(model_summary.get("label_mode", "drop-neutral"))
+    live_decision_rule = str(model_summary.get("live_decision_rule", "threshold_plus_buy_point_overlay")).strip()
     latest_signal = str(payload.get("signal_summary", {}).get("signal", "no_entry"))
     latest_selected = latest_signal != "no_entry"
     if model_family == "hard_gate_two_expert_mixed":
-        line_id = "hard_gate_two_expert_mixed_live"
+        line_id = preferred_line
         feature_note = f"hard-gate mixed two-expert {live_label_mode} path"
     elif len(live_extra_features) > 2:
         line_id = "context_stack_live"
@@ -689,7 +718,7 @@ def build_gld(asset_dir: Path) -> pd.DataFrame:
                 "latest_selected": latest_selected,
                 "cutoff": float(payload["signal_summary"]["decision_threshold"]),
                 "last_selected_date": selected_dates[-1] if selected_dates else "",
-                "usage_note": f"Current GLD live line uses {feature_note} with the threshold-plus-buy-point overlay; {reference_rule} remains the reference rule.",
+                "usage_note": f"Current GLD live line uses {feature_note} with {live_decision_rule}; {reference_rule} remains the reference rule.",
             }
         ]
     )

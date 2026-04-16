@@ -34,7 +34,11 @@ from prepare import (
     add_context_features,
     add_price_features,
     add_relative_strength_features,
+    add_vix_term_structure_features,
+    add_vix_features,
     download_asset_prices,
+    download_vix3m_prices,
+    download_vix_prices,
     load_splits,
 )
 
@@ -159,11 +163,17 @@ def synchronize_latest_signal_row(
 
 def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[str, object]]:
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
+    asset_key = ac.get_asset_key()
     raw_prices = download_asset_prices()
     live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
     splits = load_splits()
     feature_names = build_feature_names()
+    if any(name.startswith("vix_") for name in feature_names):
+        live_features = add_vix_features(live_features, download_vix_prices())
     model_artifacts = fit_model(splits, feature_names, raw_prices=raw_prices)
+    if asset_key == "gld" and str(model_artifacts["model_family"]) == "hard_gate_two_expert_mixed":
+        live_features = add_vix_features(live_features, download_vix_prices())
+        live_features = add_vix_term_structure_features(live_features, download_vix3m_prices())
     feature_names = list(model_artifacts["feature_names"])
     threshold = float(model_artifacts["threshold"])
     history_probabilities = build_history_probabilities(model_artifacts, splits, feature_names)
@@ -179,7 +189,7 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
         vector, snapshot = score_latest_row(model_artifacts, feature_names, train_frame, row)
         probability = float(predict_probabilities(model_artifacts, vector)[0])
         raw_signal, band_info = classify_signal(probability, float(threshold), history_probabilities)
-        signal, buy_point_summary = apply_buy_point_overlay(raw_signal, snapshot)
+        signal, buy_point_summary = apply_buy_point_overlay(raw_signal, snapshot, asset_key=asset_key)
         rule_info = summarize_rule(probability, history_probabilities, rule_top_pct)
         rationale_text = " | ".join(build_model_rationale(snapshot))
         rule_text = build_rule_rationale(probability, float(threshold), rule_info)

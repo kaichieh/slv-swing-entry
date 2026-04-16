@@ -21,7 +21,11 @@ from prepare import (
     add_context_features,
     add_price_features,
     add_relative_strength_features,
+    add_vix_term_structure_features,
+    add_vix_features,
     download_asset_prices,
+    download_vix3m_prices,
+    download_vix_prices,
 )
 
 DEFAULT_LIVE_EXTRA_FEATURES = ac.get_live_extra_features()
@@ -38,6 +42,7 @@ LIVE_OPERATOR_FEATURE_MAP = {
 }
 LIVE_OPERATOR_MODEL_FAMILY_MAP = {
     HARD_GATE_TWO_EXPERT_GDX_LIVE: HARD_GATE_TWO_EXPERT,
+    "gld_mixed_vix_vxv_term_panic_live": HARD_GATE_TWO_EXPERT_MIXED,
 }
 
 try:
@@ -56,6 +61,21 @@ def build_feature_names() -> list[str]:
             feature_names.append(column)
     drop_features = set(tr.get_env_csv("AR_DROP_FEATURES"))
     return [name for name in feature_names if name not in drop_features]
+
+
+def append_selected_experimental_features(default_features: tuple[str, ...], available_columns) -> tuple[str, ...]:
+    selected = set(tr.get_env_csv("AR_EXTRA_BASE_FEATURES"))
+    feature_names = list(default_features)
+    for column in tr.EXPERIMENTAL_FEATURE_COLUMNS:
+        if column not in selected or column not in available_columns or column in feature_names:
+            continue
+        feature_names.append(column)
+    return tuple(feature_names)
+
+
+def selected_vix_features_requested() -> bool:
+    selected = set(tr.get_env_csv("AR_EXTRA_BASE_FEATURES"))
+    return any(column.startswith("vix_") for column in selected)
 
 
 def get_rule_top_pct() -> float:
@@ -103,9 +123,9 @@ def resolve_live_operator_line_id(feature_names: list[str], model_family: str) -
 
 def build_live_provenance(model_artifacts: Mapping[str, Any], live_operator_line_id: str) -> dict[str, object]:
     model_family = str(model_artifacts.get("model_family", "")).strip()
-    if model_family != HARD_GATE_TWO_EXPERT:
+    if model_family not in {HARD_GATE_TWO_EXPERT, HARD_GATE_TWO_EXPERT_MIXED}:
         return {}
-    return {
+    provenance = {
         "operator_line_id": live_operator_line_id,
         "benchmark_symbol": get_live_benchmark_symbol(),
         "outer_gate_feature": str(model_artifacts.get("outer_gate_feature", "")),
@@ -113,6 +133,13 @@ def build_live_provenance(model_artifacts: Mapping[str, Any], live_operator_line
         "left_expert": str(model_artifacts.get("left_expert", "")),
         "right_expert": str(model_artifacts.get("right_expert", "")),
     }
+    if model_family == HARD_GATE_TWO_EXPERT_MIXED:
+        settings = ac.get_live_term_panic_settings()
+        if settings["feature"] and settings["threshold"] is not None:
+            provenance["decision_overlay"] = "vix_vxv_term_panic_block"
+            provenance["term_panic_feature"] = str(settings["feature"])
+            provenance["term_panic_threshold"] = round(float(cast(float | int | str, settings["threshold"])), 6)
+    return provenance
 
 
 def require_xgboost() -> Any:
@@ -150,6 +177,8 @@ def fit_hard_gate_two_expert_model(raw_prices) -> dict[str, Any]:
     )
 
     frame = rb.build_labeled_frame(raw_prices, label_mode=get_live_label_mode())
+    left_extra_features = append_selected_experimental_features(left_extra_features, frame.columns)
+    right_extra_features = append_selected_experimental_features(right_extra_features, frame.columns)
     _, left_artifacts = rb.train_model(
         frame,
         winner.LEFT_EXPERT,
@@ -206,17 +235,21 @@ def fit_hard_gate_two_expert_mixed_model(raw_prices) -> dict[str, Any]:
     import research_gld_topbottom10_hard_gate_two_expert_mixed as winner
 
     frame = rb.build_labeled_frame(raw_prices, label_mode=get_live_label_mode())
+    if selected_vix_features_requested():
+        frame = add_vix_features(frame, download_vix_prices())
+    left_extra_features = append_selected_experimental_features(winner.LEFT_EXTRA_FEATURES, frame.columns)
+    right_extra_features = append_selected_experimental_features(winner.RIGHT_EXTRA_FEATURES, frame.columns)
     _, left_artifacts = rb.train_model(
         frame,
         winner.LEFT_EXPERT,
         model_family="regime_dual_logistic",
-        extra_features=winner.LEFT_EXTRA_FEATURES,
+        extra_features=left_extra_features,
         gate_feature="above_200dma_flag",
     )
     _, right_artifacts = rb.train_model(
         frame,
         winner.RIGHT_EXPERT,
-        extra_features=winner.RIGHT_EXTRA_FEATURES,
+        extra_features=right_extra_features,
     )
 
     splits = rb.split_frame(frame)
@@ -245,6 +278,8 @@ def fit_hard_gate_two_expert_mixed_model(raw_prices) -> dict[str, Any]:
         "feature_names": feature_names,
         "left_artifacts": left_artifacts,
         "right_artifacts": right_artifacts,
+        "left_expert": winner.LEFT_EXPERT,
+        "right_expert": winner.RIGHT_EXPERT,
         "outer_gate_feature": winner.OUTER_GATE_FEATURE,
         "outer_gate_threshold": float(winner.OUTER_GATE_THRESHOLD),
         "validation_probabilities": validation_probabilities,
@@ -534,11 +569,25 @@ def assess_buy_point(snapshot: dict[str, float]) -> tuple[bool, list[str], list[
     return len(warnings) == 0, passes, warnings
 
 
-def apply_buy_point_overlay(signal: str, snapshot: dict[str, float]) -> tuple[str, dict[str, object]]:
+def apply_buy_point_overlay(signal: str, snapshot: dict[str, float], asset_key: str = "") -> tuple[str, dict[str, object]]:
     buy_point_ok, passes, warnings = assess_buy_point(snapshot)
     adjusted_signal = signal
 
-    if not buy_point_ok:
+    settings = ac.get_live_term_panic_settings(asset_key)
+    term_panic_feature = str(settings["feature"]) if settings["feature"] else ""
+    term_panic_threshold = settings["threshold"]
+    term_panic = (
+        asset_key == "gld"
+        and bool(term_panic_feature)
+        and term_panic_threshold is not None
+        and float(snapshot.get(term_panic_feature, 0.0)) > float(cast(float | int | str, term_panic_threshold))
+    )
+    if term_panic:
+        adjusted_signal = "no_entry"
+        warnings = ["GLD term panic block active: recent VIX/VIX3M stress remains extreme"] + warnings
+        buy_point_ok = False
+
+    if not buy_point_ok and not term_panic:
         if signal in {"very_strong_bullish", "strong_bullish"}:
             adjusted_signal = "bullish"
         elif signal == "bullish":
@@ -630,10 +679,16 @@ def build_rule_rationale(probability: float, threshold: float, rule_summary: dic
 
 def main() -> None:
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
+    asset_key = str(ac.load_asset_config()["asset_key"])
     raw_prices = download_asset_prices()
     live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
     splits = tr.load_splits()
     feature_names = build_feature_names()
+    if any(name.startswith("vix_") for name in feature_names):
+        live_features = add_vix_features(live_features, download_vix_prices())
+    if asset_key == "gld" and get_live_model_family() == HARD_GATE_TWO_EXPERT_MIXED:
+        live_features = add_vix_features(live_features, download_vix_prices())
+        live_features = add_vix_term_structure_features(live_features, download_vix3m_prices())
     model_artifacts = fit_model(splits, feature_names, raw_prices=raw_prices)
     feature_names = list(model_artifacts["feature_names"])
     threshold = float(model_artifacts["threshold"])
@@ -646,7 +701,7 @@ def main() -> None:
 
     historical_probabilities = build_history_probabilities(model_artifacts, splits, feature_names)
     raw_signal, band_info = classify_signal(probability, float(threshold), historical_probabilities)
-    signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot)
+    signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot, asset_key=asset_key)
     rule_top_pct = get_rule_top_pct()
     rule_summary = summarize_rule(probability, historical_probabilities, rule_top_pct)
     model_rationale = build_model_rationale(raw_snapshot)
@@ -654,6 +709,10 @@ def main() -> None:
     bullish = predicted_label == 1
     live_operator_line_id = resolve_live_operator_line_id(feature_names, str(model_artifacts["model_family"]))
     live_provenance = build_live_provenance(model_artifacts, live_operator_line_id)
+
+    live_decision_rule = "threshold_plus_buy_point_overlay"
+    if asset_key == "gld" and str(model_artifacts["model_family"]) == HARD_GATE_TWO_EXPERT_MIXED:
+        live_decision_rule = "threshold_plus_buy_point_overlay_plus_vix_vxv_term_panic_block"
 
     output = {
         "signal_summary": {
@@ -679,7 +738,7 @@ def main() -> None:
             "model_reasons": model_rationale,
             "rule_reason": rule_rationale,
         },
-        "asset_key": str(ac.load_asset_config()["asset_key"]),
+        "asset_key": asset_key,
         "symbol": ac.get_asset_symbol(),
         "latest_raw_date": latest_live["date"].iloc[0].strftime("%Y-%m-%d"),
         "latest_open": round(float(latest_live["open"].iloc[0]), 2),
@@ -694,7 +753,7 @@ def main() -> None:
             "label_mode": str(model_artifacts.get("live_label_mode", get_live_label_mode())),
             "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
             "default_interactions": list(model_artifacts.get("default_interactions", [])),
-            "live_decision_rule": "threshold_plus_buy_point_overlay",
+            "live_decision_rule": live_decision_rule,
             "reference_percentile_rule": f"top_{rule_top_pct:g}pct",
             "xgboost_params": model_artifacts.get("xgboost_params", {}),
         },

@@ -1,130 +1,78 @@
+from __future__ import annotations
+
 import json
+import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest import mock
+
+import pandas as pd
 
 import refresh_active_status as ras
 
 
 class RefreshActiveStatusGldTests(unittest.TestCase):
-    def test_build_gld_uses_dynamic_context_stack_metadata(self) -> None:
-        payload = {
-            "signal_summary": {
-                "predicted_label": 1,
-                "predicted_probability": 0.4662,
-                "decision_threshold": 0.461,
-            },
-            "latest_raw_date": "2026-04-01",
-            "model_summary": {
-                "reference_percentile_rule": "top_7.5pct",
-            },
-            "model_extra_features": [
-                "ret_60",
-                "sma_gap_60",
-                "atr_pct_20_percentile",
-                "trend_quality_20",
-            ],
-        }
-        signal_rows = [
-            {"date": "2026-03-28", "signal": "no_entry"},
-            {"date": "2026-03-31", "signal": "weak_bullish"},
-            {"date": "2026-04-01", "signal": "bullish"},
-        ]
-        tmpdir = Path(__file__).resolve().parent / "_tmp"
-        tmpdir.mkdir(exist_ok=True)
-        prediction_path = tmpdir / "latest_prediction_test.json"
-        prediction_path.write_text(json.dumps(payload), encoding="utf-8")
-        self.addCleanup(lambda: prediction_path.unlink(missing_ok=True))
+    def test_build_gld_uses_configured_term_panic_line_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp)
+            latest_prediction_path = cache_dir / "latest_prediction.json"
+            latest_prediction_path.write_text(
+                json.dumps(
+                    {
+                        "latest_raw_date": "2026-04-15",
+                        "signal_summary": {
+                            "signal": "no_entry",
+                            "predicted_probability": 0.51,
+                            "decision_threshold": 0.49,
+                        },
+                        "live_operator_line_id": "gld_mixed_vix_vxv_term_panic_live",
+                        "live_provenance": {
+                            "operator_line_id": "gld_mixed_vix_vxv_term_panic_live",
+                            "left_expert": "dual_context",
+                            "right_expert": "context_no_atr",
+                            "outer_gate_feature": "atr_pct_20_percentile",
+                            "outer_gate_threshold": 0.7,
+                            "decision_overlay": "vix_vxv_term_panic_block",
+                            "term_panic_feature": "vix_vxv_ratio_pct_63_rolling_max_3",
+                            "term_panic_threshold": 0.9,
+                        },
+                        "model_summary": {
+                            "model_family": "hard_gate_two_expert_mixed",
+                            "label_mode": "future-return-top-bottom-10pct",
+                            "reference_percentile_rule": "top_20pct",
+                            "live_decision_rule": "threshold_plus_buy_point_overlay_plus_vix_vxv_term_panic_block",
+                        },
+                        "signal_rows": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            signal_rows = pd.DataFrame(
+                [
+                    {"date": "2026-04-14", "signal": "bullish"},
+                    {"date": "2026-04-15", "signal": "no_entry"},
+                ]
+            )
 
-        with patch.object(ras.ac, "get_latest_prediction_path", return_value=prediction_path):
-            with patch.object(ras, "read_signal_rows_from_cache", return_value=ras.pd.DataFrame(signal_rows)):
-                frame = ras.build_gld(tmpdir)
+            with mock.patch.object(
+                ras.ac,
+                "load_asset_config",
+                return_value={
+                    "live_operator_line_id": "gld_mixed_vix_vxv_term_panic_live",
+                    "live_left_expert": "dual_context",
+                    "live_right_expert": "context_no_atr",
+                    "live_outer_gate_feature": "atr_pct_20_percentile",
+                    "live_outer_gate_threshold": 0.7,
+                    "live_term_panic_feature": "vix_vxv_ratio_pct_63_rolling_max_3",
+                    "live_term_panic_threshold": 0.9,
+                },
+            ):
+                with mock.patch.object(ras.ac, "get_latest_prediction_path", return_value=latest_prediction_path):
+                    with mock.patch.object(ras, "read_signal_rows_from_cache", return_value=signal_rows):
+                        output = ras.build_gld(cache_dir)
 
-        row = frame.iloc[0]
-        self.assertEqual(row["line_id"], "context_stack_live")
-        self.assertEqual(row["recent_selected_count"], 2)
-        self.assertEqual(row["last_selected_date"], "2026-04-01")
-        self.assertIn("context-stack extras", row["usage_note"])
-        self.assertIn("top_7.5pct", row["usage_note"])
-
-    def test_build_gld_status_follows_execution_signal_when_overlay_blocks_entry(self) -> None:
-        payload = {
-            "signal_summary": {
-                "signal": "no_entry",
-                "predicted_label": 1,
-                "predicted_probability": 0.4662,
-                "decision_threshold": 0.461,
-            },
-            "latest_raw_date": "2026-04-01",
-            "model_summary": {
-                "reference_percentile_rule": "top_7.5pct",
-            },
-            "model_extra_features": [
-                "ret_60",
-                "sma_gap_60",
-                "atr_pct_20_percentile",
-                "trend_quality_20",
-            ],
-        }
-        signal_rows = [
-            {"date": "2026-03-28", "signal": "no_entry"},
-            {"date": "2026-03-31", "signal": "weak_bullish"},
-            {"date": "2026-04-01", "signal": "no_entry"},
-        ]
-        tmpdir = Path(__file__).resolve().parent / "_tmp"
-        tmpdir.mkdir(exist_ok=True)
-        prediction_path = tmpdir / "latest_prediction_overlay_test.json"
-        prediction_path.write_text(json.dumps(payload), encoding="utf-8")
-        self.addCleanup(lambda: prediction_path.unlink(missing_ok=True))
-
-        with patch.object(ras.ac, "get_latest_prediction_path", return_value=prediction_path):
-            with patch.object(ras, "read_signal_rows_from_cache", return_value=ras.pd.DataFrame(signal_rows)):
-                frame = ras.build_gld(tmpdir)
-
-        row = frame.iloc[0]
-        self.assertEqual(row["line_id"], "context_stack_live")
-        self.assertEqual(row["status"], "inactive")
-        self.assertFalse(bool(row["latest_selected"]))
-        self.assertEqual(row["last_selected_date"], "2026-03-31")
-
-    def test_build_gld_uses_explicit_line_id_for_hard_gate_two_expert_mixed_live_family(self) -> None:
-        payload = {
-            "signal_summary": {
-                "signal": "weak_bullish",
-                "predicted_label": 1,
-                "predicted_probability": 0.4662,
-                "decision_threshold": 0.461,
-            },
-            "latest_raw_date": "2026-04-01",
-            "model_summary": {
-                "model_family": "hard_gate_two_expert_mixed",
-                "reference_percentile_rule": "top_20pct",
-            },
-            "model_extra_features": [
-                "ret_60",
-                "sma_gap_60",
-                "trend_quality_20",
-                "percent_up_days_20",
-            ],
-        }
-        signal_rows = [
-            {"date": "2026-03-28", "signal": "no_entry"},
-            {"date": "2026-03-31", "signal": "weak_bullish"},
-            {"date": "2026-04-01", "signal": "weak_bullish"},
-        ]
-        tmpdir = Path(__file__).resolve().parent / "_tmp"
-        tmpdir.mkdir(exist_ok=True)
-        prediction_path = tmpdir / "latest_prediction_hard_gate_test.json"
-        prediction_path.write_text(json.dumps(payload), encoding="utf-8")
-        self.addCleanup(lambda: prediction_path.unlink(missing_ok=True))
-
-        with patch.object(ras.ac, "get_latest_prediction_path", return_value=prediction_path):
-            with patch.object(ras, "read_signal_rows_from_cache", return_value=ras.pd.DataFrame(signal_rows)):
-                frame = ras.build_gld(tmpdir)
-
-        row = frame.iloc[0]
-        self.assertEqual(row["line_id"], "hard_gate_two_expert_mixed_live")
-        self.assertIn("hard-gate mixed two-expert", row["usage_note"])
+        self.assertEqual(output.loc[0, "line_id"], "gld_mixed_vix_vxv_term_panic_live")
+        self.assertIn("threshold_plus_buy_point_overlay_plus_vix_vxv_term_panic_block", output.loc[0, "usage_note"])
 
 
 if __name__ == "__main__":

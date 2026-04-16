@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-gld	GLD	hard_gate_two_expert_mixed_live	binary_operator	primary	active	selected_now	37	2026-04-15	0.5041	True	0.493	2026-04-15	0	Preferred line is currently selected.
+gld	GLD	gld_mixed_vix_vxv_term_panic_live	binary_operator	primary	active	selected_now	14	2026-04-15	0.5049	True	0.49	2026-04-15	0	Preferred line is currently selected.
