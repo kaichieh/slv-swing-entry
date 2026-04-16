@@ -34,7 +34,9 @@ from prepare import (
     add_context_features,
     add_price_features,
     add_relative_strength_features,
+    add_vix_features,
     download_asset_prices,
+    download_vix_prices,
     load_splits,
 )
 
@@ -161,6 +163,7 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
     raw_prices = download_asset_prices()
     live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
+    live_features = add_vix_features(live_features, download_vix_prices())
     splits = load_splits()
     feature_names = build_feature_names()
     model_artifacts = fit_model(splits, feature_names, raw_prices=raw_prices)

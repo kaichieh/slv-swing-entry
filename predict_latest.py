@@ -21,7 +21,9 @@ from prepare import (
     add_context_features,
     add_price_features,
     add_relative_strength_features,
+    add_vix_features,
     download_asset_prices,
+    download_vix_prices,
 )
 
 DEFAULT_LIVE_EXTRA_FEATURES = ac.get_live_extra_features()
@@ -56,6 +58,16 @@ def build_feature_names() -> list[str]:
             feature_names.append(column)
     drop_features = set(tr.get_env_csv("AR_DROP_FEATURES"))
     return [name for name in feature_names if name not in drop_features]
+
+
+def append_selected_experimental_features(default_features: tuple[str, ...], available_columns) -> tuple[str, ...]:
+    selected = set(tr.get_env_csv("AR_EXTRA_BASE_FEATURES"))
+    feature_names = list(default_features)
+    for column in tr.EXPERIMENTAL_FEATURE_COLUMNS:
+        if column not in selected or column not in available_columns or column in feature_names:
+            continue
+        feature_names.append(column)
+    return tuple(feature_names)
 
 
 def get_rule_top_pct() -> float:
@@ -150,6 +162,8 @@ def fit_hard_gate_two_expert_model(raw_prices) -> dict[str, Any]:
     )
 
     frame = rb.build_labeled_frame(raw_prices, label_mode=get_live_label_mode())
+    left_extra_features = append_selected_experimental_features(left_extra_features, frame.columns)
+    right_extra_features = append_selected_experimental_features(right_extra_features, frame.columns)
     _, left_artifacts = rb.train_model(
         frame,
         winner.LEFT_EXPERT,
@@ -206,17 +220,19 @@ def fit_hard_gate_two_expert_mixed_model(raw_prices) -> dict[str, Any]:
     import research_gld_topbottom10_hard_gate_two_expert_mixed as winner
 
     frame = rb.build_labeled_frame(raw_prices, label_mode=get_live_label_mode())
+    left_extra_features = append_selected_experimental_features(winner.LEFT_EXTRA_FEATURES, frame.columns)
+    right_extra_features = append_selected_experimental_features(winner.RIGHT_EXTRA_FEATURES, frame.columns)
     _, left_artifacts = rb.train_model(
         frame,
         winner.LEFT_EXPERT,
         model_family="regime_dual_logistic",
-        extra_features=winner.LEFT_EXTRA_FEATURES,
+        extra_features=left_extra_features,
         gate_feature="above_200dma_flag",
     )
     _, right_artifacts = rb.train_model(
         frame,
         winner.RIGHT_EXPERT,
-        extra_features=winner.RIGHT_EXTRA_FEATURES,
+        extra_features=right_extra_features,
     )
 
     splits = rb.split_frame(frame)
@@ -632,6 +648,7 @@ def main() -> None:
     tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
     raw_prices = download_asset_prices()
     live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
+    live_features = add_vix_features(live_features, download_vix_prices())
     splits = tr.load_splits()
     feature_names = build_feature_names()
     model_artifacts = fit_model(splits, feature_names, raw_prices=raw_prices)

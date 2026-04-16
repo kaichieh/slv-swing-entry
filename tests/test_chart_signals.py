@@ -7,9 +7,70 @@ from pathlib import Path
 from unittest import mock
 
 import chart_signals as cs
+import numpy as np
+import pandas as pd
 
 
 class ChartSignalsPayloadTests(unittest.TestCase):
+    def test_build_chart_rows_builds_live_features_with_vix_pipeline(self) -> None:
+        live_features = pd.DataFrame(
+            [
+                {
+                    "date": pd.Timestamp("2026-04-15"),
+                    "open": 100.0,
+                    "high": 102.0,
+                    "low": 99.0,
+                    "close": 101.0,
+                    "baseline_feature": 1.0,
+                    "vix_close_lag1": 22.0,
+                }
+            ]
+        )
+        splits = {
+            "test": mock.Mock(frame=pd.DataFrame({"date": [pd.Timestamp("2026-03-31")]})),
+        }
+        model_artifacts = {
+            "model_family": "logistic",
+            "threshold": 0.5,
+            "train_frame": pd.DataFrame({"baseline_feature": [1.0], "vix_close_lag1": [20.0]}),
+            "feature_names": ["baseline_feature", "vix_close_lag1"],
+            "default_interactions": [],
+        }
+
+        with mock.patch.object(cs.tr, "set_seed"):
+            with mock.patch.object(cs.tr, "get_env_int", return_value=cs.tr.SEED):
+                with mock.patch.object(cs, "download_asset_prices", return_value="raw_prices"):
+                    with mock.patch.object(cs, "add_price_features", return_value="price_features"):
+                        with mock.patch.object(cs, "add_relative_strength_features", return_value="relative_features"):
+                            with mock.patch.object(cs, "add_context_features", return_value="context_features"):
+                                with mock.patch.object(cs, "download_vix_prices", return_value="vix_prices", create=True) as download_vix_prices:
+                                    with mock.patch.object(cs, "add_vix_features", return_value=live_features, create=True) as add_vix_features:
+                                        with mock.patch.object(cs, "load_splits", return_value=splits):
+                                            with mock.patch.object(cs, "build_feature_names", return_value=["baseline_feature", "vix_close_lag1"]):
+                                                with mock.patch.object(cs, "fit_model", return_value=model_artifacts):
+                                                    with mock.patch.object(cs, "build_history_probabilities", return_value=np.array([0.2, 0.4], dtype=np.float32)):
+                                                        with mock.patch.object(cs, "get_rule_top_pct", return_value=20.0):
+                                                            score_latest_row = mock.Mock(
+                                                                return_value=(
+                                                                    np.array([[1.0]], dtype=np.float32),
+                                                                    {"baseline_feature": 1.0, "vix_close_lag1": 22.0},
+                                                                )
+                                                            )
+                                                            with mock.patch.object(cs, "score_latest_row", score_latest_row):
+                                                                with mock.patch.object(cs, "predict_probabilities", return_value=np.array([0.7], dtype=np.float32)):
+                                                                    with mock.patch.object(cs, "classify_signal", return_value=("bullish", {"confidence_gap": 0.2})):
+                                                                        with mock.patch.object(cs, "apply_buy_point_overlay", return_value=("bullish", {"buy_point_ok": True, "buy_point_warnings": []})):
+                                                                            with mock.patch.object(cs, "summarize_rule", return_value={"selected": True, "cutoff": 0.6, "rule_name": "top_20pct_reference", "percentile_rank": 0.9}):
+                                                                                with mock.patch.object(cs, "build_model_rationale", return_value=["reason"]):
+                                                                                    with mock.patch.object(cs, "build_rule_rationale", return_value="rule rationale"):
+                                                                                        rows, meta = cs.build_chart_rows(lookback_days=5)
+
+        download_vix_prices.assert_called_once_with()
+        add_vix_features.assert_called_once_with("context_features", "vix_prices")
+        pd.testing.assert_frame_equal(score_latest_row.call_args.args[3], live_features)
+        self.assertEqual(rows[0]["signal"], "bullish")
+        self.assertEqual(meta["latest_date"], "2026-04-15")
+
     def test_build_chart_payload_exposes_algorithm_metadata(self) -> None:
         rows = [
             {
