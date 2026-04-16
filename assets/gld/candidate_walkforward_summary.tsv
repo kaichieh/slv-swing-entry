@@ -2,3 +2,6 @@ asset_key	role	model_name	extra_features	fold_name	validation_f1	validation_bal_
 gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60,sma_gap_60	fold_1	0.4057	0.5509	0.5166	0.5084	0.944
 gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60,sma_gap_60	fold_2	0.5358	0.574	0.4718	0.4921	0.5854
 gld	headline	ret_60_plus_sma_gap_60_interaction	ret_60,sma_gap_60	fold_3	0.5983	0.5411	0.8243	0.5659	0.9125
+gld	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_1	0.4057	0.5509	0.5166	0.5084	0.944
+gld	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_2	0.5358	0.574	0.4718	0.4921	0.5854
+gld	operator	ret_60_plus_sma_gap_60	ret_60,sma_gap_60	fold_3	0.5983	0.5411	0.8243	0.5659	0.9125
