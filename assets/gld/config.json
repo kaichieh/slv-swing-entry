@@ -8,11 +8,9 @@
   "default_chart_signal_mode": "execution",
   "live_model_family": "hard_gate_two_expert_mixed",
   "live_label_mode": "future-return-top-bottom-10pct",
-  "live_operator_line_id": "gld_mixed_vix_vxv_term_panic_live",
+  "live_operator_line_id": "gld_current_live_mixed_live",
   "live_left_expert": "dual_context",
   "live_right_expert": "context_no_atr",
   "live_outer_gate_feature": "atr_pct_20_percentile",
-  "live_outer_gate_threshold": 0.7,
-  "live_term_panic_feature": "vix_vxv_ratio_pct_63_rolling_max_3",
-  "live_term_panic_threshold": 0.9
+  "live_outer_gate_threshold": 0.7
 }

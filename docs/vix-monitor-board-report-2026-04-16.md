@@ -5,7 +5,7 @@
 This experiment tested whether adding a shared VIX feature pack helps the current `monitor_board` asset set.
 
 > Later GLD-only follow-up superseded the initial GLD interpretation in this report.
-> The early shared daily-VIX pack looked positive for GLD in this coarse board-wide screen, but deeper GLD-specific follow-up did not find a surviving VIX-driven core replacement model. The only GLD+VIX path that remained justified was a VIX/VIX3M term-panic overlay line.
+> The early shared daily-VIX pack looked positive for GLD in this coarse board-wide screen, but deeper GLD-specific follow-up did not find a surviving VIX-driven core replacement model. An intermediate GLD conclusion kept only a VIX/VIX3M term-panic overlay line, and that overlay conclusion was itself later superseded by the baseline live-line switch to `gld_current_live_mixed_live`.
 
 - Scope: all 9 board assets (`gld`, `slv`, `iwm`, `spy`, `tlt`, `xle`, `nvda`, `qqq`, `tsla`)
 - Strategy shape: add VIX as a shared feature source, not as a new board renderer rule
@@ -102,7 +102,7 @@ Raw experiment output was saved to `.sisyphus/vix_experiment_results.json`.
 
 Adding VIX **did help some monitor-board assets, but not the board as a whole**.
 
-For **GLD specifically**, this report should now be read as historical context only: the later GLD-only follow-up replaced the original daily-VIX interpretation with a narrower conclusion — keep the non-VIX mixed core model, and only adopt a VIX/VIX3M term-panic overlay at runtime.
+For **GLD specifically**, this report should now be read as historical context only: the later GLD-only follow-up first replaced the original daily-VIX interpretation with a narrower overlay conclusion, and that overlay conclusion was later superseded again by the baseline live-line switch to `gld_current_live_mixed_live`.
 
 The best evidence supports **asset-specific adoption**, not a blanket rollout:
 
