@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from typing import cast
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -175,6 +176,32 @@ def get_live_model_family(asset_key: str | None = None) -> str:
     config = load_asset_config(asset_key)
     value = str(config.get("live_model_family", "logistic")).strip().lower()
     return value if value else "logistic"
+
+
+def get_live_operator_line_id(asset_key: str | None = None) -> str:
+    config = load_asset_config(asset_key)
+    return str(config.get("live_operator_line_id", "")).strip()
+
+
+def get_live_term_panic_settings(asset_key: str | None = None) -> dict[str, object]:
+    config = load_asset_config(asset_key)
+    feature = str(config.get("live_term_panic_feature", "")).strip()
+    threshold_raw = config.get("live_term_panic_threshold")
+    threshold = float(cast(float | int | str, threshold_raw)) if threshold_raw is not None else None
+    return {
+        "feature": feature,
+        "threshold": threshold,
+    }
+
+
+def get_live_mixed_signature(asset_key: str | None = None) -> dict[str, object]:
+    config = load_asset_config(asset_key)
+    return {
+        "left_expert": str(config.get("live_left_expert", "")).strip(),
+        "right_expert": str(config.get("live_right_expert", "")).strip(),
+        "outer_gate_feature": str(config.get("live_outer_gate_feature", "")).strip(),
+        "outer_gate_threshold": float(cast(float | int | str, config.get("live_outer_gate_threshold", 0.0))),
+    }
 
 
 def get_live_xgboost_params(asset_key: str | None = None) -> dict[str, int | float]:
