@@ -18,6 +18,8 @@ import signal_chart_renderer
 import train as tr
 from predict_latest import (
     apply_buy_point_overlay,
+    build_latest_prediction_output,
+    build_live_analysis_context,
     build_history_probabilities,
     build_feature_names,
     build_model_rationale,
@@ -28,18 +30,7 @@ from predict_latest import (
     predict_probabilities,
     score_latest_row,
     summarize_rule,
-)
-from prepare import (
-    BENCHMARK_SYMBOL,
-    add_context_features,
-    add_price_features,
-    add_relative_strength_features,
-    add_vix_term_structure_features,
-    add_vix_features,
-    download_asset_prices,
-    download_vix3m_prices,
-    download_vix_prices,
-    load_splits,
+    write_latest_prediction_output,
 )
 
 OUTPUT_PATH = str(ac.get_chart_output_path())
@@ -161,33 +152,27 @@ def synchronize_latest_signal_row(
     return synced_rows
 
 
-def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[str, object]]:
-    tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
-    asset_key = ac.get_asset_key()
-    raw_prices = download_asset_prices()
-    live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
-    splits = load_splits()
-    feature_names = build_feature_names()
-    if any(name.startswith("vix_") for name in feature_names):
-        live_features = add_vix_features(live_features, download_vix_prices())
-    model_artifacts = fit_model(splits, feature_names, raw_prices=raw_prices)
-    if asset_key == "gld" and str(model_artifacts["model_family"]) == "hard_gate_two_expert_mixed":
-        live_features = add_vix_features(live_features, download_vix_prices())
-        live_features = add_vix_term_structure_features(live_features, download_vix3m_prices())
-    feature_names = list(model_artifacts["feature_names"])
-    threshold = float(model_artifacts["threshold"])
-    history_probabilities = build_history_probabilities(model_artifacts, splits, feature_names)
-    rule_top_pct = get_rule_top_pct()
-
-    train_frame = model_artifacts["train_frame"]
+def build_chart_rows(lookback_days: int, context: dict[str, object] | None = None) -> tuple[list[dict[str, object]], dict[str, object]]:
+    if context is None:
+        context = build_live_analysis_context()
+    asset_key = str(context["asset_key"])
+    live_features = cast(pd.DataFrame, context["live_features"])
+    feature_names = list(cast(list[str], context["feature_names"]))
+    model_artifacts = cast(dict[str, object], context["model_artifacts"])
+    threshold = float(context["threshold"])
+    history_probabilities = np.asarray(context["historical_probabilities"], dtype=np.float32)
+    rule_top_pct = float(context["rule_top_pct"])
+    train_frame = context["train_frame"]
     scored = live_features.dropna(subset=feature_names).copy()
     scored = scored.tail(lookback_days).reset_index(drop=True)
+    scored_matrix, _ = score_latest_row(model_artifacts, feature_names, train_frame, scored)
+    scored_probabilities = predict_probabilities(model_artifacts, scored_matrix)
 
     rows: list[dict[str, object]] = []
     for idx in range(len(scored)):
-        row = scored.iloc[[idx]]
-        vector, snapshot = score_latest_row(model_artifacts, feature_names, train_frame, row)
-        probability = float(predict_probabilities(model_artifacts, vector)[0])
+        row = cast(pd.Series, scored.iloc[idx])
+        snapshot = {name: float(row[name]) for name in scored.columns if name != "date"}
+        probability = float(scored_probabilities[idx])
         raw_signal, band_info = classify_signal(probability, float(threshold), history_probabilities)
         signal, buy_point_summary = apply_buy_point_overlay(raw_signal, snapshot, asset_key=asset_key)
         rule_info = summarize_rule(probability, history_probabilities, rule_top_pct)
@@ -198,8 +183,8 @@ def build_chart_rows(lookback_days: int) -> tuple[list[dict[str, object]], dict[
         percentile_rank = float(cast(float | int | str, rule_info["percentile_rank"]))
         rows.append(
             {
-                "date": row["date"].iloc[0].strftime("%Y-%m-%d"),
-                "close": round(float(row["close"].iloc[0]), 2),
+                "date": cast(pd.Timestamp, row["date"]).strftime("%Y-%m-%d"),
+                "close": round(float(row["close"]), 2),
                 "signal": signal,
                 "raw_model_signal": raw_signal,
                 "buy_point_ok": bool(buy_point_summary["buy_point_ok"]),
@@ -274,8 +259,11 @@ def build_html(rows: list[dict[str, object]], meta: dict[str, object]) -> str:
 
 def main() -> None:
     lookback_days = get_env_int("AR_CHART_LOOKBACK_DAYS", DEFAULT_LOOKBACK_DAYS)
-    rows, meta = build_chart_rows(lookback_days)
-    rows_for_output = synchronize_latest_signal_row(rows)
+    context = build_live_analysis_context()
+    latest_prediction_payload = build_latest_prediction_output(context)
+    write_latest_prediction_output(latest_prediction_payload)
+    rows, meta = build_chart_rows(lookback_days, context=context)
+    rows_for_output = synchronize_latest_signal_row(rows, latest_prediction_payload)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     pd.DataFrame(rows_for_output).to_csv(ROWS_OUTPUT_PATH, sep="\t", index=False)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:

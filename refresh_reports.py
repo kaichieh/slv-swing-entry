@@ -38,7 +38,6 @@ def refresh_asset(asset_key: str) -> None:
         run_step("research_regression_recent.py", asset_key)
         run_step("research_regression_recent_chart.py", asset_key)
     else:
-        run_step("predict_latest.py", asset_key)
         run_step("chart_signals.py", asset_key)
     run_step("refresh_active_status.py", asset_key)
     run_step("render_active_status.py", asset_key)

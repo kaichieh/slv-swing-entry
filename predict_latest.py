@@ -837,5 +837,133 @@ def main() -> None:
     print(json.dumps(output, indent=2, ensure_ascii=False))
 
 
+def build_live_analysis_context() -> dict[str, Any]:
+    tr.set_seed(tr.get_env_int("AR_SEED", tr.SEED))
+    asset_key = str(ac.load_asset_config()["asset_key"])
+    raw_prices = download_asset_prices()
+    live_features = add_context_features(add_relative_strength_features(add_price_features(raw_prices), BENCHMARK_SYMBOL))
+    splits = tr.load_splits()
+    feature_names = build_feature_names()
+    needs_vix_features = any(name.startswith("vix_") for name in feature_names)
+    needs_gld_term_panic = active_gld_term_panic_overlay(asset_key)
+    vix_frame = None
+    if needs_vix_features or needs_gld_term_panic:
+        vix_frame = download_vix_prices()
+    if needs_vix_features and vix_frame is not None:
+        live_features = add_vix_features(live_features, vix_frame)
+    if needs_gld_term_panic:
+        if vix_frame is None:
+            vix_frame = download_vix_prices()
+        live_features = add_vix_features(live_features, vix_frame)
+        live_features = add_vix_term_structure_features(live_features, download_vix3m_prices())
+    model_artifacts = fit_model(splits, feature_names, raw_prices=raw_prices)
+    feature_names = list(model_artifacts["feature_names"])
+    threshold = float(model_artifacts["threshold"])
+    train_frame = model_artifacts["train_frame"]
+    historical_probabilities = build_history_probabilities(model_artifacts, splits, feature_names)
+    return {
+        "asset_key": asset_key,
+        "live_features": live_features,
+        "splits": splits,
+        "feature_names": feature_names,
+        "model_artifacts": model_artifacts,
+        "threshold": threshold,
+        "train_frame": train_frame,
+        "historical_probabilities": historical_probabilities,
+        "rule_top_pct": get_rule_top_pct(),
+    }
+
+
+def build_latest_prediction_output(context: Mapping[str, Any]) -> dict[str, object]:
+    asset_key = str(context["asset_key"])
+    live_features = context["live_features"]
+    splits = cast(Mapping[str, DatasetSplit], context["splits"])
+    feature_names = list(cast(list[str], context["feature_names"]))
+    model_artifacts = cast(dict[str, Any], context["model_artifacts"])
+    threshold = float(context["threshold"])
+    train_frame = context["train_frame"]
+    historical_probabilities = np.asarray(context["historical_probabilities"], dtype=np.float32)
+    rule_top_pct = float(context["rule_top_pct"])
+
+    latest_live = live_features.iloc[[-1]].copy()
+    latest_vector, raw_snapshot = score_latest_row(model_artifacts, feature_names, train_frame, latest_live)
+    probability = float(predict_probabilities(model_artifacts, latest_vector)[0])
+    predicted_label = int(probability >= threshold)
+    raw_signal, band_info = classify_signal(probability, float(threshold), historical_probabilities)
+    signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot, asset_key=asset_key)
+    rule_summary = summarize_rule(probability, historical_probabilities, rule_top_pct)
+    model_rationale = build_model_rationale(raw_snapshot)
+    rule_rationale = build_rule_rationale(probability, float(threshold), rule_summary)
+    bullish = predicted_label == 1
+    live_operator_line_id = resolve_live_operator_line_id(feature_names, str(model_artifacts["model_family"]))
+    live_provenance = build_live_provenance(model_artifacts, live_operator_line_id)
+
+    live_decision_rule = "threshold_plus_buy_point_overlay"
+    if asset_key == "gld" and uses_gld_term_panic_overlay(live_operator_line_id, str(model_artifacts["model_family"])):
+        live_decision_rule = "threshold_plus_buy_point_overlay_plus_vix_vxv_term_panic_block"
+
+    output: dict[str, object] = {
+        "signal_summary": {
+            "signal": signal,
+            "verdict": "璅∪???銝剜??脣" if bullish else "璅∪??桀?銝??葉?脣",
+            "predicted_label": predicted_label,
+            "predicted_probability": round(probability, 4),
+            "decision_threshold": round(float(threshold), 4),
+            "raw_model_signal": raw_signal,
+            **band_info,
+        },
+        "model_signal_summary": {
+            "signal": raw_signal,
+            "verdict": "璅∪???銝剜??脣" if bullish else "璅∪??桀?銝??葉?脣",
+            "predicted_label": predicted_label,
+            "predicted_probability": round(probability, 4),
+            "decision_threshold": round(float(threshold), 4),
+            **band_info,
+        },
+        "buy_point_summary": buy_point_summary,
+        "rule_summary": rule_summary,
+        "rationale_summary": {
+            "model_reasons": model_rationale,
+            "rule_reason": rule_rationale,
+        },
+        "asset_key": asset_key,
+        "symbol": ac.get_asset_symbol(),
+        "latest_raw_date": latest_live["date"].iloc[0].strftime("%Y-%m-%d"),
+        "latest_open": round(float(latest_live["open"].iloc[0]), 2),
+        "latest_high": round(float(latest_live["high"].iloc[0]), 2),
+        "latest_low": round(float(latest_live["low"].iloc[0]), 2),
+        "latest_close": round(float(latest_live["close"].iloc[0]), 2),
+        "trained_until_label_date": str(
+            model_artifacts.get("trained_until_label_date", splits["test"].frame["date"].iloc[-1].strftime("%Y-%m-%d"))
+        ),
+        "model_summary": {
+            "model_family": str(model_artifacts["model_family"]),
+            "label_mode": str(model_artifacts.get("live_label_mode", get_live_label_mode())),
+            "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
+            "default_interactions": list(model_artifacts.get("default_interactions", [])),
+            "live_decision_rule": live_decision_rule,
+            "reference_percentile_rule": f"top_{rule_top_pct:g}pct",
+            "xgboost_params": model_artifacts.get("xgboost_params", {}),
+        },
+        "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
+        "latest_feature_snapshot": {
+            key: round(value, 4)
+            for key, value in raw_snapshot.items()
+            if key in {"ret_20", "ret_60", "drawdown_20", "volume_vs_20", "rsi_14", "sma_gap_20", "sma_gap_60"}
+        },
+    }
+    if live_operator_line_id:
+        output["live_operator_line_id"] = live_operator_line_id
+    if live_provenance:
+        output["live_provenance"] = live_provenance
+    return output
+
+
+def write_latest_prediction_output(output: Mapping[str, object]) -> None:
+    latest_prediction_path = Path(ac.get_latest_prediction_path())
+    latest_prediction_path.parent.mkdir(parents=True, exist_ok=True)
+    latest_prediction_path.write_text(json.dumps(dict(output), indent=2, ensure_ascii=False), encoding="utf-8")
+
+
 if __name__ == "__main__":
     main()

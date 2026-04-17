@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-hard_gate_two_expert_gdx_live	binary_operator	primary	True	inactive	47	2026-04-15	0.5596	False	0.44	2026-04-13	Primary SLV live line uses the adopted GDX-relative hard-gate two-expert breakthrough.
+hard_gate_two_expert_gdx_live	binary_operator	primary	True	inactive	47	2026-04-17	0.2073	False	0.445	2026-04-13	Primary SLV live line uses the adopted GDX-relative hard-gate two-expert breakthrough.

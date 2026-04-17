@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-qqq	QQQ	distance_bottom5	regression_watchlist	primary	watchlist_ready	inactive_wait	0	2026-04-15	0.042858283404833	False	-0.019215			Preferred line is inactive; continue monitoring without action.
+qqq	QQQ	distance_bottom5	regression_watchlist	primary	watchlist_ready	inactive_wait	0	2026-04-17	0.0471738033942546	False	-0.019215			Preferred line is inactive; continue monitoring without action.
