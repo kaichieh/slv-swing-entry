@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-gld_current_live_mixed_live	binary_operator	primary	True	inactive	35	2026-04-17	0.4799	False	0.493	2026-04-15	Current GLD live line uses hard-gate mixed two-expert future-return-top-bottom-10pct path with threshold_plus_buy_point_overlay; top_20pct remains the reference rule.
+gld_current_live_mixed_live	binary_operator	primary	True	inactive	37	2026-04-17	0.4814	False	0.492	2026-04-15	Current GLD live line uses hard-gate mixed two-expert future-return-top-bottom-10pct path with threshold_plus_buy_point_overlay; top_20pct remains the reference rule.

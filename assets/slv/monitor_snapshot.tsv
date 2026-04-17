@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-slv	SLV	hard_gate_two_expert_gdx_live	binary_operator	primary	inactive	watchlist_wait	47	2026-04-17	0.2073	False	0.445	2026-04-13	4	Preferred line is valid but currently waiting below cutoff.
+slv	SLV	hard_gate_two_expert_gdx_live	binary_operator	primary	inactive	watchlist_wait	47	2026-04-17	0.2247	False	0.445	2026-04-13	4	Preferred line is valid but currently waiting below cutoff.

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 from html import escape
+from typing import Any, cast
 
 import pandas as pd
 
@@ -29,6 +30,114 @@ MIXED_ACTION_PRIORITY = {
 
 PRIORITY_RESEARCH_SIGNAL_COLOR = "#7c3aed"
 FOLLOWUP_ROUNDS = (4, 3, 2)
+
+TECHNICAL_ENUM_ZH: dict[str, dict[str, str]] = {
+    "A_trend": {
+        "bullish": "\u591a\u982d",
+        "bearish": "\u7a7a\u982d",
+        "sideways": "\u9707\u76ea",
+        "bullish_rebound": "\u591a\u982d\u53cd\u5f48",
+        "bearish_pullback": "\u7a7a\u982d\u56de\u6a94",
+    },
+    "B_price_vs_ma": {
+        "above": "\u5728\u5747\u7dda\u4e0a\u65b9",
+        "below": "\u5728\u5747\u7dda\u4e0b\u65b9",
+        "near": "\u63a5\u8fd1\u5747\u7dda",
+        "crossing_up": "\u5411\u4e0a\u7a7f\u8d8a\u5747\u7dda",
+        "crossing_down": "\u5411\u4e0b\u8dcc\u7834\u5747\u7dda",
+    },
+    "C_rsi_state": {
+        "overbought": "\u904e\u71b1",
+        "strong": "\u504f\u5f37",
+        "neutral": "\u4e2d\u6027",
+        "weak": "\u504f\u5f31",
+        "oversold": "\u8d85\u8ce3",
+    },
+    "D_kd_state": {
+        "golden_cross": "\u9ec3\u91d1\u4ea4\u53c9",
+        "death_cross": "\u6b7b\u4ea1\u4ea4\u53c9",
+        "high_level_flattening": "\u9ad8\u6a94\u921d\u5316",
+        "low_level_flattening": "\u4f4e\u6a94\u921d\u5316",
+        "overbought": "\u9ad8\u6a94\u904e\u71b1",
+        "oversold": "\u4f4e\u6a94\u8d85\u8ce3",
+        "neutral": "\u4e2d\u6027",
+    },
+    "E_levels.type": {
+        "support": "\u652f\u6490",
+        "resistance": "\u58d3\u529b",
+    },
+    "E_levels.strength": {
+        "weak": "\u5f31",
+        "medium": "\u4e2d",
+        "strong": "\u5f37",
+    },
+    "E_levels.status": {
+        "holding": "\u5b88\u4f4f\u4e2d",
+        "broken": "\u5df2\u8dcc\u7834\uff0f\u5df2\u7a81\u7834",
+        "tested": "\u6e2c\u8a66\u4e2d",
+    },
+    "F_volume_state": {
+        "expanding_on_rise": "\u4e0a\u6f32\u653e\u91cf",
+        "contracting_on_rise": "\u4e0a\u6f32\u7e2e\u91cf",
+        "expanding_on_drop": "\u4e0b\u8dcc\u653e\u91cf",
+        "contracting_on_drop": "\u4e0b\u8dcc\u7e2e\u91cf",
+        "volume_spike": "\u7206\u91cf",
+        "normal": "\u91cf\u80fd\u6b63\u5e38",
+        "dry_up": "\u91cf\u7e2e",
+    },
+    "G_ma_structure": {
+        "bullish_alignment": "\u5747\u7dda\u591a\u982d\u6392\u5217",
+        "bearish_alignment": "\u5747\u7dda\u7a7a\u982d\u6392\u5217",
+        "mixed": "\u5747\u7dda\u6df7\u5408",
+        "golden_cross": "\u5747\u7dda\u9ec3\u91d1\u4ea4\u53c9",
+        "death_cross": "\u5747\u7dda\u6b7b\u4ea1\u4ea4\u53c9",
+        "compression": "\u5747\u7dda\u7cfe\u7d50",
+        "expanding": "\u5747\u7dda\u767c\u6563",
+    },
+    "H_macd_state": {
+        "golden_cross": "MACD \u9ec3\u91d1\u4ea4\u53c9",
+        "death_cross": "MACD \u6b7b\u4ea1\u4ea4\u53c9",
+        "bullish_expanding": "\u591a\u65b9\u67f1\u72c0\u9ad4\u64f4\u5927",
+        "bullish_contracting": "\u591a\u65b9\u67f1\u72c0\u9ad4\u7e2e\u5c0f",
+        "bearish_expanding": "\u7a7a\u65b9\u67f1\u72c0\u9ad4\u64f4\u5927",
+        "bearish_contracting": "\u7a7a\u65b9\u67f1\u72c0\u9ad4\u7e2e\u5c0f",
+        "neutral": "\u4e2d\u6027",
+    },
+    "I_divergence_state": {
+        "bullish_divergence": "\u504f\u591a\u80cc\u96e2",
+        "bearish_divergence": "\u504f\u7a7a\u80cc\u96e2",
+        "hidden_bullish_divergence": "\u96b1\u6027\u504f\u591a\u80cc\u96e2",
+        "hidden_bearish_divergence": "\u96b1\u6027\u504f\u7a7a\u80cc\u96e2",
+        "none": "\u7121",
+    },
+    "J_candlestick_pattern": {
+        "bullish_engulfing": "\u591a\u982d\u541e\u565c",
+        "bearish_engulfing": "\u7a7a\u982d\u541e\u565c",
+        "hammer": "\u9318\u5b50\u7dda",
+        "shooting_star": "\u5c04\u64ca\u4e4b\u661f",
+        "doji": "\u5341\u5b57\u7dda",
+        "long_bullish_candle": "\u9577\u7d05K",
+        "long_bearish_candle": "\u9577\u9ed1K",
+        "inside_bar": "\u5167\u5305\u7dda",
+        "none": "\u7121\u660e\u78ba\u578b\u614b",
+    },
+    "K_trade_action": {
+        "buy_pullback": "\u7b49\u56de\u6a94\u8cb7\u9032",
+        "buy_breakout": "\u7b49\u7a81\u7834\u8cb7\u9032",
+        "hold": "\u6301\u6709",
+        "wait": "\u89c0\u671b",
+        "reduce": "\u6e1b\u78bc",
+        "sell": "\u8ce3\u51fa",
+        "avoid": "\u907f\u958b",
+    },
+    "L_price_volume_divergence": {
+        "bearish_volume_divergence": "\u504f\u7a7a\u50f9\u91cf\u80cc\u96e2",
+        "bullish_volume_divergence": "\u504f\u591a\u50f9\u91cf\u80cc\u96e2",
+        "price_volume_confirmed": "\u50f9\u91cf\u914d\u5408\u78ba\u8a8d",
+        "inconclusive": "\u8a0a\u865f\u4e0d\u660e",
+        "none": "\u7121",
+    },
+}
 
 
 def _coerce_float(value: object) -> float:
@@ -77,6 +186,156 @@ def _load_snapshot_row(asset_key: str) -> pd.Series | None:
     if frame.empty:
         return None
     return frame.iloc[0]
+
+
+def _load_technical_reading(asset_key: str) -> dict[str, object] | None:
+    path = ac.get_technical_reading_json_path(asset_key)
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _technical_label(reading: dict[str, object] | None, key: str) -> str:
+    if not reading:
+        return "n/a"
+    technical = reading.get("technical_reading", {})
+    if isinstance(technical, dict):
+        value = technical.get(key)
+        if value is not None:
+            enum_value = str(value).strip()
+            mapped = TECHNICAL_ENUM_ZH.get(key, {}).get(enum_value)
+            if mapped:
+                return mapped
+            return enum_value
+    return "n/a"
+
+
+def _technical_value(reading: dict[str, object] | None, key: str) -> str:
+    if not reading:
+        return ""
+    technical = reading.get("technical_reading", {})
+    if isinstance(technical, dict):
+        value = technical.get(key)
+        if value is not None:
+            return str(value).strip()
+    return ""
+
+
+def _technical_levels(reading: dict[str, object] | None) -> list[dict[str, object]]:
+    if not reading:
+        return []
+    technical = reading.get("technical_reading", {})
+    if isinstance(technical, dict):
+        levels = technical.get("E_levels")
+        if isinstance(levels, list):
+            return [level for level in levels if isinstance(level, dict)]
+    return []
+
+
+def _key_level_text(reading: dict[str, object] | None) -> str:
+    levels = _technical_levels(reading)
+    if not levels:
+        return "n/a"
+    resistances = [level for level in levels if str(level.get("type")) == "resistance"]
+    supports = [level for level in levels if str(level.get("type")) == "support"]
+    preferred = resistances[0] if resistances else supports[-1]
+    level_type = "壓力" if str(preferred.get("type")) == "resistance" else "支撐"
+    level_value = preferred.get("level")
+    if isinstance(level_value, (int, float)):
+        return f"{level_type} {float(level_value):.0f}"
+    return level_type
+
+
+def _technical_summary(trend_zh: str, rsi_zh: str, action_zh: str, volume_zh: str) -> str:
+    if trend_zh == "\u591a\u982d" and rsi_zh in {"\u904e\u71b1", "\u504f\u5f37"} and action_zh == "\u7b49\u56de\u6a94\u8cb7\u9032":
+        return "\u591a\u982d\u504f\u71b1\uff0c\u7b49\u56de\u6a94"
+    if trend_zh == "\u591a\u982d" and action_zh == "\u7b49\u7a81\u7834\u8cb7\u9032":
+        return "\u591a\u982d\u504f\u5f37\uff0c\u53ef\u7b49\u7a81\u7834"
+    if trend_zh in {"\u7a7a\u982d", "\u7a7a\u982d\u56de\u6a94"} and action_zh in {"\u89c0\u671b", "\u907f\u958b"}:
+        return "\u7a7a\u982d\u504f\u5f31\uff0c\u5148\u89c0\u671b"
+    if action_zh == "\u89c0\u671b":
+        return f"{trend_zh}\uff0c\u5148\u89c0\u671b"
+    if action_zh == "\u6301\u6709":
+        return f"{trend_zh}\uff0c\u53ef\u7e7c\u7e8c\u6301\u6709"
+    if volume_zh != "n/a":
+        return f"{trend_zh} / {rsi_zh} / {volume_zh}"
+    return f"{trend_zh} / {rsi_zh} / {action_zh}"
+
+
+
+def _chip_class(value: str, group: str) -> str:
+    if group == "trend":
+        return "chip-green" if value in {"bullish", "bullish_rebound"} else "chip-red" if value in {"bearish", "bearish_pullback"} else "chip-sand"
+    if group == "rsi":
+        return "chip-red" if value == "overbought" else "chip-blue" if value == "oversold" else "chip-amber" if value in {"strong", "weak"} else "chip-sand"
+    if group == "volume":
+        return "chip-sand"
+    if group == "action":
+        if value == "buy_breakout":
+            return "chip-blue"
+        if value == "buy_pullback":
+            return "chip-amber"
+        if value == "hold":
+            return "chip-green"
+        if value in {"wait", "avoid", "sell", "reduce"}:
+            return "chip-red"
+        return "chip-sand"
+    return "chip-sand"
+
+
+def _enrich_board_row(row: dict[str, object]) -> dict[str, object]:
+    asset_key = str(row["asset_key"])
+    reading = _load_technical_reading(asset_key)
+    trend = _technical_value(reading, "A_trend")
+    rsi = _technical_value(reading, "C_rsi_state")
+    volume = _technical_value(reading, "F_volume_state")
+    action = _technical_value(reading, "K_trade_action")
+    trend_zh = _technical_label(reading, "A_trend")
+    rsi_zh = _technical_label(reading, "C_rsi_state")
+    volume_zh = _technical_label(reading, "F_volume_state")
+    action_zh = _technical_label(reading, "K_trade_action")
+    row["technical_trend"] = trend
+    row["technical_trend_zh"] = trend_zh
+    row["technical_rsi"] = rsi
+    row["technical_rsi_zh"] = rsi_zh
+    row["technical_volume"] = volume
+    row["technical_volume_zh"] = volume_zh
+    row["technical_action"] = action
+    row["technical_action_zh"] = action_zh
+    row["technical_summary"] = _technical_summary(trend_zh, rsi_zh, action_zh, volume_zh) if reading else "n/a"
+    row["technical_key_level"] = _key_level_text(reading)
+    row["detail_reading"] = reading or {}
+    return row
+
+
+def _key_level_text(reading: dict[str, object] | None) -> str:
+    levels = _technical_levels(reading)
+    if not levels:
+        return "n/a"
+    resistances = [level for level in levels if str(level.get("type")) == "resistance"]
+    supports = [level for level in levels if str(level.get("type")) == "support"]
+    preferred = resistances[0] if resistances else supports[-1]
+    level_type = "Resistance" if str(preferred.get("type")) == "resistance" else "Support"
+    level_value = preferred.get("level")
+    if isinstance(level_value, (int, float)):
+        return f"{level_type} {float(level_value):.0f}"
+    return level_type
+
+
+def _technical_summary(trend_zh: str, rsi_zh: str, action_zh: str, volume_zh: str) -> str:
+    if trend_zh == "\u591a\u982d" and rsi_zh in {"\u904e\u71b1", "\u504f\u5f37"} and action_zh == "\u7b49\u56de\u6a94\u8cb7\u9032":
+        return "\u591a\u982d\u504f\u71b1\uff0c\u7b49\u56de\u6a94"
+    if trend_zh == "\u591a\u982d" and action_zh == "\u7b49\u7a81\u7834\u8cb7\u9032":
+        return "\u591a\u982d\u504f\u5f37\uff0c\u53ef\u7b49\u7a81\u7834"
+    if trend_zh in {"\u7a7a\u982d", "\u7a7a\u982d\u56de\u6a94"} and action_zh in {"\u89c0\u671b", "\u907f\u958b"}:
+        return "\u7a7a\u982d\u504f\u5f31\uff0c\u5148\u89c0\u671b"
+    if action_zh == "\u89c0\u671b":
+        return f"{trend_zh}\uff0c\u5148\u89c0\u671b"
+    if action_zh == "\u6301\u6709":
+        return f"{trend_zh}\uff0c\u53ef\u7e7c\u7e8c\u6301\u6709"
+    if volume_zh != "n/a":
+        return f"{trend_zh} / {rsi_zh} / {volume_zh}"
+    return f"{trend_zh} / {rsi_zh} / {action_zh}"
 
 
 def _load_followup_rows(asset_key: str) -> tuple[pd.Series | None, pd.Series | None, int | None]:
@@ -145,6 +404,7 @@ def load_operating_board() -> pd.DataFrame:
         frame["chart_href"] = ac.get_monitor_card_chart_path(key).relative_to(ac.REPO_DIR).as_posix()
         frame["display_latest_date"] = load_display_latest_date(key)
         frame["signal_color"] = load_signal_color(key)
+        frame = pd.DataFrame([_enrich_board_row(cast(dict[str, object], row.to_dict())) for _, row in frame.iterrows()])
         frames.append(frame)
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
@@ -207,7 +467,7 @@ def load_priority_research_board() -> pd.DataFrame:
             "research_avg_return": _coerce_float(base_row.get("avg_return")),
             "research_trade_count": _coerce_int(base_row.get("selected_count"), _coerce_int(base_row.get("recent_selected_count"))),
         }
-        records.append(record)
+        records.append(_enrich_board_row(record))
     return pd.DataFrame.from_records(records)
 
 
@@ -394,197 +654,526 @@ def render_role_card(row: pd.Series) -> str:
     """
 
 
+def render_chip(label: str, chip_class: str) -> str:
+    return f'<span class="chip {chip_class}">{escape(label)}</span>'
+
+
+
+def render_table_row(row: pd.Series) -> str:
+    status_label = str(row["action"]).replace("_", " ")
+    status_chip = render_chip(
+        status_label.title(),
+        "chip-blue"
+        if str(row["action"]) == "selected_now"
+        else "chip-amber"
+        if str(row["action"]) in {"watchlist_wait", "watchlist_blocked"}
+        else "chip-sand"
+        if str(row["action"]) == "reference_only"
+        else "chip-red",
+    )
+    trend_chip = render_chip(str(row.get("technical_trend_zh", "n/a")), _chip_class(str(row.get("technical_trend", "")), "trend"))
+    rsi_chip = render_chip(str(row.get("technical_rsi_zh", "n/a")), _chip_class(str(row.get("technical_rsi", "")), "rsi"))
+    volume_chip = render_chip(str(row.get("technical_volume_zh", "n/a")), _chip_class(str(row.get("technical_volume", "")), "volume"))
+    action_chip = render_chip(str(row.get("technical_action_zh", "n/a")), _chip_class(str(row.get("technical_action", "")), "action"))
+    latest_value = "n/a" if pd.isna(row.get("latest_value")) else f"{float(row['latest_value']):.4f}"
+    symbol_color = escape(str(row.get("signal_color", "#9ca3af")))
+    asset_key = escape(str(row.get("asset_key", "")))
+    return f"""
+      <tr>
+        <td>
+          <div class="symbol">
+            <strong style="color:{symbol_color}">{escape(str(row["symbol"]))}</strong>
+            <div class="mini">{escape(str(row["display_latest_date"]))} · {escape(str(row["preferred_line"]))}</div>
+            <div class="mini">latest {escape(latest_value)}</div>
+          </div>
+        </td>
+        <td><button class="detail-link" type="button" data-target="detail-{asset_key}">view</button></td>
+        <td>{status_chip}</td>
+        <td>{trend_chip}</td>
+        <td>{rsi_chip}</td>
+        <td>{volume_chip}</td>
+        <td>{action_chip}</td>
+        <td class="summary">{escape(str(row.get("technical_summary", "n/a")))}</td>
+        <td><div class="level">{escape(str(row.get("technical_key_level", "n/a")))}</div></td>
+      </tr>
+    """
+
+
+def render_detail_card(row: pd.Series) -> str:
+    reading = cast(dict[str, Any], row.get("detail_reading", {}))
+    latest_close = cast(dict[str, object], reading.get("supporting_metrics", {})).get("latest_close", "n/a")
+    levels = str(row.get("technical_key_level", "n/a"))
+    status_chip = render_chip(
+        str(row.get("action", "n/a")).replace("_", " ").title(),
+        "chip-blue" if str(row.get("action")) == "selected_now" else "chip-amber",
+    )
+    return f"""
+      <aside class="detail-card">
+        <div class="detail-header">
+          <div>
+            <div class="eyebrow">Detail Card</div>
+            <div class="detail-symbol">{escape(str(row["symbol"]))}</div>
+            <div class="detail-price">Close {escape(str(latest_close))} · {escape(str(row["display_latest_date"]))}</div>
+          </div>
+          {status_chip}
+        </div>
+
+        <div class="detail-summary">
+          <strong>{escape(str(row["symbol"]))}</strong> · {escape(str(row.get("technical_summary", "n/a")))}
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="label">A / C / K</div>
+            <div class="value">{escape(str(row.get("technical_trend_zh", "n/a")))} · {escape(str(row.get("technical_rsi_zh", "n/a")))} · {escape(str(row.get("technical_action_zh", "n/a")))}</div>
+          </div>
+          <div class="detail-box">
+            <div class="label">F / G / L</div>
+            <div class="value">{escape(str(row.get("technical_volume_zh", "n/a")))} · {escape(_technical_label(reading, "G_ma_structure"))} · {escape(_technical_label(reading, "L_price_volume_divergence"))}</div>
+          </div>
+          <div class="detail-box">
+            <div class="label">D / H / I</div>
+            <div class="value">{escape(_technical_label(reading, "D_kd_state"))} · {escape(_technical_label(reading, "H_macd_state"))} · {escape(_technical_label(reading, "I_divergence_state"))}</div>
+          </div>
+          <div class="detail-box">
+            <div class="label">Key Levels</div>
+            <div class="value">{escape(levels)}</div>
+          </div>
+        </div>
+
+        <ul class="detail-list">
+          <li><strong>Action note:</strong> {escape(str(row.get("action_note", "n/a")))}</li>
+          <li><strong>Pattern:</strong> {escape(_technical_label(reading, "J_candlestick_pattern"))}</li>
+          <li><strong>Chart:</strong> <a href="{escape(str(row["chart_href"]))}">{escape(str(row["chart_href"]))}</a></li>
+        </ul>
+      </aside>
+    """
+
+
+def render_detail_template(row: pd.Series) -> str:
+    asset_key = escape(str(row.get("asset_key", "")))
+    return f'<template id="detail-template-{asset_key}">{render_detail_card(row)}</template>'
+
+
 def build_html(board: pd.DataFrame) -> str:
     counts = board["action"].value_counts().to_dict()
     summary = " | ".join(f"{key}={value}" for key, value in counts.items())
-    today_board = board.loc[
-        board["action"].isin(["selected_now", "watchlist_wait", "watchlist_blocked", "priority_research", "inactive_wait"])
-    ].copy()
-    today_cards = "\n".join(render_today_card(row) for _, row in today_board.iterrows())
-    role_cards = "\n".join(render_role_card(row) for _, row in board.iterrows())
-    today_legend = "".join(
-        [
-            '<span class="legend-item"><span class="swatch" style="background:#9ca3af"></span>no_entry</span>',
-            '<span class="legend-item"><span class="swatch" style="background:#fde68a"></span>weak_bullish</span>',
-            '<span class="legend-item"><span class="swatch" style="background:#f59e0b"></span>bullish</span>',
-            '<span class="legend-item"><span class="swatch" style="background:#16a34a"></span>strong_bullish</span>',
-            '<span class="legend-item"><span class="swatch" style="background:#065f46"></span>very_strong_bullish / selected</span>',
-            f'<span class="legend-item"><span class="swatch" style="background:{PRIORITY_RESEARCH_SIGNAL_COLOR}"></span>priority_research</span>',
-        ]
-    )
-    role_legend = "".join(
-        f'<span class="legend-item"><span class="swatch" style="background:{role_color(role)}"></span>{escape(role)}</span>'
-        for role in ["primary", "reference", "research"]
-    )
+    board_rows = "\n".join(render_table_row(row) for _, row in board.iterrows())
+    detail_row = board.iloc[0] if not board.empty else pd.Series(dtype="object")
+    current_detail = render_detail_card(detail_row) if not board.empty else ""
+    detail_templates = "\n".join(render_detail_template(row) for _, row in board.iterrows())
+    selected_count = int(counts.get("selected_now", 0))
+    watchlist_count = int(counts.get("watchlist_wait", 0) + counts.get("watchlist_blocked", 0))
+    overbought_count = int((board["technical_rsi"] == "overbought").sum()) if "technical_rsi" in board.columns else 0
+    pullback_count = int((board["technical_action"] == "buy_pullback").sum()) if "technical_action" in board.columns else 0
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Monitor Board</title>
   <style>
     :root {{
-      --bg: #f6f3ec;
-      --ink: #1f2937;
-      --muted: #6b7280;
-      --panel: #fffdf8;
+      --bg: #f4efe6;
+      --panel: rgba(255, 252, 246, 0.82);
+      --line: #dfd2bc;
+      --ink: #1c1917;
+      --muted: #6b6459;
+      --shadow: 0 24px 60px rgba(46, 38, 24, 0.12);
     }}
+    * {{ box-sizing: border-box; }}
     body {{
       margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(180deg, #f6f3ec 0%, #ebe5da 100%);
+      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.6), transparent 28%),
+        linear-gradient(180deg, #f5f0e7 0%, #eee4d4 100%);
       color: var(--ink);
     }}
+    a {{ color: inherit; }}
     .wrap {{
-      max-width: 1600px;
+      max-width: 1500px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 28px;
     }}
-    .card {{
+    .hero {{
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }}
+    .hero-card,
+    .stats-card,
+    .board-card,
+    .detail-card {{
       background: var(--panel);
-      border: 1px solid #e7e0d4;
-      border-radius: 18px;
-      box-shadow: 0 18px 60px rgba(31, 41, 55, 0.08);
-      padding: 20px 20px 12px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(223, 210, 188, 0.85);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }}
+    .hero-card {{
+      padding: 26px 28px;
+      background: linear-gradient(135deg, rgba(255, 250, 240, 0.98), rgba(245, 232, 207, 0.92));
+    }}
+    .eyebrow {{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(28, 25, 23, 0.06);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }}
     h1 {{
-      margin: 0 0 8px;
-      font-size: 28px;
+      margin: 18px 0 10px;
+      font-size: 40px;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
     }}
-    .sub {{
+    .hero-copy {{
+      max-width: 66ch;
+      font-size: 16px;
+      line-height: 1.6;
       color: var(--muted);
-      margin-bottom: 14px;
     }}
-    .legend {{
+    .mock-note {{
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-left: 4px solid #b7791f;
+      border-radius: 14px;
+      background: rgba(255, 248, 230, 0.9);
+      font-size: 14px;
+      color: #7c5b1b;
+    }}
+    .legend-row {{
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
-      margin-bottom: 18px;
+      gap: 18px;
+      margin-top: 18px;
+      color: var(--ink);
       font-size: 14px;
+      align-items: center;
     }}
     .legend-item {{
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }}
-    .swatch {{
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
+    .legend-dot {{
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       display: inline-block;
     }}
-    .section {{
-      margin-top: 18px;
-    }}
-    .section h2 {{
-      margin: 0 0 8px;
-      font-size: 20px;
-    }}
-    .section-sub {{
-      color: var(--muted);
-      margin-bottom: 12px;
-      font-size: 14px;
-    }}
-    .spotlight-grid {{
+    .stats-card {{
+      padding: 22px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      align-content: start;
+    }}
+    .stats-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }}
-    .spotlight-card {{
-      display: block;
-      text-decoration: none;
-      background: #faf6ee;
-      border: 1px solid #eadfcb;
-      border-top: 4px solid var(--accent);
-      border-radius: 12px;
-      padding: 10px 12px;
+    .stat {{
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(223, 210, 188, 0.8);
     }}
-    .spotlight-date {{
-      font-size: 12px;
+    .stat-label {{
       color: var(--muted);
-      margin-bottom: 4px;
-    }}
-    .spotlight-symbol {{
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }}
-    .spotlight-line {{
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }}
-    .spotlight-metric {{
       font-size: 12px;
-      color: var(--ink);
-      line-height: 1.45;
-    }}
-    .spotlight-note {{
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.45;
-      margin-top: 8px;
-    }}
-    .role-grid {{
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-    }}
-    .role-card {{
-      display: block;
-      text-decoration: none;
-      background: #faf6ee;
-      border: 1px solid #eadfcb;
-      border-top: 4px solid var(--accent);
-      border-radius: 12px;
-      padding: 10px 12px;
-    }}
-    .role-symbol {{
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }}
-    .role-badge {{
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }}
-    .role-line {{
-      font-size: 13px;
-      color: var(--ink);
+      letter-spacing: 0.08em;
       margin-bottom: 8px;
     }}
-    .role-note {{
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.45;
+    .stat-value {{
+      font-size: 26px;
+      font-weight: 700;
     }}
+    .detail-link {{
+      color: #1d4ed8;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }}
+    .detail-link:hover {{
+      text-decoration: underline;
+    }}
+    .main {{
+      display: grid;
+      grid-template-columns: 1.6fr 0.9fr;
+      gap: 18px;
+    }}
+    .board-card {{
+      overflow-x: auto;
+      overflow-y: hidden;
+    }}
+    .board-head {{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid rgba(223, 210, 188, 0.8);
+    }}
+    .board-title {{
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }}
+    .board-sub {{
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 70ch;
+      line-height: 1.5;
+    }}
+    table {{
+      width: 100%;
+      border-collapse: collapse;
+    }}
+    thead th {{
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 14px 16px;
+      background: rgba(244, 239, 230, 0.9);
+      border-bottom: 1px solid rgba(223, 210, 188, 0.8);
+      white-space: nowrap;
+    }}
+    tbody td {{
+      padding: 16px;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(223, 210, 188, 0.6);
+      font-size: 14px;
+    }}
+    tbody tr:hover {{
+      background: rgba(255, 250, 240, 0.72);
+    }}
+    .symbol {{
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }}
+    .symbol strong {{
+      font-size: 22px;
+      line-height: 1;
+    }}
+    .mini {{
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }}
+    .chip {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }}
+    .chip-green {{ color: #14532d; background: #dcfce7; border-color: #86efac; }}
+    .chip-amber {{ color: #92400e; background: #fef3c7; border-color: #fcd34d; }}
+    .chip-red {{ color: #991b1b; background: #fee2e2; border-color: #fca5a5; }}
+    .chip-blue {{ color: #1d4ed8; background: #dbeafe; border-color: #93c5fd; }}
+    .chip-sand {{ color: #6b4f1d; background: #f6e8cf; border-color: #e8c787; }}
+    .summary {{
+      font-size: 14px;
+      line-height: 1.55;
+      color: #3f3a33;
+    }}
+    .level {{
+      font-size: 14px;
+      font-weight: 700;
+    }}
+    .detail-card {{
+      padding: 24px;
+      display: none;
+      gap: 16px;
+      align-content: start;
+      background: linear-gradient(180deg, rgba(255, 252, 246, 0.98), rgba(247, 240, 228, 0.94));
+    }}
+    .detail-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }}
+    .detail-symbol {{
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }}
+    .detail-price {{
+      color: var(--muted);
+      font-size: 14px;
+    }}
+    .detail-summary {{
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(39, 103, 73, 0.08);
+      border: 1px solid rgba(39, 103, 73, 0.14);
+      line-height: 1.6;
+      font-size: 15px;
+    }}
+    .detail-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }}
+    .detail-box {{
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(223, 210, 188, 0.8);
+    }}
+    .detail-box .label {{
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }}
+    .detail-box .value {{
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.4;
+    }}
+    .detail-list {{
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }}
+    .detail-list li {{
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(223, 210, 188, 0.8);
+      line-height: 1.5;
+      font-size: 14px;
+    }}
+    .detail-panel {{
+      position: relative;
+      min-height: 640px;
+    }}
+    .detail-card {{
+      display: grid;
+    }}
+    @media (max-width: 1180px) {{
+      .hero, .main {{ grid-template-columns: 1fr; }}
+      
+    }}
+    @media (max-width: 860px) {{
+      .wrap {{ padding: 18px; }}
+      h1 {{ font-size: 32px; }}
+      .board-card {{ overflow-x: auto; }}
+      table {{ min-width: 980px; }}
+          }}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <h1>Monitor Board</h1>
-      <div class="sub">Single homepage for non-SLV assets. Read it top-down: first who matters today, then the priority research follow-ups, then each asset's structural role. {escape(summary)}</div>
-
-      <div class="section">
-        <h2>Today</h2>
-        <div class="section-sub">Current operating states plus the eight benchmark-aware research follow-ups. Card accent colors match the latest bar color inside each asset chart; priority research cards use the purple follow-up shell.</div>
-        <div class="legend">{today_legend}</div>
-        <div class="spotlight-grid">{today_cards}</div>
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">Monitor Board · Technical Summary</div>
+        <h1>Monitor Board with Technical Overlay</h1>
+        <div class="hero-copy">
+          Use the main table for the quick scan. Use the right panel for the currently selected asset detail view.
+        </div>
+        <div class="mock-note">
+          Symbol color follows the signal state. Click `view` to switch the right-side detail panel.
+        </div>
+        <div class="legend-row">
+          <span class="legend-item"><span class="legend-dot" style="background:#9ca3af"></span>no_entry</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#fde68a"></span>weak_bullish</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>bullish</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>strong_bullish</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#065f46"></span>very_strong_bullish / selected</span>
+        </div>
       </div>
-
-      <div class="section">
-        <h2>Role</h2>
-        <div class="section-sub">Structural role in the basket. This section answers whether an asset is a primary line, a reference context line, or still research-only.</div>
-        <div class="legend">{role_legend}</div>
-        <div class="role-grid">{role_cards}</div>
+      <div class="stats-card">
+        <div class="stats-grid">
+          <div class="stat"><div class="stat-label">Selected</div><div class="stat-value">{selected_count}</div></div>
+          <div class="stat"><div class="stat-label">Watchlist</div><div class="stat-value">{watchlist_count}</div></div>
+          <div class="stat"><div class="stat-label">Overbought</div><div class="stat-value">{overbought_count}</div></div>
+          <div class="stat"><div class="stat-label">Pullback Buys</div><div class="stat-value">{pullback_count}</div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Board Summary</div>
+          <div class="summary">{escape(summary)}</div>
+        </div>
       </div>
-    </div>
+    </section>
+
+
+    <section class="main">
+      <div class="board-card">
+        <div class="board-head">
+          <div>
+            <div class="board-title">Board</div>
+            <div class="board-sub">technical summary 放在主表快速掃描，完整的 A~L 判讀與關鍵價位則放在右側 detail panel。</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th>View</th>
+              <th>Status</th>
+              <th>Trend</th>
+              <th>RSI</th>
+              <th>Volume</th>
+              <th>Action</th>
+              <th>Technical Summary</th>
+              <th>Key Level</th>
+            </tr>
+          </thead>
+          <tbody>{board_rows}</tbody>
+        </table>
+      </div>
+      <div class="detail-panel">
+        <div id="detail-current">
+          {current_detail}
+        </div>
+        <div style="display:none">
+          {detail_templates}
+        </div>
+      </div>
+    </section>
   </div>
+  <script>
+    (() => {{
+      const buttons = Array.from(document.querySelectorAll('.detail-link[data-target]'));
+      const current = document.getElementById('detail-current');
+      const activate = (targetId) => {{
+        const template = document.getElementById(`detail-template-${{targetId.replace('detail-', '')}}`);
+        if (!template || !current) return;
+        current.innerHTML = template.innerHTML;
+      }};
+      buttons.forEach((button) => {{
+        button.addEventListener('click', () => activate(button.dataset.target));
+      }});
+    }})();
+  </script>
 </body>
 </html>"""
+
 
 
 def main() -> None:

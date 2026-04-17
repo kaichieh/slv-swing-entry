@@ -1,56 +1,56 @@
 {
-  "symbol": "SLV",
-  "asset_key": "slv",
+  "symbol": "TSLA",
+  "asset_key": "tsla",
   "date": "2026-04-17",
   "technical_reading": {
     "A_trend": "bullish_rebound",
     "B_price_vs_ma": "above",
-    "C_rsi_state": "overbought",
-    "D_kd_state": "death_cross",
+    "C_rsi_state": "strong",
+    "D_kd_state": "overbought",
     "E_levels": [
       {
         "type": "support",
-        "level": 60.37,
+        "level": 337.24,
         "strength": "medium",
         "status": "holding"
       },
       {
         "type": "support",
-        "level": 66.81,
+        "level": 367.86,
         "strength": "medium",
         "status": "holding"
       },
       {
         "type": "support",
-        "level": 74.46,
+        "level": 396.84,
         "strength": "strong",
-        "status": "broken"
+        "status": "tested"
       },
       {
         "type": "resistance",
-        "level": 75.16,
+        "level": 409.28,
         "strength": "medium",
         "status": "tested"
       }
     ],
     "F_volume_state": "contracting_on_rise",
-    "G_ma_structure": "mixed",
+    "G_ma_structure": "expanding",
     "H_macd_state": "bullish_expanding",
     "I_divergence_state": "none",
-    "J_candlestick_pattern": "doji",
+    "J_candlestick_pattern": "none",
     "K_trade_action": "wait",
     "L_price_volume_divergence": "bearish_volume_divergence"
   },
   "technical_reading_zh": {
     "A_trend": "多頭反彈",
     "B_price_vs_ma": "在均線上方",
-    "C_rsi_state": "過熱／超買",
-    "D_kd_state": "死亡交叉",
+    "C_rsi_state": "偏強",
+    "D_kd_state": "高檔過熱",
     "E_levels": [
       {
         "type": "support",
         "type_zh": "支撐",
-        "level": 60.37,
+        "level": 337.24,
         "strength": "medium",
         "strength_zh": "中",
         "status": "holding",
@@ -59,7 +59,7 @@
       {
         "type": "support",
         "type_zh": "支撐",
-        "level": 66.81,
+        "level": 367.86,
         "strength": "medium",
         "strength_zh": "中",
         "status": "holding",
@@ -68,16 +68,16 @@
       {
         "type": "support",
         "type_zh": "支撐",
-        "level": 74.46,
+        "level": 396.84,
         "strength": "strong",
         "strength_zh": "強",
-        "status": "broken",
-        "status_zh": "已跌破／已突破"
+        "status": "tested",
+        "status_zh": "測試中"
       },
       {
         "type": "resistance",
         "type_zh": "壓力",
-        "level": 75.16,
+        "level": 409.28,
         "strength": "medium",
         "strength_zh": "中",
         "status": "tested",
@@ -85,24 +85,24 @@
       }
     ],
     "F_volume_state": "上漲縮量",
-    "G_ma_structure": "均線混合／排列混亂",
+    "G_ma_structure": "均線發散",
     "H_macd_state": "多方柱狀體擴大",
     "I_divergence_state": "無",
-    "J_candlestick_pattern": "十字線",
+    "J_candlestick_pattern": "無明確型態",
     "K_trade_action": "觀望",
     "L_price_volume_divergence": "偏空價量背離"
   },
   "supporting_metrics": {
-    "latest_close": 73.93,
-    "ret_20": 0.1255,
-    "ret_60": -0.1195,
-    "sma_gap_20": 0.1065,
-    "sma_gap_60": -0.0072,
+    "latest_close": 401.76,
+    "ret_20": 0.0564,
+    "ret_60": -0.0688,
+    "sma_gap_20": 0.0922,
+    "sma_gap_60": 0.0124,
     "drawdown_20": 0.0,
-    "rsi_14": 78.0573,
-    "volume_vs_20": -0.2649,
-    "predicted_probability": 0.2247,
-    "decision_threshold": 0.445,
+    "rsi_14": 64.7712,
+    "volume_vs_20": -0.0155,
+    "predicted_probability": 0.3546,
+    "decision_threshold": 0.697,
     "monitor_action": "watchlist_wait"
   },
   "phase_status": {
