@@ -83,6 +83,15 @@ def _is_missing_scalar(value: object) -> bool:
     return bool(is_missing) if isinstance(is_missing, bool) else False
 
 
+def _float_or_none(value: object) -> float | None:
+    if value is None or _is_missing_scalar(value):
+        return None
+    try:
+        return float(cast(float | int | str, value))
+    except (TypeError, ValueError):
+        return None
+
+
 def _latest_signal_numeric_digits(field_name: str) -> int:
     return 2 if field_name in {"close", "rsi_14"} else 4
 
@@ -319,6 +328,70 @@ def build_nvda_preferred_live_row(preferred_line: str, payload: dict[str, object
     }
 
 
+def build_mu(asset_dir: Path) -> pd.DataFrame:
+    config = ac.load_asset_config("mu")
+    preferred_line = str(config.get("live_operator_line_id", "")).strip() or "mu_tb30_ret_60_vol_ratio_20_120_top12_5"
+    latest_prediction_path = ac.get_latest_prediction_path("mu")
+    if not latest_prediction_path.exists():
+        raise FileNotFoundError(f"Missing MU latest prediction file: {latest_prediction_path}")
+
+    payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+    signal_rows = read_signal_rows_from_cache(latest_prediction_path.parent, "mu", 60)
+    validate_latest_signal_cache(payload, signal_rows, "mu")
+    execution_selected_rows = signal_rows.loc[signal_rows["signal"].astype(str) != "no_entry"]
+    model_selected_rows = signal_rows.loc[signal_rows["raw_model_signal"].astype(str) != "no_entry"]
+    signal_summary = cast(dict[str, object], payload["signal_summary"])
+    model_signal_summary = cast(dict[str, object], payload["model_signal_summary"])
+    execution_rule = str(signal_summary.get("execution_rule", "threshold")).strip() or "threshold"
+
+    return pd.DataFrame(
+        [
+            {
+                "line_id": preferred_line,
+                "lane_type": "binary_live_model",
+                "role": "execution_preference",
+                "preferred": True,
+                "status": "watchlist_ready" if str(signal_summary.get("signal", "no_entry")) != "no_entry" else "inactive",
+                "recent_selected_count": int(len(execution_selected_rows)),
+                "latest_date": str(payload["latest_raw_date"]),
+                "latest_value": float(cast(float | int | str, signal_summary["predicted_probability"])),
+                "latest_selected": str(signal_summary.get("signal", "no_entry")) != "no_entry",
+                "cutoff": float(cast(float | int | str, signal_summary["decision_threshold"])),
+                "last_selected_date": fmt_date(execution_selected_rows.iloc[-1]["date"]) if not execution_selected_rows.empty else "",
+                "usage_note": f"Preferred MU execution line uses the tb30 ret_60 plus vol_ratio_20_120 live model with the `{execution_rule}` overlay.",
+            },
+            {
+                "line_id": "mu_tb30_ret_60_vol_ratio_20_120_model_reference",
+                "lane_type": "binary_live_model",
+                "role": "model_reference",
+                "preferred": False,
+                "status": "secondary",
+                "recent_selected_count": int(len(model_selected_rows)),
+                "latest_date": str(payload["latest_raw_date"]),
+                "latest_value": float(cast(float | int | str, model_signal_summary["predicted_probability"])),
+                "latest_selected": str(model_signal_summary.get("signal", "no_entry")) != "no_entry",
+                "cutoff": float(cast(float | int | str, model_signal_summary["decision_threshold"])),
+                "last_selected_date": fmt_date(model_selected_rows.iloc[-1]["date"]) if not model_selected_rows.empty else "",
+                "usage_note": "Balance-first MU model reference stays on tb30 with ret_60 plus vol_ratio_20_120; keep this as context while the stricter execution overlay decides entries.",
+            },
+            {
+                "line_id": "mu_tb20_ret_60_vol_ratio_20_120_overlay_research",
+                "lane_type": "binary_operator",
+                "role": "research_side_line",
+                "preferred": False,
+                "status": "secondary",
+                "recent_selected_count": 0,
+                "latest_date": str(payload["latest_raw_date"]),
+                "latest_value": None,
+                "latest_selected": False,
+                "cutoff": None,
+                "last_selected_date": "",
+                "usage_note": "Research-only MU sidecar: tb20 plus vol_ratio_20_120 with top 15% or fixed 0.510 remains the strongest historical execution overlay, but it is not the default live scorer yet.",
+            },
+        ]
+    )
+
+
 def nvda_live_cache_matches_preferred_line(payload: dict[str, object], preferred_line: str) -> bool:
     explicit_line = str(payload.get("live_operator_line_id", "")).strip()
     if explicit_line:
@@ -532,6 +605,7 @@ def build_tsla(asset_dir: Path) -> pd.DataFrame:
 BUILDERS = {
     "gld": None,
     "iwm": build_iwm,
+    "mu": build_mu,
     "slv": None,
     "spy": build_spy,
     "tlt": build_tlt,
@@ -787,10 +861,8 @@ def build_base_status(asset_dir: Path) -> pd.DataFrame:
             promotion_gate = row.get("promotion_gate")
             description = str(row.get("description", "")).strip()
             result_status = str(row.get("status", "")).strip()
-            if bool(pd.notna(headline)):
-                latest_value = float(cast(float | int | str, headline))
-            if bool(pd.notna(promotion_gate)):
-                cutoff = float(cast(float | int | str, promotion_gate))
+            latest_value = _float_or_none(headline)
+            cutoff = _float_or_none(promotion_gate)
             if result_status:
                 status = result_status.lower().replace(" ", "_")
             if description:
