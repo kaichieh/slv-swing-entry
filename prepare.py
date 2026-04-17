@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import dataclass
 from http.client import RemoteDisconnected
 from io import StringIO
@@ -66,6 +67,11 @@ VIX_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS"
 VIX_CACHE_PATH = str(Path(CACHE_DIR).parent / "vixcls.csv")
 VIX3M_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VXVCLS"
 VIX3M_CACHE_PATH = str(Path(CACHE_DIR).parent / "vxvcls.csv")
+VIX_YAHOO_SYMBOL = "^VIX"
+VIX3M_YAHOO_SYMBOL = "^VIX3M"
+FETCH_TEXT_TIMEOUT_SECONDS = 60
+FETCH_TEXT_MAX_ATTEMPTS = 3
+FETCH_TEXT_RETRY_BASE_SECONDS = 1.5
 
 EXPERIMENTAL_FEATURE_COLUMNS = [
     "ret_60",
@@ -272,7 +278,8 @@ def normalize_vix_frame(frame: pd.DataFrame) -> pd.DataFrame:
             raise RuntimeError("Downloaded VIX dataset missing a recognizable close column.")
         normalized = normalized.rename(columns={value_columns[0]: "close"})
 
-    date_values = np.asarray(pd.to_datetime(normalized["date"]), dtype="datetime64[ns]")
+    normalized["date"] = pd.to_datetime(normalized["date"]).dt.normalize()
+    date_values = np.asarray(normalized["date"], dtype="datetime64[ns]")
     close_values = np.asarray(pd.to_numeric(normalized["close"], errors="coerce"), dtype=np.float64)
     clean_dates: list[np.datetime64] = []
     clean_closes: list[float] = []
@@ -297,10 +304,21 @@ def fetch_text(url: str, *, accept_json: bool = False) -> str:
     headers = {"User-Agent": "Mozilla/5.0"}
     if accept_json:
         headers["Accept"] = "application/json"
-    request = Request(url, headers=headers)
-    with urlopen(request, timeout=30) as response:
-        charset = response.headers.get_content_charset() or "utf-8"
-        return response.read().decode(charset)
+    last_error: Exception | None = None
+    for attempt in range(1, FETCH_TEXT_MAX_ATTEMPTS + 1):
+        request = Request(url, headers=headers)
+        try:
+            with urlopen(request, timeout=FETCH_TEXT_TIMEOUT_SECONDS) as response:
+                charset = response.headers.get_content_charset() or "utf-8"
+                return response.read().decode(charset)
+        except Exception as exc:
+            last_error = exc
+            if attempt >= FETCH_TEXT_MAX_ATTEMPTS or not should_retry_fetch(exc):
+                raise
+            time.sleep(FETCH_TEXT_RETRY_BASE_SECONDS * attempt)
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError(f"Unable to fetch URL: {url}")
 
 
 def download_prices_from_yahoo(symbol: str) -> pd.DataFrame:
@@ -333,13 +351,17 @@ def download_prices_from_stooq(url: str) -> pd.DataFrame:
 def download_vix_prices(url: str = VIX_CSV_URL) -> pd.DataFrame:
     ensure_cache_dir()
     try:
-        frame = pd.read_csv(StringIO(fetch_text(url)))
-        if frame.empty:
-            raise RuntimeError("Downloaded VIX dataset is empty.")
-        normalized = normalize_vix_frame(frame)
+        normalized = download_vix_prices_from_fred(url)
         normalized.to_csv(VIX_CACHE_PATH, index=False)
         return normalized
     except Exception as exc:
+        if should_retry_fetch(exc):
+            try:
+                normalized = download_vix_prices_from_yahoo(VIX_YAHOO_SYMBOL)
+                normalized.to_csv(VIX_CACHE_PATH, index=False)
+                return normalized
+            except Exception as yahoo_exc:
+                exc = yahoo_exc
         if not should_fallback_to_cached_prices(exc):
             raise
         if not os.path.exists(VIX_CACHE_PATH):
@@ -353,16 +375,17 @@ def download_vix_prices(url: str = VIX_CSV_URL) -> pd.DataFrame:
 def download_vix3m_prices(url: str = VIX3M_CSV_URL) -> pd.DataFrame:
     ensure_cache_dir()
     try:
-        try:
-            frame = pd.read_csv(url)
-        except Exception:
-            frame = pd.read_csv(StringIO(fetch_text(url)))
-        if frame.empty:
-            raise RuntimeError("Downloaded VIX3M dataset is empty.")
-        normalized = normalize_vix_frame(frame)
+        normalized = download_vix3m_prices_from_fred(url)
         normalized.to_csv(VIX3M_CACHE_PATH, index=False)
         return normalized
     except Exception as exc:
+        if should_retry_fetch(exc):
+            try:
+                normalized = download_vix_prices_from_yahoo(VIX3M_YAHOO_SYMBOL)
+                normalized.to_csv(VIX3M_CACHE_PATH, index=False)
+                return normalized
+            except Exception as yahoo_exc:
+                exc = yahoo_exc
         if not should_fallback_to_cached_prices(exc):
             raise
         if not os.path.exists(VIX3M_CACHE_PATH):
@@ -382,6 +405,32 @@ def should_fallback_to_cached_prices(exc: Exception) -> bool:
         message = str(exc)
         return message.startswith("Downloaded dataset missing columns:") or message.endswith("dataset from stooq is empty.")
     return False
+
+
+def should_retry_fetch(exc: Exception) -> bool:
+    return should_fallback_to_cached_prices(exc)
+
+
+def download_vix_prices_from_fred(url: str) -> pd.DataFrame:
+    frame = pd.read_csv(StringIO(fetch_text(url)))
+    if frame.empty:
+        raise RuntimeError("Downloaded VIX dataset is empty.")
+    return normalize_vix_frame(frame)
+
+
+def download_vix3m_prices_from_fred(url: str) -> pd.DataFrame:
+    try:
+        frame = pd.read_csv(url)
+    except Exception:
+        frame = pd.read_csv(StringIO(fetch_text(url)))
+    if frame.empty:
+        raise RuntimeError("Downloaded VIX3M dataset is empty.")
+    return normalize_vix_frame(frame)
+
+
+def download_vix_prices_from_yahoo(symbol: str) -> pd.DataFrame:
+    frame = download_prices_from_yahoo(symbol)
+    return normalize_vix_frame(frame[["date", "close"]].copy())
 
 
 def download_symbol_prices(symbol: str, stooq_url: str, cache_path: str) -> pd.DataFrame:
