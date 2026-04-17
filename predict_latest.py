@@ -41,6 +41,7 @@ GLD_MIXED_VIX_TERM_PANIC_LIVE = "gld_mixed_vix_vxv_term_panic_live"
 LIVE_OPERATOR_FEATURE_MAP = {
     "ret_60_sma_gap_60_atr_pct_20": {"ret_60", "sma_gap_60", "atr_pct_20"},
     "xgboost_tb30_distance_live": {"distance_to_252_high"},
+    "mu_tb30_ret_60_vol_ratio_20_120_top12_5": {"ret_60", "vol_ratio_20_120"},
 }
 LIVE_OPERATOR_MODEL_FAMILY_MAP = {
     HARD_GATE_TWO_EXPERT_GDX_LIVE: HARD_GATE_TWO_EXPERT,
@@ -176,6 +177,10 @@ def get_live_model_family() -> str:
     if family not in {"logistic", "xgboost", HARD_GATE_TWO_EXPERT, HARD_GATE_TWO_EXPERT_MIXED}:
         raise ValueError(f"Unsupported live_model_family '{family}'")
     return family
+
+
+def get_live_execution_rule() -> str:
+    return ac.get_live_execution_rule()
 
 
 def fit_hard_gate_two_expert_model(raw_prices) -> dict[str, Any]:
@@ -642,6 +647,35 @@ def summarize_rule(probability: float, historical_probabilities: np.ndarray, top
     }
 
 
+def parse_top_pct_rule(rule_name: str) -> float | None:
+    prefix = "top_"
+    suffix = "pct"
+    if not (rule_name.startswith(prefix) and rule_name.endswith(suffix)):
+        return None
+    raw = rule_name[len(prefix) : -len(suffix)].replace("_", ".")
+    try:
+        value = float(raw)
+    except ValueError:
+        return None
+    return value if 0.0 < value < 100.0 else None
+
+
+def resolve_execution_cutoff(execution_rule: str, threshold: float, historical_probabilities: np.ndarray) -> float:
+    if execution_rule == "threshold":
+        return threshold
+    top_pct = parse_top_pct_rule(execution_rule)
+    if top_pct is not None:
+        if len(historical_probabilities) == 0:
+            return threshold
+        return float(np.quantile(historical_probabilities, 1.0 - top_pct / 100.0))
+    if execution_rule.startswith("fixed_"):
+        try:
+            return float(execution_rule.split("_", 1)[1])
+        except ValueError:
+            return threshold
+    return threshold
+
+
 def build_model_rationale(snapshot: dict[str, float]) -> list[str]:
     reasons: list[str] = []
     rsi_14 = float(snapshot.get("rsi_14", 50.0))
@@ -720,10 +754,14 @@ def main() -> None:
     latest_live = live_features.iloc[[-1]].copy()
     latest_vector, raw_snapshot = score_latest_row(model_artifacts, feature_names, train_frame, latest_live)
     probability = float(predict_probabilities(model_artifacts, latest_vector)[0])
-    predicted_label = int(probability >= threshold)
+    execution_rule = get_live_execution_rule()
 
     historical_probabilities = build_history_probabilities(model_artifacts, splits, feature_names)
-    raw_signal, band_info = classify_signal(probability, float(threshold), historical_probabilities)
+    execution_cutoff = resolve_execution_cutoff(execution_rule, float(threshold), historical_probabilities)
+    predicted_label = int(probability >= execution_cutoff)
+    model_predicted_label = int(probability >= threshold)
+    raw_signal, band_info = classify_signal(probability, float(execution_cutoff), historical_probabilities)
+    model_signal, model_band_info = classify_signal(probability, float(threshold), historical_probabilities)
     signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot, asset_key=asset_key)
     rule_top_pct = get_rule_top_pct()
     rule_summary = summarize_rule(probability, historical_probabilities, rule_top_pct)
@@ -743,17 +781,18 @@ def main() -> None:
             "verdict": "模型偏向中期進場" if bullish else "模型目前不偏向中期進場",
             "predicted_label": predicted_label,
             "predicted_probability": round(probability, 4),
-            "decision_threshold": round(float(threshold), 4),
+            "decision_threshold": round(float(execution_cutoff), 4),
             "raw_model_signal": raw_signal,
+            "execution_rule": execution_rule,
             **band_info,
         },
         "model_signal_summary": {
-            "signal": raw_signal,
+            "signal": model_signal,
             "verdict": "模型偏向中期進場" if bullish else "模型目前不偏向中期進場",
-            "predicted_label": predicted_label,
+            "predicted_label": model_predicted_label,
             "predicted_probability": round(probability, 4),
             "decision_threshold": round(float(threshold), 4),
-            **band_info,
+            **model_band_info,
         },
         "buy_point_summary": buy_point_summary,
         "rule_summary": rule_summary,
@@ -777,6 +816,7 @@ def main() -> None:
             "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
             "default_interactions": list(model_artifacts.get("default_interactions", [])),
             "live_decision_rule": live_decision_rule,
+            "live_execution_rule": execution_rule,
             "reference_percentile_rule": f"top_{rule_top_pct:g}pct",
             "xgboost_params": model_artifacts.get("xgboost_params", {}),
         },

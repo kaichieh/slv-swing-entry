@@ -86,6 +86,7 @@ ASSET_DEFAULTS: dict[str, AssetDefaults] = {
     "amzn": AssetDefaults("amzn", "AMZN", 0.12, -0.06, 60, "drop-neutral"),
     "googl": AssetDefaults("googl", "GOOGL", 0.10, -0.05, 60, "drop-neutral"),
     "meta": AssetDefaults("meta", "META", 0.12, -0.06, 60, "drop-neutral"),
+    "mu": AssetDefaults("mu", "MU", 0.12, -0.06, 60, "drop-neutral"),
     "amd": AssetDefaults("amd", "AMD", 0.12, -0.06, 60, "drop-neutral"),
     "nflx": AssetDefaults("nflx", "NFLX", 0.12, -0.06, 60, "drop-neutral"),
     "avgo": AssetDefaults("avgo", "AVGO", 0.12, -0.06, 60, "drop-neutral"),
@@ -176,6 +177,12 @@ def get_live_model_family(asset_key: str | None = None) -> str:
     config = load_asset_config(asset_key)
     value = str(config.get("live_model_family", "logistic")).strip().lower()
     return value if value else "logistic"
+
+
+def get_live_execution_rule(asset_key: str | None = None) -> str:
+    config = load_asset_config(asset_key)
+    value = str(config.get("live_execution_rule", "threshold")).strip().lower()
+    return value if value else "threshold"
 
 
 def get_live_operator_line_id(asset_key: str | None = None) -> str:

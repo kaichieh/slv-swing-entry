@@ -1,0 +1,17 @@
+{
+  "asset_key": "mu",
+  "symbol": "MU",
+  "default_chart_signal_mode": "execution",
+  "horizon_days": 60,
+  "upper_barrier": 0.12,
+  "lower_barrier": -0.06,
+  "label_mode": "future-return-top-bottom-30pct",
+  "live_execution_rule": "top_12_5pct",
+  "live_label_mode": "future-return-top-bottom-30pct",
+  "live_operator_line_id": "mu_tb30_ret_60_vol_ratio_20_120_top12_5",
+  "live_extra_features": [
+    "ret_60",
+    "vol_ratio_20_120"
+  ],
+  "live_reference_top_pct": 12.5
+}
