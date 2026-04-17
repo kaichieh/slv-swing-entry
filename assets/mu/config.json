@@ -9,6 +9,7 @@
   "live_execution_rule": "top_12_5pct",
   "live_label_mode": "future-return-top-bottom-30pct",
   "live_operator_line_id": "mu_tb30_ret_60_vol_ratio_20_120_top12_5",
+  "live_threshold_metric": "balanced_accuracy",
   "live_extra_features": [
     "ret_60",
     "vol_ratio_20_120"

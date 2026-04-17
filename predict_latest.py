@@ -183,6 +183,10 @@ def get_live_execution_rule() -> str:
     return ac.get_live_execution_rule()
 
 
+def get_live_threshold_metric() -> str:
+    return ac.get_live_threshold_metric()
+
+
 def fit_hard_gate_two_expert_model(raw_prices) -> dict[str, Any]:
     import research_batch as rb
     import research_slv_topbottom15_gdx_hard_gate_two_expert as winner
@@ -341,6 +345,7 @@ def fit_logistic_model(splits: Mapping[str, DatasetSplit], feature_names: list[s
     best_validation_f1 = -np.inf
     best_threshold = 0.5
     epochs_without_improvement = 0
+    threshold_metric = get_live_threshold_metric()
 
     validation_returns = splits["validation"].frame["future_return_60"].to_numpy(dtype=np.float32)
 
@@ -353,7 +358,7 @@ def fit_logistic_model(splits: Mapping[str, DatasetSplit], feature_names: list[s
         weights -= learning_rate * gradient
 
         validation_logits = validation_x @ weights
-        threshold = tr.select_threshold(tr.sigmoid(validation_logits), validation_y)
+        threshold = tr.select_threshold(tr.sigmoid(validation_logits), validation_y, primary_metric=threshold_metric)
         validation_metrics = tr.compute_metrics(validation_logits, validation_y, validation_returns, threshold)
         if validation_metrics.f1 > best_validation_f1:
             best_validation_f1 = validation_metrics.f1
@@ -372,6 +377,7 @@ def fit_logistic_model(splits: Mapping[str, DatasetSplit], feature_names: list[s
         "train_frame": splits["train"].frame,
         "feature_names": feature_names,
         "default_interactions": ["drawdown_20:volume_vs_20"],
+        "threshold_metric": threshold_metric,
     }
 
 
@@ -419,7 +425,8 @@ def fit_xgboost_model(splits: Mapping[str, DatasetSplit], feature_names: list[st
         model.fit(train_x, train_y)
         validation_probabilities = np.asarray(model.predict_proba(validation_x)[:, 1], dtype=np.float32)
 
-    threshold = tr.select_threshold(validation_probabilities, validation_y)
+    threshold_metric = get_live_threshold_metric()
+    threshold = tr.select_threshold(validation_probabilities, validation_y, primary_metric=threshold_metric)
     return {
         "model_family": "xgboost",
         "model": model,
@@ -432,6 +439,7 @@ def fit_xgboost_model(splits: Mapping[str, DatasetSplit], feature_names: list[st
             "learning_rate": learning_rate,
         },
         "default_interactions": [],
+        "threshold_metric": threshold_metric,
     }
 
 
@@ -814,6 +822,7 @@ def main() -> None:
             "model_family": str(model_artifacts["model_family"]),
             "label_mode": str(model_artifacts.get("live_label_mode", get_live_label_mode())),
             "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
+            "threshold_metric": str(model_artifacts.get("threshold_metric", get_live_threshold_metric())),
             "default_interactions": list(model_artifacts.get("default_interactions", [])),
             "live_decision_rule": live_decision_rule,
             "live_execution_rule": execution_rule,

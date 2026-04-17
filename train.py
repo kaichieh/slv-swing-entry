@@ -60,6 +60,13 @@ def get_env_optional_float(name: str) -> float | None:
     return float(value)
 
 
+def get_env_optional_str(name: str) -> str | None:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return None
+    return value.strip()
+
+
 def get_env_csv(name: str, default: tuple[str, ...] = ()) -> tuple[str, ...]:
     value = os.getenv(name)
     if value is None or not value.strip():
@@ -158,6 +165,7 @@ def select_threshold_from_grid(
     target_positive_rate: float | None = None,
     positive_rate_penalty: float = 0.0,
     max_positive_rate: float = 1.0,
+    primary_metric: str = "f1",
 ) -> float:
     best_threshold = 0.5
     best_score = -1.0
@@ -174,7 +182,7 @@ def select_threshold_from_grid(
         bal_acc = 0.5 * (recall + specificity)
         _, _, _, _, predictions = classification_stats(probabilities, labels, float(threshold))
         positive_rate = float(predictions.mean())
-        score = f1
+        score = bal_acc if primary_metric == "balanced_accuracy" else f1
         if target_positive_rate is not None and positive_rate_penalty > 0.0:
             score -= positive_rate_penalty * abs(positive_rate - target_positive_rate)
         if score > fallback_score or (abs(score - fallback_score) < 1e-8 and bal_acc > fallback_bal_acc):
@@ -192,13 +200,16 @@ def select_threshold_from_grid(
     return best_threshold
 
 
-def select_threshold(probabilities: np.ndarray, labels: np.ndarray) -> float:
+def select_threshold(probabilities: np.ndarray, labels: np.ndarray, primary_metric: str | None = None) -> float:
     threshold_min = get_env_float("AR_THRESHOLD_MIN", THRESHOLD_MIN)
     threshold_max = get_env_float("AR_THRESHOLD_MAX", THRESHOLD_MAX)
     threshold_steps = get_env_int("AR_THRESHOLD_STEPS", THRESHOLD_STEPS)
     target_positive_rate = get_env_optional_float("AR_THRESHOLD_TARGET_POSITIVE_RATE")
     positive_rate_penalty = get_env_float("AR_THRESHOLD_POSITIVE_RATE_PENALTY", 0.0)
     max_positive_rate = get_env_float("AR_THRESHOLD_MAX_POSITIVE_RATE", 1.0)
+    threshold_metric = primary_metric or get_env_optional_str("AR_THRESHOLD_PRIMARY_METRIC") or ac.get_threshold_metric()
+    if threshold_metric not in {"f1", "balanced_accuracy"}:
+        threshold_metric = "f1"
     thresholds = np.linspace(threshold_min, threshold_max, threshold_steps)
     return select_threshold_from_grid(
         probabilities,
@@ -207,6 +218,7 @@ def select_threshold(probabilities: np.ndarray, labels: np.ndarray) -> float:
         target_positive_rate=target_positive_rate,
         positive_rate_penalty=positive_rate_penalty,
         max_positive_rate=max_positive_rate,
+        primary_metric=threshold_metric,
     )
 
 
