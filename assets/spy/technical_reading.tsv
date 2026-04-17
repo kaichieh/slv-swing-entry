@@ -1,0 +1,2 @@
+asset_key	symbol	date	A_trend	A_trend_zh	B_price_vs_ma	B_price_vs_ma_zh	C_rsi_state	C_rsi_state_zh	F_volume_state	F_volume_state_zh	G_ma_structure	G_ma_structure_zh	K_trade_action	K_trade_action_zh
+spy	SPY	2026-04-17	bullish	多頭	above	在均線上方	overbought	過熱／超買	contracting_on_rise	上漲縮量	bullish_alignment	均線多頭排列	wait	觀望

@@ -42,6 +42,8 @@ def refresh_asset(asset_key: str) -> None:
     run_step("refresh_active_status.py", asset_key)
     run_step("render_active_status.py", asset_key)
     run_step("refresh_monitor_snapshot.py", asset_key)
+    if not ac.uses_regression_chart(asset_key):
+        run_step("refresh_technical_reading.py", asset_key)
     elapsed = time.perf_counter() - start
     print(f"[{asset_key}] done in {elapsed:.1f}s", flush=True)
 

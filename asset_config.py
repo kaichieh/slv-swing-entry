@@ -358,6 +358,14 @@ def get_monitor_snapshot_path(asset_key: str | None = None) -> Path:
     return get_asset_dir(asset_key) / "monitor_snapshot.tsv"
 
 
+def get_technical_reading_json_path(asset_key: str | None = None) -> Path:
+    return get_asset_dir(asset_key) / "technical_reading.json"
+
+
+def get_technical_reading_tsv_path(asset_key: str | None = None) -> Path:
+    return get_asset_dir(asset_key) / "technical_reading.tsv"
+
+
 def get_monitor_board_path() -> Path:
     return REPO_DIR / "monitor_board.tsv"
 
