@@ -1,0 +1,19 @@
+metric	value	note
+monitor_verdict	hold_anchor_watch	Monitoring only. This bucket tracks dates where live fired while the exact v82 event rule stayed idle.
+shared_rows	1260	Rows on the shared live-versus-v82 comparison axis.
+bucket_rows	548	Dates where live selected while the v82 rule did not match.
+bucket_non_overlap_60d_episodes	25	Greedy 60-day non-overlap episodes, used as a sample-quality sanity check.
+latest_case_date	2026-04-16	Most recent live-selected, v82-idle date.
+future_return_20_avg	0.0281	Average 20-day realized return after live-only selection, using matured rows only.
+future_return_20_hit_rate	0.518	Share of matured live-only rows with positive 20-day realized return.
+matured_20_count	529	Number of live-only rows with 20-day outcomes available.
+future_return_60_avg	0.1317	Average 60-day realized return after live-only selection, using matured rows only.
+future_return_60_hit_rate	0.5837	Share of matured live-only rows with positive 60-day realized return.
+matured_60_count	490	Number of live-only rows with 60-day outcomes available.
+episode_future_return_60_avg	0.094	Average 60-day realized return across non-overlap episodes.
+max_year_share	0.3011	Largest year concentration: 2025 with 165 rows.
+above_200dma_share	0.5785	Share of live-only bucket rows above the 200-day moving average.
+slope_60_positive_share	0.5803	Share of live-only bucket rows with positive 60-day slope.
+v82_full_match_share	0.0	Should remain 0.0000 in this bucket because these are v82-idle rows.
+v82_four_of_five_share	0.0456	Share of live-only rows where v82 missed by exactly one rule leg.
+v82_pass_rate_median	0.2	Median fraction of v82 rule legs that passed on live-only dates.

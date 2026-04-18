@@ -53,6 +53,7 @@ class RefreshReportsTests(unittest.TestCase):
                 ("refresh_mu_subregime_report.py", "mu"),
                 ("refresh_mu_live_bucket_report.py", "mu"),
                 ("refresh_mu_tolerance_report.py", "mu"),
+                ("refresh_mu_gap_volume_ignition_v82_reports.py", "mu"),
             ],
         )
 
@@ -68,6 +69,7 @@ class RefreshReportsTests(unittest.TestCase):
                 mock.call("refresh_mu_subregime_report.py", "mu"),
                 mock.call("refresh_mu_live_bucket_report.py", "mu"),
                 mock.call("refresh_mu_tolerance_report.py", "mu"),
+                mock.call("refresh_mu_gap_volume_ignition_v82_reports.py", "mu"),
             ],
         )
 

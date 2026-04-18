@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MU Gap Volume Ignition v82 Divergence Report</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f6f1e8;
+      color: #1e2530;
+    }
+    .hero {
+      margin-bottom: 24px;
+    }
+    .hero p {
+      margin: 6px 0 0;
+      color: #5c6879;
+      line-height: 1.5;
+    }
+    .callout {
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: #fffdf8;
+      border-left: 6px solid #9a6237;
+      margin-bottom: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fffdf8;
+      border: 1px solid #e7dcc9;
+      margin-bottom: 24px;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e7dcc9;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f5ecdf;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #5c6879;
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>MU Gap Volume Ignition v82 Divergence Report</h1>
+    <p>Live stays on the official MU lane. This report measures the exact v82 event rule as a research challenger only: overnight_gap>=0.5%, volume_vs_20>=0.50, range_z_20>=0.50, intraday_return>=0, breakout_20==1.</p>
+    <p>Latest date: <strong>2026-04-17</strong>. Latest comparison state: <strong>blocked_idle</strong>. Latest divergence case: <strong>live_model_ready_shadow_not_ready</strong>. Latest pocket lens: <strong>above_200dma_and_slope_60_positive</strong>.</p>
+  </section>
+  <section class="callout">
+    This is evidence collection only. The v82 lane can pressure the live call if its challenger-only rows mature well, but it does not change live by itself.
+  </section>
+  <section>
+    <h2>Outcome Summary</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Bucket</th>
+          <th>Rows</th>
+          <th>Matured 20d</th>
+          <th>Avg 20d</th>
+          <th>Hit 20d</th>
+          <th>Matured 60d</th>
+          <th>Avg 60d</th>
+          <th>Hit 60d</th>
+          <th>Bullish Pocket Rows</th>
+          <th>Promotion Verdict</th>
+        </tr>
+      </thead>
+      <tbody><tr><td>both_selected</td><td>15</td><td>15</td><td>0.1185</td><td>0.7333</td><td>15</td><td>0.1659</td><td>0.8</td><td>14</td><td>Shared conviction supports the current live line, not a challenger-only upgrade.</td></tr><tr><td>live_selected_while_shadow_not</td><td>548</td><td>529</td><td>0.0281</td><td>0.518</td><td>490</td><td>0.1317</td><td>0.5837</td><td>317</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td></tr><tr><td>shadow_selected_while_live_not</td><td>5</td><td>5</td><td>0.1173</td><td>0.8</td><td>5</td><td>0.2462</td><td>1.0</td><td>4</td><td>Shadow catches some live misses, but this bucket alone is not strong enough to justify promotion.</td></tr><tr><td>live_blocked_shadow_idle</td><td>310</td><td>309</td><td>0.0341</td><td>0.5566</td><td>308</td><td>0.0761</td><td>0.5649</td><td>224</td><td>Mostly an overlay asymmetry on the live side; this is not promotion evidence for the challenger.</td></tr><tr><td>both_idle</td><td>382</td><td>382</td><td>0.038</td><td>0.5838</td><td>382</td><td>0.126</td><td>0.6675</td><td>203</td><td>Neither line is active, so this bucket is baseline context rather than promotion evidence.</td></tr></tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Recent Divergence Rows</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Case</th>
+          <th>Owner</th>
+          <th>Pocket</th>
+          <th>Live</th>
+          <th>v82</th>
+          <th>20d</th>
+          <th>60d</th>
+          <th>Verdict</th>
+          <th>Pass Count</th>
+        </tr>
+      </thead>
+      <tbody><tr><td>2026-04-17</td><td>live_model_ready_shadow_not_ready</td><td>shared</td><td>above_200dma_and_slope_60_positive</td><td>no_entry</td><td>no_entry</td><td>nan</td><td>nan</td><td>Mostly an overlay asymmetry on the live side; this is not promotion evidence for the challenger.</td><td>1</td></tr><tr><td>2026-04-16</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-04-15</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>0</td></tr><tr><td>2026-04-14</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>4</td></tr><tr><td>2026-04-13</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-04-10</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-04-09</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-04-08</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-04-07</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-04-06</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>2</td></tr><tr><td>2026-04-02</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-04-01</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>3</td></tr><tr><td>2026-03-31</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>3</td></tr><tr><td>2026-03-30</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>3</td></tr><tr><td>2026-03-27</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-03-26</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>1</td></tr><tr><td>2026-03-25</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>0</td></tr><tr><td>2026-03-24</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>0</td></tr><tr><td>2026-03-23</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>2</td></tr><tr><td>2026-03-20</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>nan</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>2</td></tr><tr><td>2026-03-19</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>0.02430958331109445</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>3</td></tr><tr><td>2026-03-18</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>-0.009745955196603484</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>3</td></tr><tr><td>2026-03-17</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>-0.011826098521098172</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>3</td></tr><tr><td>2026-03-16</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>0.054006375120865036</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>2</td></tr><tr><td>2026-03-13</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>0.0010090645363014517</td><td>nan</td><td>Supports the current live line; the shadow challenger is still too restrictive here.</td><td>2</td></tr></tbody>
+    </table>
+  </section>
+</body>
+</html>

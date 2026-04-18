@@ -16,13 +16,13 @@
       },
       {
         "type": "support",
-        "level": 398.89,
+        "level": 398.81,
         "strength": "medium",
         "status": "holding"
       },
       {
         "type": "support",
-        "level": 407.37,
+        "level": 407.34,
         "strength": "strong",
         "status": "holding"
       },
@@ -33,11 +33,11 @@
         "status": "holding"
       }
     ],
-    "F_volume_state": "dry_up",
+    "F_volume_state": "contracting_on_rise",
     "G_ma_structure": "bullish_alignment",
     "H_macd_state": "bullish_contracting",
     "I_divergence_state": "hidden_bullish_divergence",
-    "J_candlestick_pattern": "none",
+    "J_candlestick_pattern": "long_bearish_candle",
     "K_trade_action": "buy_pullback",
     "L_price_volume_divergence": "inconclusive"
   },
@@ -59,7 +59,7 @@
       {
         "type": "support",
         "type_zh": "支撐",
-        "level": 398.89,
+        "level": 398.81,
         "strength": "medium",
         "strength_zh": "中",
         "status": "holding",
@@ -68,7 +68,7 @@
       {
         "type": "support",
         "type_zh": "支撐",
-        "level": 407.37,
+        "level": 407.34,
         "strength": "strong",
         "strength_zh": "強",
         "status": "holding",
@@ -84,26 +84,26 @@
         "status_zh": "守住中"
       }
     ],
-    "F_volume_state": "量縮",
+    "F_volume_state": "上漲縮量",
     "G_ma_structure": "均線多頭排列",
     "H_macd_state": "多方柱狀體縮小",
     "I_divergence_state": "隱性偏多背離",
-    "J_candlestick_pattern": "無明確型態",
+    "J_candlestick_pattern": "長黑K",
     "K_trade_action": "等回檔買進",
     "L_price_volume_divergence": "訊號不明"
   },
   "supporting_metrics": {
-    "latest_close": 456.71,
-    "ret_20": 0.028,
-    "ret_60": 0.1737,
-    "sma_gap_20": 0.1449,
-    "sma_gap_60": 0.1211,
-    "drawdown_20": -0.0192,
-    "rsi_14": 75.425,
-    "volume_vs_20": -0.543,
-    "predicted_probability": 0.5462,
-    "decision_threshold": 0.353,
-    "monitor_action": "selected_now"
+    "latest_close": 455.07,
+    "ret_20": 0.0243,
+    "ret_60": 0.1695,
+    "sma_gap_20": 0.1411,
+    "sma_gap_60": 0.1172,
+    "drawdown_20": -0.0227,
+    "rsi_14": 74.7985,
+    "volume_vs_20": -0.3341,
+    "predicted_probability": 0.5176,
+    "decision_threshold": 0.5077,
+    "monitor_action": "watchlist_blocked"
   },
   "phase_status": {
     "A_trend": "ready",

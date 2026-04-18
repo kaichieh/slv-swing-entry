@@ -1,0 +1,6 @@
+outcome_bucket	row_count	avg_live_confidence_gap	avg_shadow_confidence_gap	avg_gap_delta	promotion_verdict	bullish_pocket_count	bullish_pocket_confirmed_count	matured_20d_count	avg_return_20d	hit_rate_20d	matured_60d_count	avg_return_60d	hit_rate_60d
+both_selected	15	0.073	0.0	-0.073	Shared conviction supports the current live line, not a challenger-only upgrade.	14	14	15	0.1185	0.7333	15	0.1659	0.8
+live_selected_while_shadow_not	548	0.0428	-0.7102	-0.753	Supports the current live line; the shadow challenger is still too restrictive here.	317	280	529	0.0281	0.518	490	0.1317	0.5837
+shadow_selected_while_live_not	5	0.0251	0.0	-0.0251	Shadow catches some live misses, but this bucket alone is not strong enough to justify promotion.	4	4	5	0.1173	0.8	5	0.2462	1.0
+live_blocked_shadow_idle	310	0.0201	-0.6916	-0.7118	Mostly an overlay asymmetry on the live side; this is not promotion evidence for the challenger.	224	214	309	0.0341	0.5566	308	0.0761	0.5649
+both_idle	382	-0.0127	-0.7869	-0.7742	Neither line is active, so this bucket is baseline context rather than promotion evidence.	203	135	382	0.038	0.5838	382	0.126	0.6675

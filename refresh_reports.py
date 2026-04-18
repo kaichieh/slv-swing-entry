@@ -18,6 +18,7 @@ MU_CHALLENGER_MONITOR_SCRIPTS = (
     "refresh_mu_subregime_report.py",
     "refresh_mu_live_bucket_report.py",
     "refresh_mu_tolerance_report.py",
+    "refresh_mu_gap_volume_ignition_v82_reports.py",
 )
 
 
