@@ -121,6 +121,24 @@ def build_market_panic() -> dict[str, object]:
     merged["credit_ratio"] = merged["hyg_close"] / (merged["ief_close"] + 1e-10)
     merged["credit_ratio_z20"] = zscore(merged["credit_ratio"], 20)
     merged["credit_ratio_ret_5"] = merged["credit_ratio"].pct_change(5)
+    merged = merged.dropna(subset=["vix_percentile_252", "credit_ratio_z20", "credit_ratio_ret_5"]).reset_index(drop=True)
+    if merged.empty:
+        raise RuntimeError("Unable to build market panic overlay because derived panic features are empty.")
+
+    merged["vix_state"] = [
+        classify_vix_state(float(vix_close), float(vix_percentile_252))
+        for vix_close, vix_percentile_252 in zip(merged["vix_close"], merged["vix_percentile_252"])
+    ]
+    merged["term_state"] = [classify_term_state(float(value)) for value in merged["vix_vix3m_ratio"]]
+    merged["credit_state"] = [
+        classify_credit_state(float(credit_ratio_z20), float(credit_ratio_ret_5))
+        for credit_ratio_z20, credit_ratio_ret_5 in zip(merged["credit_ratio_z20"], merged["credit_ratio_ret_5"])
+    ]
+    merged["panic_score"] = [
+        panic_component_score(vix_state, term_state, credit_state)
+        for vix_state, term_state, credit_state in zip(merged["vix_state"], merged["term_state"], merged["credit_state"])
+    ]
+    merged["panic_regime"] = [classify_panic_regime(int(score)) for score in merged["panic_score"]]
 
     latest = merged.iloc[-1]
     vix_level = float(latest["vix_close"])
@@ -131,11 +149,32 @@ def build_market_panic() -> dict[str, object]:
     credit_ratio_z20 = latest_non_na(merged["credit_ratio_z20"])
     credit_ratio_ret_5 = latest_non_na(merged["credit_ratio_ret_5"])
 
-    vix_state = classify_vix_state(vix_level, vix_percentile_252)
-    term_state = classify_term_state(term_ratio)
-    credit_state = classify_credit_state(credit_ratio_z20, credit_ratio_ret_5)
-    panic_score = panic_component_score(vix_state, term_state, credit_state)
-    regime = classify_panic_regime(panic_score)
+    vix_state = str(latest["vix_state"])
+    term_state = str(latest["term_state"])
+    credit_state = str(latest["credit_state"])
+    panic_score = int(latest["panic_score"])
+    regime = str(latest["panic_regime"])
+    end = pd.Timestamp(latest["date"])
+    start = end - pd.Timedelta(days=61)
+    lookback = merged.loc[pd.to_datetime(merged["date"]) >= start].copy()
+    history_2m = [
+        {
+            "date": str(pd.Timestamp(row["date"]).date()),
+            "panic_score": int(row["panic_score"]),
+            "panic_regime": str(row["panic_regime"]),
+            "vix_close": round(float(row["vix_close"]), 2),
+        }
+        for _, row in lookback.iterrows()
+    ]
+    summary_2m = {
+        "date_from": str(pd.Timestamp(lookback.iloc[0]["date"]).date()),
+        "date_to": str(pd.Timestamp(lookback.iloc[-1]["date"]).date()),
+        "trading_days": int(len(lookback)),
+        "regime_counts": {str(k): int(v) for k, v in lookback["panic_regime"].value_counts().to_dict().items()},
+        "avg_panic_score": round(float(lookback["panic_score"].mean()), 3),
+        "max_panic_score": int(lookback["panic_score"].max()),
+        "min_panic_score": int(lookback["panic_score"].min()),
+    }
 
     return {
         "date": str(pd.Timestamp(latest["date"]).date()),
@@ -154,6 +193,8 @@ def build_market_panic() -> dict[str, object]:
             "credit_ratio_z20": round(credit_ratio_z20, 4),
             "credit_ratio_ret_5": round(credit_ratio_ret_5, 4),
         },
+        "history_2m": history_2m,
+        "summary_2m": summary_2m,
     }
 
 

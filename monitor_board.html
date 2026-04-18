@@ -70,6 +70,53 @@
       font-size: 14px;
       line-height: 1.5;
     }
+    .panic-history-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .panic-history-chart {
+      display: flex;
+      align-items: end;
+      gap: 4px;
+      height: 86px;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.48);
+      border: 1px solid rgba(223, 210, 188, 0.8);
+      overflow: hidden;
+    }
+    .panic-bar {
+      flex: 1 1 0;
+      min-width: 6px;
+      border-radius: 999px 999px 4px 4px;
+      opacity: 0.95;
+    }
+    .panic-history-scale {
+      position: relative;
+      height: 20px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      letter-spacing: 0.04em;
+    }
+    .panic-tick {
+      position: absolute;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+    .panic-tick:first-child {
+      transform: none;
+    }
+    .panic-tick:last-child {
+      transform: translateX(-100%);
+    }
     .signal-legend {
       display: flex;
       flex-wrap: wrap;
@@ -505,6 +552,14 @@
           <span>VIX 17.48</span>
           <span>VIX/VIX3M 0.8416</span>
           <span>HYG/IEF z20 1.47</span>
+        </div>
+        <div class="panic-history-head">
+          <span>近兩個月回顧</span>
+          <span>2026-02-17 to 2026-04-17</span>
+        </div>
+        <div class="panic-history-chart"><div class="panic-bar" title="2026-02-17 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-18 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-19 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-20 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-23 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-24 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-25 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-26 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-27 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-02 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-03 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-04 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-05 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-06 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-09 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-10 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-11 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-12 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-13 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-16 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-17 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-18 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-19 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-20 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-23 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-24 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-25 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-26 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-27 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-30 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-31 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-04-01 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-02 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-06 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-07 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-04-08 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-09 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-10 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-13 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-14 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-15 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-16 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-17 · calm · score 0" style="height:28px;background:#16a34a"></div></div>
+        <div class="panic-history-scale">
+          <span class="panic-tick" style="left:0%">2/17</span><span class="panic-tick" style="left:21%">3/1</span><span class="panic-tick" style="left:72%">4/1</span><span class="panic-tick" style="left:100%">4/17</span>
         </div>
       </section>
     

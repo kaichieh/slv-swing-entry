@@ -8,6 +8,7 @@ from typing import Any, cast
 import pandas as pd
 
 import asset_config as ac
+from refresh_market_panic import build_market_panic
 
 ACTION_PRIORITY = {
     "selected_now": 0,
@@ -200,6 +201,12 @@ def _load_market_panic() -> dict[str, object] | None:
     if not path.exists():
         return None
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def refresh_market_panic_payload() -> dict[str, object]:
+    payload = build_market_panic()
+    ac.get_market_panic_path().write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    return payload
 
 
 def _technical_label(reading: dict[str, object] | None, key: str) -> str:
@@ -891,10 +898,28 @@ def render_market_panic_card(panic: dict[str, Any] | None) -> str:
     if not panic:
         return ""
     metrics = cast(dict[str, Any], panic.get("metrics", {}))
+    summary_2m = cast(dict[str, Any], panic.get("summary_2m", {}))
+    history_2m = cast(list[dict[str, Any]], panic.get("history_2m", []))
     vix_state = str(panic.get("vix_state", ""))
     term_state = str(panic.get("term_state", ""))
     credit_state = str(panic.get("credit_state", ""))
     regime = str(panic.get("panic_regime", ""))
+    bar_color = {
+        "calm": "#16a34a",
+        "guarded": "#f59e0b",
+        "stressed": "#dc2626",
+        "panic": "#7f1d1d",
+    }
+    tick_labels = ("2/17", "3/1", "4/1", "4/17")
+    tick_positions = ("0%", "21%", "72%", "100%")
+    bars = "".join(
+        f'<div class="panic-bar" title="{escape(str(item.get("date", "")))} · {escape(str(item.get("panic_regime", "")))} · score {escape(str(item.get("panic_score", "")))}" style="height:{28 + int(item.get("panic_score", 0)) * 18}px;background:{bar_color.get(str(item.get("panic_regime", "")), "#a8a29e")}"></div>'
+        for item in history_2m
+    )
+    ticks = "".join(
+        f'<span class="panic-tick" style="left:{position}">{label}</span>'
+        for label, position in zip(tick_labels, tick_positions)
+    )
     return f"""
       <section class="market-panic-card">
         <div class="market-panic-header">
@@ -914,6 +939,14 @@ def render_market_panic_card(panic: dict[str, Any] | None) -> str:
           <span>VIX {escape(str(metrics.get("vix_close", "n/a")))}</span>
           <span>VIX/VIX3M {escape(str(metrics.get("vix_vix3m_ratio", "n/a")))}</span>
           <span>HYG/IEF z20 {escape(str(metrics.get("credit_ratio_z20", "n/a")))}</span>
+        </div>
+        <div class="panic-history-head">
+          <span>近兩個月回顧</span>
+          <span>{escape(str(summary_2m.get("date_from", "n/a")))} to {escape(str(summary_2m.get("date_to", "n/a")))}</span>
+        </div>
+        <div class="panic-history-chart">{bars}</div>
+        <div class="panic-history-scale">
+          {ticks}
         </div>
       </section>
     """
@@ -1164,6 +1197,53 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
       color: var(--muted);
       font-size: 14px;
       line-height: 1.5;
+    }}
+    .panic-history-head {{
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }}
+    .panic-history-chart {{
+      display: flex;
+      align-items: end;
+      gap: 4px;
+      height: 86px;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.48);
+      border: 1px solid rgba(223, 210, 188, 0.8);
+      overflow: hidden;
+    }}
+    .panic-bar {{
+      flex: 1 1 0;
+      min-width: 6px;
+      border-radius: 999px 999px 4px 4px;
+      opacity: 0.95;
+    }}
+    .panic-history-scale {{
+      position: relative;
+      height: 20px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      letter-spacing: 0.04em;
+    }}
+    .panic-tick {{
+      position: absolute;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }}
+    .panic-tick:first-child {{
+      transform: none;
+    }}
+    .panic-tick:last-child {{
+      transform: translateX(-100%);
     }}
     .signal-legend {{
       display: flex;
@@ -1641,7 +1721,7 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
 
 def main() -> None:
     board = load_board()
-    market_panic = _load_market_panic()
+    market_panic = refresh_market_panic_payload()
     board.to_csv(ac.get_monitor_board_path(), sep="\t", index=False)
     ac.get_monitor_board_chart_path().write_text(build_html(board, market_panic), encoding="utf-8")
     print(

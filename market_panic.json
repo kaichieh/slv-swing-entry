@@ -14,5 +14,279 @@
     "credit_ratio": 0.8422,
     "credit_ratio_z20": 1.47,
     "credit_ratio_ret_5": 0.0011
+  },
+  "history_2m": [
+    {
+      "date": "2026-02-17",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 20.29
+    },
+    {
+      "date": "2026-02-18",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 19.62
+    },
+    {
+      "date": "2026-02-19",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 20.23
+    },
+    {
+      "date": "2026-02-20",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 19.09
+    },
+    {
+      "date": "2026-02-23",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 21.01
+    },
+    {
+      "date": "2026-02-24",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 19.55
+    },
+    {
+      "date": "2026-02-25",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 17.93
+    },
+    {
+      "date": "2026-02-26",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 18.63
+    },
+    {
+      "date": "2026-02-27",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 19.86
+    },
+    {
+      "date": "2026-03-02",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 21.44
+    },
+    {
+      "date": "2026-03-03",
+      "panic_score": 3,
+      "panic_regime": "panic",
+      "vix_close": 23.57
+    },
+    {
+      "date": "2026-03-04",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 21.15
+    },
+    {
+      "date": "2026-03-05",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 23.75
+    },
+    {
+      "date": "2026-03-06",
+      "panic_score": 3,
+      "panic_regime": "panic",
+      "vix_close": 29.49
+    },
+    {
+      "date": "2026-03-09",
+      "panic_score": 3,
+      "panic_regime": "panic",
+      "vix_close": 25.5
+    },
+    {
+      "date": "2026-03-10",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 24.93
+    },
+    {
+      "date": "2026-03-11",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 24.23
+    },
+    {
+      "date": "2026-03-12",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 27.29
+    },
+    {
+      "date": "2026-03-13",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 27.19
+    },
+    {
+      "date": "2026-03-16",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 23.51
+    },
+    {
+      "date": "2026-03-17",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 22.37
+    },
+    {
+      "date": "2026-03-18",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 25.09
+    },
+    {
+      "date": "2026-03-19",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 24.06
+    },
+    {
+      "date": "2026-03-20",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 26.78
+    },
+    {
+      "date": "2026-03-23",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 26.15
+    },
+    {
+      "date": "2026-03-24",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 26.95
+    },
+    {
+      "date": "2026-03-25",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 25.33
+    },
+    {
+      "date": "2026-03-26",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 27.44
+    },
+    {
+      "date": "2026-03-27",
+      "panic_score": 3,
+      "panic_regime": "panic",
+      "vix_close": 31.05
+    },
+    {
+      "date": "2026-03-30",
+      "panic_score": 3,
+      "panic_regime": "panic",
+      "vix_close": 30.61
+    },
+    {
+      "date": "2026-03-31",
+      "panic_score": 3,
+      "panic_regime": "panic",
+      "vix_close": 25.25
+    },
+    {
+      "date": "2026-04-01",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 24.54
+    },
+    {
+      "date": "2026-04-02",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 23.87
+    },
+    {
+      "date": "2026-04-06",
+      "panic_score": 1,
+      "panic_regime": "guarded",
+      "vix_close": 24.17
+    },
+    {
+      "date": "2026-04-07",
+      "panic_score": 2,
+      "panic_regime": "stressed",
+      "vix_close": 25.78
+    },
+    {
+      "date": "2026-04-08",
+      "panic_score": 0,
+      "panic_regime": "calm",
+      "vix_close": 21.04
+    },
+    {
+      "date": "2026-04-09",
+      "panic_score": 0,
+      "panic_regime": "calm",
+      "vix_close": 19.49
+    },
+    {
+      "date": "2026-04-10",
+      "panic_score": 0,
+      "panic_regime": "calm",
+      "vix_close": 19.23
+    },
+    {
+      "date": "2026-04-13",
+      "panic_score": 0,
+      "panic_regime": "calm",
+      "vix_close": 19.12
+    },
+    {
+      "date": "2026-04-14",
+      "panic_score": 0,
+      "panic_regime": "calm",
+      "vix_close": 18.36
+    },
+    {
+      "date": "2026-04-15",
+      "panic_score": 0,
+      "panic_regime": "calm",
+      "vix_close": 18.17
+    },
+    {
+      "date": "2026-04-16",
+      "panic_score": 0,
+      "panic_regime": "calm",
+      "vix_close": 17.94
+    },
+    {
+      "date": "2026-04-17",
+      "panic_score": 0,
+      "panic_regime": "calm",
+      "vix_close": 17.48
+    }
+  ],
+  "summary_2m": {
+    "date_from": "2026-02-17",
+    "date_to": "2026-04-17",
+    "trading_days": 43,
+    "regime_counts": {
+      "stressed": 19,
+      "guarded": 10,
+      "calm": 8,
+      "panic": 6
+    },
+    "avg_panic_score": 1.535,
+    "max_panic_score": 3,
+    "min_panic_score": 0
   }
 }
