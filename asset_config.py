@@ -179,6 +179,18 @@ def get_live_model_family(asset_key: str | None = None) -> str:
     return value if value else "logistic"
 
 
+def get_threshold_metric(asset_key: str | None = None) -> str:
+    config = load_asset_config(asset_key)
+    value = str(config.get("threshold_metric", "f1")).strip().lower()
+    return value if value in {"f1", "balanced_accuracy"} else "f1"
+
+
+def get_live_threshold_metric(asset_key: str | None = None) -> str:
+    config = load_asset_config(asset_key)
+    value = str(config.get("live_threshold_metric", get_threshold_metric(asset_key))).strip().lower()
+    return value if value in {"f1", "balanced_accuracy"} else get_threshold_metric(asset_key)
+
+
 def get_live_execution_rule(asset_key: str | None = None) -> str:
     config = load_asset_config(asset_key)
     value = str(config.get("live_execution_rule", "threshold")).strip().lower()

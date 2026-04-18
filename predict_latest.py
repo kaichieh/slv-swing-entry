@@ -183,6 +183,10 @@ def get_live_execution_rule() -> str:
     return ac.get_live_execution_rule()
 
 
+def get_live_threshold_metric() -> str:
+    return ac.get_live_threshold_metric()
+
+
 def fit_hard_gate_two_expert_model(raw_prices) -> dict[str, Any]:
     import research_batch as rb
     import research_slv_topbottom15_gdx_hard_gate_two_expert as winner
@@ -341,6 +345,7 @@ def fit_logistic_model(splits: Mapping[str, DatasetSplit], feature_names: list[s
     best_validation_f1 = -np.inf
     best_threshold = 0.5
     epochs_without_improvement = 0
+    threshold_metric = get_live_threshold_metric()
 
     validation_returns = splits["validation"].frame["future_return_60"].to_numpy(dtype=np.float32)
 
@@ -353,7 +358,7 @@ def fit_logistic_model(splits: Mapping[str, DatasetSplit], feature_names: list[s
         weights -= learning_rate * gradient
 
         validation_logits = validation_x @ weights
-        threshold = tr.select_threshold(tr.sigmoid(validation_logits), validation_y)
+        threshold = tr.select_threshold(tr.sigmoid(validation_logits), validation_y, primary_metric=threshold_metric)
         validation_metrics = tr.compute_metrics(validation_logits, validation_y, validation_returns, threshold)
         if validation_metrics.f1 > best_validation_f1:
             best_validation_f1 = validation_metrics.f1
@@ -372,6 +377,7 @@ def fit_logistic_model(splits: Mapping[str, DatasetSplit], feature_names: list[s
         "train_frame": splits["train"].frame,
         "feature_names": feature_names,
         "default_interactions": ["drawdown_20:volume_vs_20"],
+        "threshold_metric": threshold_metric,
     }
 
 
@@ -419,7 +425,8 @@ def fit_xgboost_model(splits: Mapping[str, DatasetSplit], feature_names: list[st
         model.fit(train_x, train_y)
         validation_probabilities = np.asarray(model.predict_proba(validation_x)[:, 1], dtype=np.float32)
 
-    threshold = tr.select_threshold(validation_probabilities, validation_y)
+    threshold_metric = get_live_threshold_metric()
+    threshold = tr.select_threshold(validation_probabilities, validation_y, primary_metric=threshold_metric)
     return {
         "model_family": "xgboost",
         "model": model,
@@ -432,6 +439,7 @@ def fit_xgboost_model(splits: Mapping[str, DatasetSplit], feature_names: list[st
             "learning_rate": learning_rate,
         },
         "default_interactions": [],
+        "threshold_metric": threshold_metric,
     }
 
 
@@ -814,6 +822,7 @@ def main() -> None:
             "model_family": str(model_artifacts["model_family"]),
             "label_mode": str(model_artifacts.get("live_label_mode", get_live_label_mode())),
             "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
+            "threshold_metric": str(model_artifacts.get("threshold_metric", get_live_threshold_metric())),
             "default_interactions": list(model_artifacts.get("default_interactions", [])),
             "live_decision_rule": live_decision_rule,
             "live_execution_rule": execution_rule,
@@ -888,13 +897,16 @@ def build_latest_prediction_output(context: Mapping[str, Any]) -> dict[str, obje
     latest_live = live_features.iloc[[-1]].copy()
     latest_vector, raw_snapshot = score_latest_row(model_artifacts, feature_names, train_frame, latest_live)
     probability = float(predict_probabilities(model_artifacts, latest_vector)[0])
-    predicted_label = int(probability >= threshold)
-    raw_signal, band_info = classify_signal(probability, float(threshold), historical_probabilities)
+    execution_rule = get_live_execution_rule()
+    execution_cutoff = resolve_execution_cutoff(execution_rule, float(threshold), historical_probabilities)
+    predicted_label = int(probability >= execution_cutoff)
+    model_predicted_label = int(probability >= threshold)
+    raw_signal, band_info = classify_signal(probability, float(execution_cutoff), historical_probabilities)
+    model_signal, model_band_info = classify_signal(probability, float(threshold), historical_probabilities)
     signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot, asset_key=asset_key)
     rule_summary = summarize_rule(probability, historical_probabilities, rule_top_pct)
     model_rationale = build_model_rationale(raw_snapshot)
     rule_rationale = build_rule_rationale(probability, float(threshold), rule_summary)
-    bullish = predicted_label == 1
     live_operator_line_id = resolve_live_operator_line_id(feature_names, str(model_artifacts["model_family"]))
     live_provenance = build_live_provenance(model_artifacts, live_operator_line_id)
 
@@ -905,20 +917,21 @@ def build_latest_prediction_output(context: Mapping[str, Any]) -> dict[str, obje
     output: dict[str, object] = {
         "signal_summary": {
             "signal": signal,
-            "verdict": "璅∪???銝剜??脣" if bullish else "璅∪??桀?銝??葉?脣",
+            "verdict": "模型偏向中期進場" if predicted_label == 1 else "模型目前不偏向中期進場",
             "predicted_label": predicted_label,
             "predicted_probability": round(probability, 4),
-            "decision_threshold": round(float(threshold), 4),
+            "decision_threshold": round(float(execution_cutoff), 4),
             "raw_model_signal": raw_signal,
+            "execution_rule": execution_rule,
             **band_info,
         },
         "model_signal_summary": {
-            "signal": raw_signal,
-            "verdict": "璅∪???銝剜??脣" if bullish else "璅∪??桀?銝??葉?脣",
-            "predicted_label": predicted_label,
+            "signal": model_signal,
+            "verdict": "模型偏向中期進場" if model_predicted_label == 1 else "模型目前不偏向中期進場",
+            "predicted_label": model_predicted_label,
             "predicted_probability": round(probability, 4),
             "decision_threshold": round(float(threshold), 4),
-            **band_info,
+            **model_band_info,
         },
         "buy_point_summary": buy_point_summary,
         "rule_summary": rule_summary,
@@ -940,8 +953,10 @@ def build_latest_prediction_output(context: Mapping[str, Any]) -> dict[str, obje
             "model_family": str(model_artifacts["model_family"]),
             "label_mode": str(model_artifacts.get("live_label_mode", get_live_label_mode())),
             "model_extra_features": [name for name in feature_names if name not in tr.FEATURE_COLUMNS],
+            "threshold_metric": str(model_artifacts.get("threshold_metric", get_live_threshold_metric())),
             "default_interactions": list(model_artifacts.get("default_interactions", [])),
             "live_decision_rule": live_decision_rule,
+            "live_execution_rule": execution_rule,
             "reference_percentile_rule": f"top_{rule_top_pct:g}pct",
             "xgboost_params": model_artifacts.get("xgboost_params", {}),
         },
