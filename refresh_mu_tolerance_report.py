@@ -14,7 +14,7 @@ import train
 ASSET_KEY = "mu"
 LIVE_LABEL_MODE = "future-return-top-bottom-30pct"
 CHALLENGER_LABEL_MODE = "future-return-top-bottom-20pct"
-TOP_PCT = 12.5
+TOP_PCT = 11.5
 TOLERANCE_VARIANTS = (0.0, 0.001, 0.0025, 0.005)
 FOLDS = 3
 POCKET_LABEL = "above_200dma_and_slope60_positive"

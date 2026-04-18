@@ -481,7 +481,7 @@ def render_html(summary: pd.DataFrame, recent: pd.DataFrame, latest_row: pd.Seri
 <body>
   <section class="hero">
     <h1>MU Divergence Outcome Report</h1>
-    <p>Live stays on <strong>tb30 + top_12.5pct</strong>. The main challenger remains <strong>plain tb20 + top_12.5pct</strong>, and divergence monitoring is here to judge it rather than promote it early.</p>
+<p>Live stays on <strong>tb30 + top_12.5pct</strong>. The main challenger remains <strong>plain tb20 + top_11.5pct</strong>, and divergence monitoring is here to judge it rather than promote it early.</p>
     <p>Latest date: <strong>{escape(str(latest_row['date']))}</strong>. Latest comparison state: <strong>{escape(str(latest_row['comparison_state']))}</strong>. Latest divergence case: <strong>{escape(latest_divergence)}</strong>. Latest pocket lens: <strong>{escape(str(latest_row['bullish_pocket_label']))}</strong>.</p>
   </section>
   <section class="callout">

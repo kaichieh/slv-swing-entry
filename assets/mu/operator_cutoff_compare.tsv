@@ -1,0 +1,13 @@
+model_name	label_mode	rule	heldout_cutoff	heldout_episode_count	heldout_episode_hit_rate	heldout_episode_avg_return	heldout_episode_max_drawdown_compound	forward_total_episodes	forward_mean_episode_hit_rate	forward_mean_episode_avg_return	forward_min_episode_avg_return	forward_min_hit_rate	forward_worst_drawdown_compound	heldout_avg_return_delta_vs_top_12_5pct	forward_mean_avg_return_delta_vs_top_12_5pct	forward_min_avg_return_delta_vs_top_12_5pct
+tb20_challenger	future-return-top-bottom-20pct	top_10pct	0.500296	6	0.6667	0.2447	-0.3662	14	0.6889	0.1988	-0.0164	0.4	-0.6685	0.0716	0.0018	-0.0705
+tb20_challenger	future-return-top-bottom-20pct	top_11pct	0.500182	6	0.6667	0.312	-0.4101	15	0.6889	0.2139	-0.0164	0.4	-0.6685	0.1389	0.0169	-0.0705
+tb20_challenger	future-return-top-bottom-20pct	top_11_5pct	0.500118	6	0.6667	0.312	-0.4101	16	0.6571	0.2085	0.0541	0.4	-0.6317	0.1389	0.0115	0.0
+tb20_challenger	future-return-top-bottom-20pct	top_12pct	0.500096	6	0.6667	0.312	-0.4101	16	0.6571	0.197	0.0541	0.4	-0.6317	0.1389	0.0	0.0
+tb20_challenger	future-return-top-bottom-20pct	top_12_5pct	0.500068	7	0.5714	0.1731	-0.3662	16	0.6571	0.197	0.0541	0.4	-0.6317	0.0	0.0	0.0
+tb20_challenger	future-return-top-bottom-20pct	top_15pct	0.499946	7	0.5714	0.2154	-0.3662	20	0.5873	0.1425	-0.0602	0.3333	-0.8642	0.0423	-0.0545	-0.1143
+tb20_challenger	future-return-top-bottom-20pct	threshold	0.498	8	0.625	0.2916	-0.3282	30	0.5333	0.1204	-0.0865	0.3	-0.9183	0.1185	-0.0766	-0.1406
+tb20_challenger	future-return-top-bottom-20pct	fixed_0.510	0.51	0	0.0	0.0	0.0	27	0.3704	-0.0537	-0.2836	0.1111	-0.9858	-0.1731	-0.2507	-0.3377
+tb30_live_ref	future-return-top-bottom-30pct	top_10pct	0.502435	6	0.8333	0.3979	0.0	14	0.6889	0.1988	-0.0164	0.4	-0.6685			
+tb30_live_ref	future-return-top-bottom-30pct	top_12_5pct	0.49922	6	0.8333	0.4037	0.0	16	0.6571	0.197	0.0541	0.4	-0.6317			
+tb30_live_ref	future-return-top-bottom-30pct	top_15pct	0.496684	7	0.7143	0.3252	-0.2537	20	0.5873	0.1425	-0.0602	0.3333	-0.8642			
+tb30_live_ref	future-return-top-bottom-30pct	threshold	0.455	8	0.625	0.2916	-0.3282	30	0.5333	0.1204	-0.0865	0.3	-0.9183			

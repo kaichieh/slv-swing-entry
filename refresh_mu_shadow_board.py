@@ -17,9 +17,9 @@ import train as tr
 ASSET_KEY = "mu"
 LOOKBACK_DAYS = 60
 DIFF_RECENT_LIMIT = 20
-SHADOW_LINE_ID = "mu_tb20_ret_60_vol_ratio_20_120_top12_5_shadow"
+SHADOW_LINE_ID = "mu_tb20_ret_60_vol_ratio_20_120_top11_5_shadow"
 SHADOW_LABEL_MODE = "future-return-top-bottom-20pct"
-SHADOW_EXECUTION_RULE = "top_12_5pct"
+SHADOW_EXECUTION_RULE = "top_11_5pct"
 SHADOW_THRESHOLD_METRIC = "balanced_accuracy"
 SHADOW_EXTRA_FEATURES = ("ret_60", "vol_ratio_20_120")
 
@@ -135,7 +135,7 @@ def build_shadow_rows(
         execution_cutoff = float(
             pl.resolve_execution_cutoff(SHADOW_EXECUTION_RULE, model_threshold, historical_probabilities)
         )
-        reference_top_pct = pl.parse_top_pct_rule(SHADOW_EXECUTION_RULE) or 12.5
+        reference_top_pct = pl.parse_top_pct_rule(SHADOW_EXECUTION_RULE) or 11.5
         train_frame = model_artifacts["train_frame"]
         scored = live_features.dropna(subset=feature_names)
         if lookback_days is not None:

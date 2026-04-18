@@ -12,6 +12,13 @@ from pathlib import Path
 import asset_config as ac
 
 REPO_DIR = Path(__file__).resolve().parent
+MU_CHALLENGER_MONITOR_SCRIPTS = (
+    "refresh_mu_shadow_board.py",
+    "refresh_mu_divergence_report.py",
+    "refresh_mu_subregime_report.py",
+    "refresh_mu_live_bucket_report.py",
+    "refresh_mu_tolerance_report.py",
+)
 
 
 def build_env(asset_key: str | None = None) -> dict[str, str]:
@@ -30,6 +37,11 @@ def run_step(script_name: str, asset_key: str | None = None) -> None:
     subprocess.run(command, cwd=REPO_DIR, env=build_env(asset_key), check=True)
 
 
+def run_mu_challenger_monitors() -> None:
+    for script_name in MU_CHALLENGER_MONITOR_SCRIPTS:
+        run_step(script_name, "mu")
+
+
 def refresh_asset(asset_key: str) -> None:
     start = time.perf_counter()
     print(f"[{asset_key}] start", flush=True)
@@ -44,6 +56,8 @@ def refresh_asset(asset_key: str) -> None:
     run_step("refresh_monitor_snapshot.py", asset_key)
     if not ac.uses_regression_chart(asset_key):
         run_step("refresh_technical_reading.py", asset_key)
+    if asset_key == "mu":
+        run_mu_challenger_monitors()
     elapsed = time.perf_counter() - start
     print(f"[{asset_key}] done in {elapsed:.1f}s", flush=True)
 
