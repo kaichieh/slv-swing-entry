@@ -680,7 +680,7 @@ def render_table_row(row: pd.Series) -> str:
     asset_key = escape(str(row.get("asset_key", "")))
     chart_href = escape(str(row.get("chart_href", "#")))
     return f"""
-      <tr>
+      <tr class="board-row" data-target="detail-{asset_key}">
         <td>
           <div class="symbol">
             <a class="symbol-link" href="{chart_href}"><strong style="color:{symbol_color}">{escape(str(row["symbol"]))}</strong></a>
@@ -688,7 +688,6 @@ def render_table_row(row: pd.Series) -> str:
             <div class="mini">latest {escape(latest_value)}</div>
           </div>
         </td>
-        <td><button class="detail-link" type="button" data-target="detail-{asset_key}">view</button></td>
         <td>{status_chip}</td>
         <td>{trend_chip}</td>
         <td>{rsi_chip}</td>
@@ -980,10 +979,6 @@ def build_html(board: pd.DataFrame) -> str:
     detail_row = board.iloc[0] if not board.empty else pd.Series(dtype="object")
     current_detail = render_detail_card(detail_row) if not board.empty else ""
     detail_templates = "\n".join(render_detail_template(row) for _, row in board.iterrows())
-    selected_count = int(counts.get("selected_now", 0))
-    watchlist_count = int(counts.get("watchlist_wait", 0) + counts.get("watchlist_blocked", 0))
-    overbought_count = int((board["technical_rsi"] == "overbought").sum()) if "technical_rsi" in board.columns else 0
-    pullback_count = int((board["technical_action"] == "buy_pullback").sum()) if "technical_action" in board.columns else 0
     return f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -1179,6 +1174,9 @@ def build_html(board: pd.DataFrame) -> str:
     tbody tr:hover {{
       background: rgba(255, 250, 240, 0.72);
     }}
+    .board-row {{
+      cursor: pointer;
+    }}
     .symbol {{
       display: flex;
       flex-direction: column;
@@ -1367,39 +1365,6 @@ def build_html(board: pd.DataFrame) -> str:
 </head>
 <body>
   <div class="wrap">
-    <section class="hero">
-      <div class="hero-card">
-        <div class="eyebrow">Monitor Board · Technical Summary</div>
-        <h1>Monitor Board with Technical Overlay</h1>
-        <div class="hero-copy">
-          Use the main table for the quick scan. Use the right panel for the currently selected asset detail view.
-        </div>
-        <div class="mock-note">
-          Symbol color follows the signal state. Click `view` to switch the right-side detail panel.
-        </div>
-        <div class="legend-row">
-          <span class="legend-item"><span class="legend-dot" style="background:#9ca3af"></span>no_entry</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#fde68a"></span>weak_bullish</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>bullish</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>strong_bullish</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#065f46"></span>very_strong_bullish / selected</span>
-        </div>
-      </div>
-      <div class="stats-card">
-        <div class="stats-grid">
-          <div class="stat"><div class="stat-label">Selected</div><div class="stat-value">{selected_count}</div></div>
-          <div class="stat"><div class="stat-label">Watchlist</div><div class="stat-value">{watchlist_count}</div></div>
-          <div class="stat"><div class="stat-label">Overbought</div><div class="stat-value">{overbought_count}</div></div>
-          <div class="stat"><div class="stat-label">Pullback Buys</div><div class="stat-value">{pullback_count}</div></div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Board Summary</div>
-          <div class="summary">{escape(summary)}</div>
-        </div>
-      </div>
-    </section>
-
-
     <section class="main">
       <div class="board-card">
         <div class="board-head">
@@ -1412,7 +1377,6 @@ def build_html(board: pd.DataFrame) -> str:
           <thead>
             <tr>
               <th>Asset</th>
-              <th>View</th>
               <th>Status</th>
               <th>Trend</th>
               <th>RSI</th>
@@ -1437,15 +1401,19 @@ def build_html(board: pd.DataFrame) -> str:
   </div>
   <script>
     (() => {{
-      const buttons = Array.from(document.querySelectorAll('.detail-link[data-target]'));
+      const rows = Array.from(document.querySelectorAll('.board-row[data-target]'));
       const current = document.getElementById('detail-current');
       const activate = (targetId) => {{
         const template = document.getElementById(`detail-template-${{targetId.replace('detail-', '')}}`);
         if (!template || !current) return;
         current.innerHTML = template.innerHTML;
       }};
-      buttons.forEach((button) => {{
-        button.addEventListener('click', () => activate(button.dataset.target));
+      rows.forEach((row) => {{
+        row.addEventListener('click', (event) => {{
+          const target = event.target;
+          if (target instanceof Element && target.closest('a')) return;
+          activate(row.dataset.target);
+        }});
       }});
     }})();
   </script>

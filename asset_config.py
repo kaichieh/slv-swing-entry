@@ -122,7 +122,7 @@ ASSET_DEFAULTS: dict[str, AssetDefaults] = {
     "bitb": AssetDefaults("bitb", "BITB", 0.18, -0.09, 60, "drop-neutral"),
 }
 REGRESSION_ASSET_KEYS = {"qqq", "tlt", "xle"}
-MONITOR_BOARD_ASSET_KEYS = ("gld", "slv", "iwm", "spy", "nvda", "tsla")
+MONITOR_BOARD_ASSET_KEYS = ("gld", "slv", "iwm", "spy", "nvda", "tsla", "mu")
 MONITOR_PRIORITY_RESEARCH_ASSET_KEYS = ("xlp", "ijh", "fxb", "smh", "pep", "vt", "rsp", "meta")
 
 REPO_DIR = Path(__file__).resolve().parent
