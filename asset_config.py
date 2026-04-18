@@ -61,6 +61,9 @@ ASSET_DEFAULTS: dict[str, AssetDefaults] = {
     "fxb": AssetDefaults("fxb", "FXB", 0.06, -0.03, 60, "drop-neutral"),
     "nvda": AssetDefaults("nvda", "NVDA", 0.12, -0.06, 60, "drop-neutral"),
     "tsla": AssetDefaults("tsla", "TSLA", 0.12, -0.06, 60, "drop-neutral"),
+    "vrt": AssetDefaults("vrt", "VRT", 0.12, -0.06, 60, "drop-neutral"),
+    "leu": AssetDefaults("leu", "LEU", 0.14, -0.07, 60, "drop-neutral"),
+    "tsmc_tw": AssetDefaults("tsmc_tw", "TSMC", 0.10, -0.05, 60, "drop-neutral"),
     "tlt": AssetDefaults("tlt", "TLT", 0.06, -0.03, 60, "drop-neutral"),
     "ief": AssetDefaults("ief", "IEF", 0.05, -0.025, 60, "drop-neutral"),
     "shy": AssetDefaults("shy", "SHY", 0.03, -0.015, 60, "drop-neutral"),
@@ -122,7 +125,7 @@ ASSET_DEFAULTS: dict[str, AssetDefaults] = {
     "bitb": AssetDefaults("bitb", "BITB", 0.18, -0.09, 60, "drop-neutral"),
 }
 REGRESSION_ASSET_KEYS = {"qqq", "tlt", "xle"}
-MONITOR_BOARD_ASSET_KEYS = ("gld", "slv", "iwm", "spy", "nvda", "tsla", "mu")
+MONITOR_BOARD_ASSET_KEYS = ("gld", "slv", "iwm", "spy", "nvda", "tsla", "mu", "tsmc_tw", "vrt", "leu")
 MONITOR_PRIORITY_RESEARCH_ASSET_KEYS = ("xlp", "ijh", "fxb", "smh", "pep", "vt", "rsp", "meta")
 
 REPO_DIR = Path(__file__).resolve().parent
@@ -161,6 +164,11 @@ def load_asset_config(asset_key: str | None = None) -> dict[str, object]:
 
 def get_asset_symbol(asset_key: str | None = None) -> str:
     return str(load_asset_config(asset_key)["symbol"])
+
+
+def get_asset_download_symbol(asset_key: str | None = None) -> str:
+    config = load_asset_config(asset_key)
+    return str(config.get("download_symbol", config["symbol"]))
 
 
 def get_live_extra_features(asset_key: str | None = None) -> tuple[str, ...]:

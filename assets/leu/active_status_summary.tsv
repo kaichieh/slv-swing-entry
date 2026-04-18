@@ -1,0 +1,2 @@
+line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
+base_research	research_backlog	research_primary	True	research_only	0			False			Base research asset with no follow-up operating rounds yet.

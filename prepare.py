@@ -455,7 +455,7 @@ def download_symbol_prices(symbol: str, stooq_url: str, cache_path: str) -> pd.D
 
 
 def download_asset_prices() -> pd.DataFrame:
-    symbol = ac.get_asset_symbol()
+    symbol = ac.get_asset_download_symbol()
     return download_symbol_prices(symbol, ac.stooq_url(symbol), RAW_DATA_PATH)
 
 
