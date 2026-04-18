@@ -386,6 +386,10 @@ def get_monitor_board_chart_path() -> Path:
     return REPO_DIR / "monitor_board.html"
 
 
+def get_market_panic_path() -> Path:
+    return REPO_DIR / "market_panic.json"
+
+
 def get_monitor_priority_path() -> Path:
     return REPO_DIR / "monitor_priority.tsv"
 

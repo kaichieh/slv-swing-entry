@@ -28,6 +28,82 @@
       margin: 0 auto;
       padding: 28px;
     }
+    .market-panic-card {
+      margin-bottom: 18px;
+      padding: 18px 20px;
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(223, 210, 188, 0.85);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .market-panic-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .market-panic-title {
+      margin-top: 10px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .market-panic-date {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .market-panic-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .market-panic-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .signal-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .signal-legend-title {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 2px;
+    }
+    .signal-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(223, 210, 188, 0.8);
+      color: var(--ink);
+    }
+    .signal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      border: 1px solid rgba(28, 25, 23, 0.08);
+    }
     .hero {
       display: grid;
       grid-template-columns: 1.3fr 0.9fr;
@@ -306,12 +382,32 @@
       background: rgba(255, 255, 255, 0.62);
       border: 1px solid rgba(223, 210, 188, 0.8);
     }
+    .detail-box-wide {
+      grid-column: 1 / -1;
+    }
     .detail-box .label {
       color: var(--muted);
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       margin-bottom: 8px;
+    }
+    .panic-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .panic-summary {
+      margin-top: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .panic-mini {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
     }
     .detail-box .value {
       font-size: 16px;
@@ -390,12 +486,43 @@
 </head>
 <body>
   <div class="wrap">
+    
+      <section class="market-panic-card">
+        <div class="market-panic-header">
+          <div>
+            <div class="eyebrow">Market Panic</div>
+            <div class="market-panic-title">平靜</div>
+            <div class="market-panic-date">2026-04-17 · 期限結構平穩／信用偏撐盤</div>
+          </div>
+          <span class="chip chip-green">Score 0</span>
+        </div>
+        <div class="market-panic-row">
+          <span class="chip chip-sand">VIX 正常</span>
+          <span class="chip chip-green">期限結構平穩</span>
+          <span class="chip chip-green">信用偏撐盤</span>
+        </div>
+        <div class="market-panic-metrics">
+          <span>VIX 17.48</span>
+          <span>VIX/VIX3M 0.8416</span>
+          <span>HYG/IEF z20 1.47</span>
+        </div>
+      </section>
+    
     <section class="main">
       <div class="board-card">
         <div class="board-head">
           <div>
             <div class="board-title">Board</div>
-            <div class="board-sub">technical summary 放在主表快速掃描，完整的 A~L 判讀與關鍵價位則放在右側 detail panel。Action: 等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
+            
+      <div class="signal-legend">
+        <span class="signal-legend-title">Symbol Color</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#9ca3af"></span> no_entry</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#fde68a"></span> weak_bullish</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#f59e0b"></span> bullish</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#16a34a"></span> strong_bullish</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#065f46"></span> very_strong_bullish</span>
+      </div>
+    
           </div>
         </div>
         <table>

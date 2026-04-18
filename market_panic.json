@@ -1,0 +1,18 @@
+{
+  "date": "2026-04-17",
+  "panic_score": 0,
+  "panic_regime": "calm",
+  "panic_summary_zh": "期限結構平穩／信用偏撐盤",
+  "vix_state": "normal",
+  "term_state": "calm_contango",
+  "credit_state": "supportive",
+  "metrics": {
+    "vix_close": 17.48,
+    "vix3m_close": 20.77,
+    "vix_percentile_252": 0.5179,
+    "vix_vix3m_ratio": 0.8416,
+    "credit_ratio": 0.8422,
+    "credit_ratio_z20": 1.47,
+    "credit_ratio_ret_5": 0.0011
+  }
+}

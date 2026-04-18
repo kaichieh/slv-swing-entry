@@ -195,6 +195,13 @@ def _load_technical_reading(asset_key: str) -> dict[str, object] | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _load_market_panic() -> dict[str, object] | None:
+    path = ac.get_market_panic_path()
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def _technical_label(reading: dict[str, object] | None, key: str) -> str:
     if not reading:
         return "n/a"
@@ -821,6 +828,110 @@ def _pattern_with_bias(reading: dict[str, Any]) -> str:
     return f"{pattern_label} · {bias}" if bias else pattern_label
 
 
+def _panic_chip_class(regime: str) -> str:
+    if regime == "calm":
+        return "chip-green"
+    if regime == "guarded":
+        return "chip-amber"
+    if regime in {"stressed", "panic"}:
+        return "chip-red"
+    return "chip-sand"
+
+
+def _panic_state_label(kind: str, value: str) -> str:
+    mapping = {
+        "panic_regime": {"calm": "平靜", "guarded": "警戒", "stressed": "緊張", "panic": "恐慌"},
+        "vix_state": {"calm": "VIX 平靜", "normal": "VIX 正常", "elevated": "VIX 升溫", "panic": "VIX 偏高"},
+        "term_state": {
+            "calm_contango": "期限結構平穩",
+            "normal_contango": "期限結構正常",
+            "flattening": "期限結構轉平",
+            "backwardation": "短端倒掛",
+        },
+        "credit_state": {
+            "supportive": "信用偏撐盤",
+            "neutral": "信用中性",
+            "cautious": "信用轉弱",
+            "risk_off": "信用偏避險",
+        },
+    }
+    return mapping.get(kind, {}).get(value, value or "n/a")
+
+
+def render_panic_overlay(reading: dict[str, Any]) -> str:
+    panic = cast(dict[str, Any], reading.get("panic_overlay", {}))
+    if not panic:
+        return ""
+    metrics = cast(dict[str, Any], panic.get("metrics", {}))
+    vix_state = str(panic.get("vix_state", ""))
+    term_state = str(panic.get("term_state", ""))
+    credit_state = str(panic.get("credit_state", ""))
+    regime = str(panic.get("panic_regime", ""))
+    return f"""
+          <div class="detail-box detail-box-wide">
+            <div class="label">Panic Overlay</div>
+            <div class="panic-row">
+              {render_chip(_panic_state_label("panic_regime", regime), _panic_chip_class(regime))}
+              {render_chip(_panic_state_label("vix_state", vix_state), "chip-red" if vix_state in {"elevated", "panic"} else "chip-green" if vix_state == "calm" else "chip-sand")}
+              {render_chip(_panic_state_label("term_state", term_state), "chip-red" if term_state == "backwardation" else "chip-amber" if term_state == "flattening" else "chip-green" if term_state == "calm_contango" else "chip-sand")}
+              {render_chip(_panic_state_label("credit_state", credit_state), "chip-red" if credit_state == "risk_off" else "chip-amber" if credit_state == "cautious" else "chip-green" if credit_state == "supportive" else "chip-sand")}
+            </div>
+            <div class="panic-summary">{escape(str(panic.get("panic_summary_zh", "n/a")))}</div>
+            <div class="panic-mini">
+              Score {escape(str(panic.get("panic_score", "n/a")))} ·
+              VIX {escape(str(metrics.get("vix_close", "n/a")))} ·
+              VIX/VIX3M {escape(str(metrics.get("vix_vix3m_ratio", "n/a")))} ·
+              HYG/IEF z20 {escape(str(metrics.get("credit_ratio_z20", "n/a")))}
+            </div>
+          </div>
+    """
+
+
+def render_market_panic_card(panic: dict[str, Any] | None) -> str:
+    if not panic:
+        return ""
+    metrics = cast(dict[str, Any], panic.get("metrics", {}))
+    vix_state = str(panic.get("vix_state", ""))
+    term_state = str(panic.get("term_state", ""))
+    credit_state = str(panic.get("credit_state", ""))
+    regime = str(panic.get("panic_regime", ""))
+    return f"""
+      <section class="market-panic-card">
+        <div class="market-panic-header">
+          <div>
+            <div class="eyebrow">Market Panic</div>
+            <div class="market-panic-title">{escape(_panic_state_label("panic_regime", regime))}</div>
+            <div class="market-panic-date">{escape(str(panic.get("date", "n/a")))} · {escape(str(panic.get("panic_summary_zh", "n/a")))}</div>
+          </div>
+          {render_chip(f"Score {panic.get('panic_score', 'n/a')}", _panic_chip_class(regime))}
+        </div>
+        <div class="market-panic-row">
+          {render_chip(_panic_state_label("vix_state", vix_state), "chip-red" if vix_state in {"elevated", "panic"} else "chip-green" if vix_state == "calm" else "chip-sand")}
+          {render_chip(_panic_state_label("term_state", term_state), "chip-red" if term_state == "backwardation" else "chip-amber" if term_state == "flattening" else "chip-green" if term_state == "calm_contango" else "chip-sand")}
+          {render_chip(_panic_state_label("credit_state", credit_state), "chip-red" if credit_state == "risk_off" else "chip-amber" if credit_state == "cautious" else "chip-green" if credit_state == "supportive" else "chip-sand")}
+        </div>
+        <div class="market-panic-metrics">
+          <span>VIX {escape(str(metrics.get("vix_close", "n/a")))}</span>
+          <span>VIX/VIX3M {escape(str(metrics.get("vix_vix3m_ratio", "n/a")))}</span>
+          <span>HYG/IEF z20 {escape(str(metrics.get("credit_ratio_z20", "n/a")))}</span>
+        </div>
+      </section>
+    """
+
+
+def render_signal_color_legend() -> str:
+    return """
+      <div class="signal-legend">
+        <span class="signal-legend-title">Symbol Color</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#9ca3af"></span> no_entry</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#fde68a"></span> weak_bullish</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#f59e0b"></span> bullish</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#16a34a"></span> strong_bullish</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#065f46"></span> very_strong_bullish</span>
+      </div>
+    """
+
+
 def render_detail_card(row: pd.Series) -> str:
     reading = cast(dict[str, Any], row.get("detail_reading", {}))
     latest_close = cast(dict[str, object], reading.get("supporting_metrics", {})).get("latest_close", "n/a")
@@ -973,13 +1084,15 @@ def render_detail_template(row: pd.Series) -> str:
     return f'<template id="detail-template-{asset_key}">{render_detail_card(row)}</template>'
 
 
-def build_html(board: pd.DataFrame) -> str:
+def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) -> str:
     counts = board["action"].value_counts().to_dict()
     summary = " | ".join(f"{key}={value}" for key, value in counts.items())
     board_rows = "\n".join(render_table_row(row) for _, row in board.iterrows())
     detail_row = board.iloc[0] if not board.empty else pd.Series(dtype="object")
     current_detail = render_detail_card(detail_row) if not board.empty else ""
     detail_templates = "\n".join(render_detail_template(row) for _, row in board.iterrows())
+    market_panic_html = render_market_panic_card(market_panic)
+    signal_legend_html = render_signal_color_legend()
     return f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -1009,6 +1122,82 @@ def build_html(board: pd.DataFrame) -> str:
       max-width: 1500px;
       margin: 0 auto;
       padding: 28px;
+    }}
+    .market-panic-card {{
+      margin-bottom: 18px;
+      padding: 18px 20px;
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(223, 210, 188, 0.85);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }}
+    .market-panic-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }}
+    .market-panic-title {{
+      margin-top: 10px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }}
+    .market-panic-date {{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }}
+    .market-panic-row {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }}
+    .market-panic-metrics {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }}
+    .signal-legend {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }}
+    .signal-legend-title {{
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 2px;
+    }}
+    .signal-legend-item {{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(223, 210, 188, 0.8);
+      color: var(--ink);
+    }}
+    .signal-dot {{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      border: 1px solid rgba(28, 25, 23, 0.08);
     }}
     .hero {{
       display: grid;
@@ -1288,12 +1477,32 @@ def build_html(board: pd.DataFrame) -> str:
       background: rgba(255, 255, 255, 0.62);
       border: 1px solid rgba(223, 210, 188, 0.8);
     }}
+    .detail-box-wide {{
+      grid-column: 1 / -1;
+    }}
     .detail-box .label {{
       color: var(--muted);
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       margin-bottom: 8px;
+    }}
+    .panic-row {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }}
+    .panic-summary {{
+      margin-top: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.45;
+    }}
+    .panic-mini {{
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
     }}
     .detail-box .value {{
       font-size: 16px;
@@ -1372,12 +1581,13 @@ def build_html(board: pd.DataFrame) -> str:
 </head>
 <body>
   <div class="wrap">
+    {market_panic_html}
     <section class="main">
       <div class="board-card">
         <div class="board-head">
           <div>
             <div class="board-title">Board</div>
-            <div class="board-sub">technical summary 放在主表快速掃描，完整的 A~L 判讀與關鍵價位則放在右側 detail panel。Action: 等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
+            {signal_legend_html}
           </div>
         </div>
         <table>
@@ -1431,8 +1641,9 @@ def build_html(board: pd.DataFrame) -> str:
 
 def main() -> None:
     board = load_board()
+    market_panic = _load_market_panic()
     board.to_csv(ac.get_monitor_board_path(), sep="\t", index=False)
-    ac.get_monitor_board_chart_path().write_text(build_html(board), encoding="utf-8")
+    ac.get_monitor_board_chart_path().write_text(build_html(board, market_panic), encoding="utf-8")
     print(
         json.dumps(
             {

@@ -98,6 +98,7 @@ def main() -> None:
                 except Exception as exc:
                     raise RuntimeError(f"Failed while refreshing asset '{asset_key}'") from exc
 
+    run_step("refresh_market_panic.py")
     run_step("refresh_monitor_board.py")
 
     print(
