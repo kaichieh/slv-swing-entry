@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MU Shadow Board</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4efe6;
+      --card: #fffdf8;
+      --line: #e8decc;
+      --text: #18212f;
+      --muted: #586272;
+      --accent: #8b5e34;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #f4efe6 0%, #ece3d4 100%);
+      color: var(--text);
+    }
+    .hero h1 { margin: 0 0 8px; font-size: 30px; }
+    .hero p { margin: 0; color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-top: 5px solid var(--accent);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-top h2 { margin: 0; font-size: 20px; }
+    .badge {
+      background: #f4e6d5;
+      color: #8b5e34;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .line-id {
+      margin: 10px 0 8px;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .note { margin: 0 0 14px; color: var(--muted); line-height: 1.5; }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      margin: 0;
+    }
+    .stats div {
+      padding: 10px 12px;
+      background: #faf6ee;
+      border: 1px solid #eee1cd;
+      border-radius: 12px;
+    }
+    dt {
+      margin-bottom: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    dd { margin: 0; font-weight: 600; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background: #f5ecdf;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>MU Shadow Board</h1>
+    <p>Latest: live=blocked (no_entry) vs shadow=blocked (no_entry)</p>
+  </section>
+  <section class="grid">
+    
+        <section class="card">
+          <div class="card-top">
+            <h2>LIVE</h2>
+            <span class="badge">blocked</span>
+          </div>
+          <p class="line-id">mu_tb30_ret_60_vol_ratio_20_120_top12_5</p>
+          <p class="note">Official live line is above threshold but still blocked by the buy-point overlay.</p>
+          <dl class="stats">
+            <div><dt>signal</dt><dd>no_entry</dd></div>
+            <div><dt>model ready</dt><dd>yes</dd></div>
+            <div><dt>buy point ok</dt><dd>no</dd></div>
+            <div><dt>probability</dt><dd>0.5177</dd></div>
+            <div><dt>cutoff</dt><dd>0.5077</dd></div>
+            <div><dt>confidence gap</dt><dd>0.0100</dd></div>
+          </dl>
+        </section>
+        
+        <section class="card">
+          <div class="card-top">
+            <h2>SHADOW</h2>
+            <span class="badge">blocked</span>
+          </div>
+          <p class="line-id">mu_tb20_ret_60_vol_ratio_20_120_top12_5_shadow</p>
+          <p class="note">Research-only challenger on future-return-top-bottom-20pct with top_12_5pct. Regime lens: above_200dma_and_slope_60_positive.</p>
+          <dl class="stats">
+            <div><dt>signal</dt><dd>no_entry</dd></div>
+            <div><dt>model ready</dt><dd>yes</dd></div>
+            <div><dt>buy point ok</dt><dd>no</dd></div>
+            <div><dt>probability</dt><dd>0.5007</dd></div>
+            <div><dt>cutoff</dt><dd>0.5006</dd></div>
+            <div><dt>confidence gap</dt><dd>0.0001</dd></div>
+          </dl>
+        </section>
+        
+  </section>
+  <section>
+    <h2>Recent Divergences</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Case</th>
+          <th>Owner</th>
+          <th>Pocket</th>
+          <th>Live Signal</th>
+          <th>Live Gap</th>
+          <th>Shadow Signal</th>
+          <th>Shadow Gap</th>
+          <th>Delta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2026-04-16</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0679</td><td>no_entry</td><td>0.0003</td><td>-0.0676</td></tr><tr><td>2026-04-15</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0801</td><td>no_entry</td><td>0.0007</td><td>-0.0794</td></tr><tr><td>2026-04-13</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0637</td><td>no_entry</td><td>0.0001</td><td>-0.0636</td></tr><tr><td>2026-04-10</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0640</td><td>no_entry</td><td>0.0001</td><td>-0.0639</td></tr><tr><td>2026-04-09</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0756</td><td>no_entry</td><td>0.0006</td><td>-0.0750</td></tr><tr><td>2026-04-07</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0466</td><td>no_entry</td><td>-0.0007</td><td>-0.0473</td></tr><tr><td>2026-04-02</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>0.0696</td><td>no_entry</td><td>-0.0000</td><td>-0.0696</td></tr><tr><td>2026-03-31</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0317</td><td>no_entry</td><td>-0.0013</td><td>-0.0330</td></tr><tr><td>2026-03-30</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0294</td><td>no_entry</td><td>-0.0016</td><td>-0.0310</td></tr><tr><td>2026-03-27</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0141</td><td>no_entry</td><td>-0.0019</td><td>-0.0160</td></tr><tr><td>2026-03-26</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0141</td><td>no_entry</td><td>-0.0022</td><td>-0.0163</td></tr><tr><td>2026-03-25</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0080</td><td>no_entry</td><td>-0.0023</td><td>-0.0103</td></tr><tr><td>2026-03-24</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0146</td><td>no_entry</td><td>-0.0020</td><td>-0.0166</td></tr><tr><td>2026-03-20</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0529</td><td>no_entry</td><td>-0.0005</td><td>-0.0534</td></tr><tr><td>2026-03-19</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0753</td><td>no_entry</td><td>0.0001</td><td>-0.0752</td></tr><tr><td>2026-03-18</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0549</td><td>no_entry</td><td>0.0000</td><td>-0.0549</td></tr><tr><td>2026-03-17</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0656</td><td>no_entry</td><td>0.0004</td><td>-0.0652</td></tr><tr><td>2026-03-16</td><td>shadow_blocked_live_selected</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0676</td><td>no_entry</td><td>0.0005</td><td>-0.0671</td></tr><tr><td>2026-03-13</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0542</td><td>no_entry</td><td>-0.0003</td><td>-0.0545</td></tr><tr><td>2026-03-12</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0505</td><td>no_entry</td><td>-0.0008</td><td>-0.0513</td></tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>

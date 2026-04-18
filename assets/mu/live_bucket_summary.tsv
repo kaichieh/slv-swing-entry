@@ -1,0 +1,20 @@
+metric	value	note
+monitor_verdict	hold_anchor_watch	This is a monitoring-only hold anchor for the current live line, not a promotion signal.
+shared_oos_rows	2139	Rows on the shared out-of-sample date axis used for live-versus-shadow comparison.
+bucket_rows	21	Dates where live selected while shadow stayed idle.
+bucket_non_overlap_60d_episodes	3	Greedy 60-day non-overlap episodes, used as a sample-quality sanity check.
+latest_case_date	2026-01-16	Most recent date where live selected while shadow stayed idle.
+future_return_20_avg	0.1778	Average 20-day realized return after the live-only selection, using matured rows only.
+future_return_20_hit_rate	0.9444	Share of matured bucket rows with positive 20-day realized return.
+matured_20_count	18	Number of bucket rows with realized 20-day outcomes available.
+future_return_60_avg	0.5241	Average 60-day realized return after the live-only selection, using matured rows only.
+future_return_60_hit_rate	1.0	Share of matured bucket rows with positive 60-day realized return.
+matured_60_count	10	Number of bucket rows with realized 60-day outcomes available.
+episode_future_return_60_avg	0.5784	Average 60-day realized return across non-overlap episodes.
+episode_future_return_60_ex_best_avg	0.4157	Episode average after dropping the single best 60-day episode.
+max_year_share	0.4286	Largest year concentration: 2025 with 9 rows.
+max_quarter_share	0.4286	Largest quarter concentration: 2025Q4 with 9 rows.
+above_200dma_share	0.6667	Share of bucket rows above the 200-day moving average.
+slope_60_positive_share	0.9048	Share of bucket rows with positive 60-day slope.
+shadow_gap_median	-0.002481	Median challenger margin versus its own execution cutoff.
+shadow_near_cutoff_share_lt_0_005	0.9524	Share of bucket rows where shadow missed by less than 0.5 percentage points of probability.

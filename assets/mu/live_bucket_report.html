@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MU Live Bucket Monitor</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f6f1e8;
+      color: #1e2530;
+    }
+    .hero {
+      margin-bottom: 22px;
+      padding: 18px 20px;
+      background: #fffdf8;
+      border-left: 6px solid #9a6237;
+    }
+    .hero p {
+      margin: 8px 0 0;
+      line-height: 1.5;
+      color: #5c6879;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: #fffdf8;
+      border: 1px solid #e7dcc9;
+      padding: 14px;
+    }
+    .card .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #5c6879;
+      margin-bottom: 6px;
+    }
+    .card .value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fffdf8;
+      border: 1px solid #e7dcc9;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e7dcc9;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f5ecdf;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #5c6879;
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>MU Live Bucket Monitor</h1>
+    <p>This is a low-risk monitor for <strong>live_selected_shadow_idle</strong>, one of the strongest current hold anchors for the live MU line. It is monitoring-only and does not imply a strategy switch.</p>
+    <p>Latest live-only anchor date: <strong>2026-01-16</strong>. Current verdict: <strong>hold_anchor_watch</strong>.</p>
+  </section>
+  <section class="grid">
+    <div class="card"><div class="label">Bucket Rows</div><div class="value">21</div></div>
+    <div class="card"><div class="label">60d Episodes</div><div class="value">3</div></div>
+    <div class="card"><div class="label">60d Avg</div><div class="value">0.5241</div></div>
+    <div class="card"><div class="label">60d Hit Rate</div><div class="value">1.0</div></div>
+    <div class="card"><div class="label">Ex-Best Episode Avg</div><div class="value">0.4157</div></div>
+    <div class="card"><div class="label">Bullish Pocket Share</div><div class="value">0.6667</div></div>
+  </section>
+  <section>
+    <h2>Recent Live-Only Anchor Rows</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Pocket</th>
+          <th>Live</th>
+          <th>Live Gap</th>
+          <th>Shadow</th>
+          <th>Shadow Gap</th>
+          <th>20d</th>
+          <th>60d</th>
+          <th>Gap Spread</th>
+        </tr>
+      </thead>
+      <tbody><tr><td>2026-01-16</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0788</td><td>no_entry</td><td>-0.0002</td><td>nan</td><td>nan</td><td>0.0790</td></tr><tr><td>2026-01-12</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0970</td><td>no_entry</td><td>-0.0011</td><td>nan</td><td>nan</td><td>0.0982</td></tr><tr><td>2025-12-24</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0674</td><td>no_entry</td><td>-0.0005</td><td>nan</td><td>nan</td><td>0.0680</td></tr><tr><td>2025-12-02</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0219</td><td>no_entry</td><td>-0.0035</td><td>0.4118752228784093</td><td>nan</td><td>0.0254</td></tr><tr><td>2025-12-01</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0269</td><td>no_entry</td><td>-0.0023</td><td>0.4383680672884278</td><td>nan</td><td>0.0291</td></tr><tr><td>2025-11-28</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0271</td><td>no_entry</td><td>-0.0025</td><td>0.23744084138079402</td><td>nan</td><td>0.0296</td></tr><tr><td>2025-11-25</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0440</td><td>no_entry</td><td>-0.0014</td><td>0.27680040188115385</td><td>nan</td><td>0.0455</td></tr><tr><td>2025-11-21</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0538</td><td>no_entry</td><td>-0.0018</td><td>0.3337995025827434</td><td>nan</td><td>0.0556</td></tr><tr><td>2025-11-20</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>0.0869</td><td>no_entry</td><td>-0.0030</td><td>0.3205543024072772</td><td>nan</td><td>0.0899</td></tr><tr><td>2025-11-13</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0773</td><td>no_entry</td><td>-0.0025</td><td>0.017683066028152394</td><td>nan</td><td>0.0798</td></tr><tr><td>2025-11-07</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0693</td><td>no_entry</td><td>-0.0010</td><td>0.037827841582317</td><td>nan</td><td>0.0703</td></tr><tr><td>2016-07-05</td><td>outside_bullish_pocket</td><td>weak_bullish</td><td>0.0095</td><td>no_entry</td><td>-0.0046</td><td>0.17800167193282812</td><td>0.5314861464991103</td><td>0.0141</td></tr><tr><td>2016-07-01</td><td>outside_bullish_pocket</td><td>weak_bullish</td><td>0.0037</td><td>no_entry</td><td>-0.0041</td><td>0.08080001831054684</td><td>0.4480000305175782</td><td>0.0079</td></tr><tr><td>2016-06-29</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0081</td><td>no_entry</td><td>-0.0023</td><td>0.028051618726635752</td><td>0.3396512993505687</td><td>0.0104</td></tr><tr><td>2016-06-27</td><td>outside_bullish_pocket</td><td>weak_bullish</td><td>0.0000</td><td>no_entry</td><td>-0.0044</td><td>0.12919059170230018</td><td>0.406377874630266</td><td>0.0045</td></tr><tr><td>2011-11-29</td><td>outside_bullish_pocket</td><td>weak_bullish</td><td>0.0490</td><td>no_entry</td><td>-0.0000</td><td>0.09397167063030509</td><td>0.5195035279609623</td><td>0.0490</td></tr><tr><td>2011-11-23</td><td>outside_bullish_pocket</td><td>weak_bullish</td><td>0.0477</td><td>no_entry</td><td>-0.0029</td><td>0.1225919097353112</td><td>0.5464097836629076</td><td>0.0505</td></tr><tr><td>2011-11-15</td><td>outside_bullish_pocket</td><td>weak_bullish</td><td>0.0014</td><td>no_entry</td><td>-0.0007</td><td>-0.001831543738455732</td><td>0.48168499927950426</td><td>0.0021</td></tr><tr><td>2011-10-03</td><td>outside_bullish_pocket</td><td>weak_bullish</td><td>0.0002</td><td>no_entry</td><td>-0.0068</td><td>0.29099312958033474</td><td>0.42494230600656246</td><td>0.0070</td></tr><tr><td>2009-05-19</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>0.0139</td><td>no_entry</td><td>-0.0031</td><td>0.09278356596924242</td><td>0.6391752506369217</td><td>0.0170</td></tr></tbody>
+    </table>
+  </section>
+</body>
+</html>
