@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-base_research	research_backlog	research_primary	True	research_only	0			False			Base research asset with no follow-up operating rounds yet.
+tsmc_tw_threshold_live	binary_operator	primary	True	active	56	2026-04-17	0.4948	True	0.484	2026-04-17	Threshold-selected live monitoring line using logistic; treats probability above cutoff as selected even when the buy-point overlay is blocking.

@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-base_research	research_backlog	research_primary	True	research_only	0			False			Base research asset with no follow-up operating rounds yet.
+vrt_watchlist_only	binary_operator	watchlist_only	True	active	33	2026-04-17	0.5005	False	0.3	2026-04-17	Watchlist-only line using logistic; keep top_20pct as context and wait for a stronger dedicated live rule.

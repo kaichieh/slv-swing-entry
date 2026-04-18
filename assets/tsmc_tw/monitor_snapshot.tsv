@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-tsmc_tw	TSMC	base_research	research_backlog	research_primary	research_only	research_only	0			False				Research-only line; no live operating action.
+tsmc_tw	TSMC	tsmc_tw_threshold_live	binary_operator	primary	active	selected_now	56	2026-04-17	0.4948	True	0.484	2026-04-17	0	Preferred line is currently selected.

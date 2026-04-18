@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-vrt	VRT	base_research	research_backlog	research_primary	research_only	research_only	0			False				Research-only line; no live operating action.
+vrt	VRT	vrt_watchlist_only	binary_operator	watchlist_only	active	watchlist_wait	33	2026-04-17	0.5005	False	0.3	2026-04-17	0	Preferred line is valid but currently waiting below cutoff.

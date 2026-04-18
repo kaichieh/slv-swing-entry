@@ -845,6 +845,120 @@ def build_slv(asset_dir: Path) -> pd.DataFrame:
 BUILDERS["slv"] = build_slv
 
 
+def build_generic_live_status(asset_key: str, line_id: str | None = None) -> pd.DataFrame:
+    latest_prediction_path = ac.get_latest_prediction_path(asset_key)
+    if not latest_prediction_path.exists():
+        raise FileNotFoundError(f"Missing latest prediction file for {asset_key}: {latest_prediction_path}")
+    payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+    signal_rows = read_signal_rows_from_cache(latest_prediction_path.parent, asset_key, 60)
+    validate_latest_signal_cache(payload, signal_rows, asset_key)
+    selected_rows = signal_rows.loc[signal_rows["signal"].astype(str) != "no_entry"]
+    recent_selected_count = int(len(selected_rows))
+    signal_summary = cast(dict[str, object], payload["signal_summary"])
+    signal = str(signal_summary["signal"])
+    preferred_line = line_id or f"{asset_key}_generic_live"
+    model_family = str(cast(dict[str, object], payload.get("model_summary", {})).get("model_family", "model")).strip() or "model"
+    execution_rule = str(signal_summary.get("execution_rule", "")).strip() or "threshold"
+    return pd.DataFrame(
+        [
+            {
+                "line_id": preferred_line,
+                "lane_type": "binary_operator",
+                "role": "primary",
+                "preferred": True,
+                "status": "active" if signal != "no_entry" else "inactive",
+                "recent_selected_count": recent_selected_count,
+                "latest_date": str(payload["latest_raw_date"]),
+                "latest_value": float(cast(float | int | str, signal_summary["predicted_probability"])),
+                "latest_selected": signal != "no_entry",
+                "cutoff": float(cast(float | int | str, signal_summary["decision_threshold"])),
+                "last_selected_date": fmt_date(selected_rows.iloc[-1]["date"]) if not selected_rows.empty else "",
+                "usage_note": f"Generic live monitoring line using {model_family} with {execution_rule}.",
+            }
+        ]
+    )
+
+
+def build_watchlist_only_live_status(asset_key: str) -> pd.DataFrame:
+    latest_prediction_path = ac.get_latest_prediction_path(asset_key)
+    if not latest_prediction_path.exists():
+        raise FileNotFoundError(f"Missing latest prediction file for {asset_key}: {latest_prediction_path}")
+    payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+    signal_rows = read_signal_rows_from_cache(latest_prediction_path.parent, asset_key, 60)
+    validate_latest_signal_cache(payload, signal_rows, asset_key)
+    selected_rows = signal_rows.loc[signal_rows["signal"].astype(str) != "no_entry"]
+    signal_summary = cast(dict[str, object], payload["signal_summary"])
+    model_summary = cast(dict[str, object], payload.get("model_summary", {}))
+    buy_point_summary = cast(dict[str, object], payload.get("buy_point_summary", {}))
+    latest_selected = False
+    recent_selected_count = int(len(selected_rows))
+    model_family = str(model_summary.get("model_family", "model")).strip() or "model"
+    reference_rule = str(model_summary.get("reference_percentile_rule", "")).strip() or "reference_rule"
+    latest_value = float(cast(float | int | str, signal_summary["predicted_probability"]))
+    cutoff = float(cast(float | int | str, signal_summary["decision_threshold"]))
+    buy_point_ok = bool(buy_point_summary.get("buy_point_ok", False))
+    action_note = (
+        f"Watchlist-only line using {model_family}; keep {reference_rule} as context and wait for a stronger dedicated live rule."
+    )
+    status = "active" if latest_value >= cutoff and not buy_point_ok else "inactive"
+    return pd.DataFrame(
+        [
+            {
+                "line_id": f"{asset_key}_watchlist_only",
+                "lane_type": "binary_operator",
+                "role": "watchlist_only",
+                "preferred": True,
+                "status": status,
+                "recent_selected_count": recent_selected_count,
+                "latest_date": str(payload["latest_raw_date"]),
+                "latest_value": latest_value,
+                "latest_selected": latest_selected,
+                "cutoff": cutoff,
+                "last_selected_date": fmt_date(selected_rows.iloc[-1]["date"]) if not selected_rows.empty else "",
+                "usage_note": action_note,
+            }
+        ]
+    )
+
+
+def build_threshold_selected_status(asset_key: str, line_id: str) -> pd.DataFrame:
+    latest_prediction_path = ac.get_latest_prediction_path(asset_key)
+    if not latest_prediction_path.exists():
+        raise FileNotFoundError(f"Missing latest prediction file for {asset_key}: {latest_prediction_path}")
+    payload = json.loads(latest_prediction_path.read_text(encoding="utf-8"))
+    signal_rows = read_signal_rows_from_cache(latest_prediction_path.parent, asset_key, 60)
+    validate_latest_signal_cache(payload, signal_rows, asset_key)
+    signal_summary = cast(dict[str, object], payload["signal_summary"])
+    latest_value = float(cast(float | int | str, signal_summary["predicted_probability"]))
+    cutoff = float(cast(float | int | str, signal_summary["decision_threshold"]))
+    latest_selected = latest_value >= cutoff
+    selected_rows = signal_rows.loc[signal_rows["probability"].astype(float) >= cutoff]
+    model_family = str(cast(dict[str, object], payload.get("model_summary", {})).get("model_family", "model")).strip() or "model"
+    return pd.DataFrame(
+        [
+            {
+                "line_id": line_id,
+                "lane_type": "binary_operator",
+                "role": "primary",
+                "preferred": True,
+                "status": "active" if latest_selected else "inactive",
+                "recent_selected_count": int(len(selected_rows)),
+                "latest_date": str(payload["latest_raw_date"]),
+                "latest_value": latest_value,
+                "latest_selected": latest_selected,
+                "cutoff": cutoff,
+                "last_selected_date": fmt_date(selected_rows.iloc[-1]["date"]) if not selected_rows.empty else "",
+                "usage_note": f"Threshold-selected live monitoring line using {model_family}; treats probability above cutoff as selected even when the buy-point overlay is blocking.",
+            }
+        ]
+    )
+
+
+BUILDERS["tsmc_tw"] = lambda _asset_dir: build_threshold_selected_status("tsmc_tw", "tsmc_tw_threshold_live")
+for _generic_asset_key in ("vrt", "leu"):
+    BUILDERS[_generic_asset_key] = (lambda asset_key: (lambda _asset_dir: build_watchlist_only_live_status(asset_key)))(_generic_asset_key)
+
+
 def build_base_status(asset_dir: Path) -> pd.DataFrame:
     results_path = asset_dir / "results.tsv"
     latest_value = None
