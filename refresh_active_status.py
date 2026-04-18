@@ -386,7 +386,7 @@ def build_mu(asset_dir: Path) -> pd.DataFrame:
                 "latest_selected": False,
                 "cutoff": None,
                 "last_selected_date": "",
-                "usage_note": "Research-only MU sidecar: tb20 plus vol_ratio_20_120 with top 15% or fixed 0.510 remains the strongest historical execution overlay, but it is not the default live scorer yet.",
+                "usage_note": "Research-only MU sidecar: tb20 plus vol_ratio_20_120 with top 11.5% is now the lead challenger execution overlay, but it is not the default live scorer yet.",
             },
         ]
     )

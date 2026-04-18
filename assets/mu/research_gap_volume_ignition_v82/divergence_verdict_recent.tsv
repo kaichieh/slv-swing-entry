@@ -1,14 +1,10 @@
 date	promotion_bucket	comparison_owner	divergence_case	comparison_state	bullish_pocket	bullish_pocket_confirmed	bullish_pocket_label	live_signal	shadow_signal	future_return_20d	future_return_60d	matured_20d	matured_60d	promotion_verdict	verdict_confidence
-2026-03-05	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry	-0.07759727617636603		True	False	supports_live	case_level
-2026-03-06	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry	0.020145887708824528		True	False	supports_live	case_level
-2026-03-09	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry	-0.030155195035163618		True	False	supports_live	case_level
-2026-03-11	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry	0.006735310869079969		True	False	supports_live	case_level
 2026-03-12	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry	0.03759711361761542		True	False	supports_live	case_level
 2026-03-13	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry	0.0010090645363014517		True	False	supports_live	case_level
-2026-03-16	shadow_blocked_live_selected	live	shadow_blocked_live_selected	selected_blocked	True	True	above_200dma_and_slope_60_positive	bullish	no_entry	0.054006375120865036		True	False	supports_live	case_level
-2026-03-17	shadow_blocked_live_selected	live	shadow_blocked_live_selected	selected_blocked	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry	-0.011826098521098172		True	False	supports_live	case_level
+2026-03-16	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry	0.054006375120865036		True	False	supports_live	case_level
+2026-03-17	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry	-0.011826098521098172		True	False	supports_live	case_level
 2026-03-18	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry	-0.009745955196603484		True	False	supports_live	case_level
-2026-03-19	shadow_blocked_live_selected	live	shadow_blocked_live_selected	selected_blocked	True	True	above_200dma_and_slope_60_positive	bullish	no_entry	0.02430958331109445		True	False	supports_live	case_level
+2026-03-19	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry	0.02430958331109445		True	False	supports_live	case_level
 2026-03-20	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
 2026-03-23	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	strong_bullish	no_entry			False	False	supports_live	case_level
 2026-03-24	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry			False	False	supports_live	case_level
@@ -17,10 +13,14 @@ date	promotion_bucket	comparison_owner	divergence_case	comparison_state	bullish_
 2026-03-27	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry			False	False	supports_live	case_level
 2026-03-30	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry			False	False	supports_live	case_level
 2026-03-31	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry			False	False	supports_live	case_level
+2026-04-01	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	strong_bullish	no_entry			False	False	supports_live	case_level
 2026-04-02	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	strong_bullish	no_entry			False	False	supports_live	case_level
+2026-04-06	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	strong_bullish	no_entry			False	False	supports_live	case_level
 2026-04-07	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
-2026-04-09	shadow_blocked_live_selected	live	shadow_blocked_live_selected	selected_blocked	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
-2026-04-10	shadow_blocked_live_selected	live	shadow_blocked_live_selected	selected_blocked	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry			False	False	supports_live	case_level
+2026-04-08	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
+2026-04-09	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
+2026-04-10	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry			False	False	supports_live	case_level
 2026-04-13	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	weak_bullish	no_entry			False	False	supports_live	case_level
-2026-04-15	shadow_blocked_live_selected	live	shadow_blocked_live_selected	selected_blocked	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
-2026-04-16	shadow_blocked_live_selected	live	shadow_blocked_live_selected	selected_blocked	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
+2026-04-14	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
+2026-04-15	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level
+2026-04-16	live_selected_shadow_idle	live	live_selected_shadow_idle	selected_idle	True	True	above_200dma_and_slope_60_positive	bullish	no_entry			False	False	supports_live	case_level

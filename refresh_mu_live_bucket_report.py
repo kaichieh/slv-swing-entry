@@ -15,7 +15,7 @@ from prepare import DatasetSplit, FEATURE_COLUMNS, TARGET_COLUMN, apply_label_mo
 ASSET_KEY = "mu"
 LIVE_LABEL_MODE = "future-return-top-bottom-30pct"
 SHADOW_LABEL_MODE = "future-return-top-bottom-20pct"
-EXECUTION_RULE = "top_12_5pct"
+EXECUTION_RULE = "top_11_5pct"
 EXTRA_FEATURES = ("ret_60", "vol_ratio_20_120")
 CASE_NAME = "live_selected_shadow_idle"
 RECENT_LIMIT = 20

@@ -1,0 +1,3 @@
+stream	line_id	status	signal	model_ready	buy_point_ok	probability	cutoff	confidence_gap	latest_date	decision_note
+live	mu_tb30_ret_60_vol_ratio_20_120_top12_5	blocked	no_entry	True	False	0.5176	0.5077	0.0099	2026-04-17	Official live line is above threshold but still blocked by the buy-point overlay.
+shadow	mu_gap_volume_ignition_v82	idle	no_entry	False	False	0.2	1.0	-0.8	2026-04-17	Research-only exact v82 event rule. Trigger only when overnight_gap>=0.5%, volume_vs_20>=0.50, range_z_20>=0.50, intraday_return>=0, and breakout_20==1. Current divergence: live_model_ready_shadow_not_ready. Regime lens: above_200dma_and_slope_60_positive.

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MU Gap Volume Ignition v82 Divergence Verdict</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f6f1e8;
+      color: #1e2530;
+    }
+    .callout {
+      margin-bottom: 24px;
+      padding: 16px 18px;
+      background: #fffdf8;
+      border-left: 6px solid #9a6237;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      background: #fffdf8;
+      border: 1px solid #e7dcc9;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e7dcc9;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f5ecdf;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #5c6879;
+    }
+  </style>
+</head>
+<body>
+  <h1>MU Gap Volume Ignition v82 Divergence Verdict</h1>
+  <div class="callout">
+    Promotion-oriented monitoring only. This keeps the exact v82 event rule separate from live while we judge whether its directional divergences actually mature better than the official MU line.
+  </div>
+  <h2>Verdict Summary</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Bucket</th>
+        <th>Owner</th>
+        <th>Verdict</th>
+        <th>Confidence</th>
+        <th>Matured 60d</th>
+        <th>Avg 60d</th>
+        <th>Hit 60d</th>
+        <th>Bullish Pocket Matured</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>both_selected</td><td>shared</td><td>inconclusive</td><td>context_only</td><td>15</td><td>0.1659</td><td>0.8</td><td>14</td><td>Shared-conviction or shared-idle bucket. This is context, not promotion evidence.</td></tr><tr><td>live_selected_shadow_idle</td><td>live</td><td>supports_live</td><td>moderate</td><td>490</td><td>0.1317</td><td>0.5837</td><td>259</td><td>When live diverges in its own favor, realized outcomes still back the official live line. 259 matured rows happened inside the bullish pocket.</td></tr><tr><td>live_blocked_shadow_selected</td><td>challenger</td><td>supports_challenger</td><td>low</td><td>5</td><td>0.2462</td><td>1.0</td><td>4</td><td>Challenger-only divergence is working well enough to add promotion pressure. 4 matured rows happened inside the bullish pocket.</td></tr><tr><td>both_idle</td><td>shared</td><td>inconclusive</td><td>context_only</td><td>382</td><td>0.126</td><td>0.6675</td><td>203</td><td>Shared-conviction or shared-idle bucket. This is context, not promotion evidence.</td></tr><tr><td>live_model_ready_shadow_not_ready</td><td>shared</td><td>inconclusive</td><td>context_only</td><td>308</td><td>0.0761</td><td>0.5649</td><td>222</td><td>Shared-conviction or shared-idle bucket. This is context, not promotion evidence.</td></tr><tr><td>promotion_case_rollup</td><td>aggregate</td><td>supports_challenger</td><td>low</td><td>495</td><td>-0.1145</td><td>-0.4163</td><td>263</td><td>live_cases=490, challenger_cases=5, live_avg=0.1317, challenger_avg=0.2462, live_hit=0.5837, challenger_hit=1.0000, live_bullish_pocket_cases=259, challenger_bullish_pocket_cases=4. Directional sample is still thin, so treat this as challenger pressure rather than a switch-ready call.</td></tr></tbody>
+  </table>
+  <h2>Recent Directional Divergences</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Bucket</th>
+        <th>Owner</th>
+        <th>Pocket</th>
+        <th>20d</th>
+        <th>60d</th>
+        <th>Verdict</th>
+        <th>Confidence</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>2026-04-16</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-15</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-14</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-13</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-10</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-09</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-08</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-07</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-06</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-02</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-04-01</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-31</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-30</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-27</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-26</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-25</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-24</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-23</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-20</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>nan</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-19</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>0.02430958331109445</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-18</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>-0.009745955196603484</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-17</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>-0.011826098521098172</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-16</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>0.054006375120865036</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-13</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>0.0010090645363014517</td><td>nan</td><td>supports_live</td><td>case_level</td></tr><tr><td>2026-03-12</td><td>live_selected_shadow_idle</td><td>live</td><td>above_200dma_and_slope_60_positive</td><td>0.03759711361761542</td><td>nan</td><td>supports_live</td><td>case_level</td></tr></tbody>
+  </table>
+</body>
+</html>

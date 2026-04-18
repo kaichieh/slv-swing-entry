@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MU Gap Volume Ignition v82 Live Bucket Monitor</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f6f1e8;
+      color: #1e2530;
+    }
+    .hero {
+      margin-bottom: 22px;
+      padding: 18px 20px;
+      background: #fffdf8;
+      border-left: 6px solid #9a6237;
+    }
+    .hero p {
+      margin: 8px 0 0;
+      line-height: 1.5;
+      color: #5c6879;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: #fffdf8;
+      border: 1px solid #e7dcc9;
+      padding: 14px;
+    }
+    .card .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #5c6879;
+      margin-bottom: 6px;
+    }
+    .card .value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fffdf8;
+      border: 1px solid #e7dcc9;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e7dcc9;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f5ecdf;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #5c6879;
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>MU Gap Volume Ignition v82 Live Bucket Monitor</h1>
+    <p>This is the live-supporting hold-anchor bucket for the exact v82 sidecar: dates where live selected while the v82 ignition rule stayed idle.</p>
+    <p>Latest live-only anchor date: <strong>2026-04-16</strong>. Current verdict: <strong>hold_anchor_watch</strong>.</p>
+  </section>
+  <section class="grid">
+    <div class="card"><div class="label">Bucket Rows</div><div class="value">548</div></div>
+    <div class="card"><div class="label">60d Episodes</div><div class="value">25</div></div>
+    <div class="card"><div class="label">60d Avg</div><div class="value">0.1317</div></div>
+    <div class="card"><div class="label">60d Hit Rate</div><div class="value">0.5837</div></div>
+    <div class="card"><div class="label">4 of 5 Share</div><div class="value">0.0456</div></div>
+    <div class="card"><div class="label">Pocket Share</div><div class="value">0.5785</div></div>
+  </section>
+  <section>
+    <h2>Recent Live-Only Anchor Rows</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Pocket</th>
+          <th>Live</th>
+          <th>v82</th>
+          <th>Pass Count</th>
+          <th>Gap</th>
+          <th>Volume</th>
+          <th>20d</th>
+          <th>60d</th>
+          <th>Live Gap</th>
+        </tr>
+      </thead>
+      <tbody><tr><td>2026-04-16</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>1/5</td><td>-0.0072</td><td>-0.3542</td><td>nan</td><td>nan</td><td>0.0679</td></tr><tr><td>2026-04-15</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>0/5</td><td>-0.0172</td><td>-0.2432</td><td>nan</td><td>nan</td><td>0.0801</td></tr><tr><td>2026-04-14</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>4/5</td><td>0.0183</td><td>-0.0175</td><td>nan</td><td>nan</td><td>0.0958</td></tr><tr><td>2026-04-13</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>1/5</td><td>-0.0098</td><td>-0.3016</td><td>nan</td><td>nan</td><td>0.0637</td></tr><tr><td>2026-04-10</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>1/5</td><td>-0.0029</td><td>-0.3151</td><td>nan</td><td>nan</td><td>0.064</td></tr><tr><td>2026-04-09</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>1/5</td><td>0.0022</td><td>-0.1849</td><td>nan</td><td>nan</td><td>0.0756</td></tr><tr><td>2026-04-08</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>1/5</td><td>0.0994</td><td>-0.0577</td><td>nan</td><td>nan</td><td>0.0656</td></tr><tr><td>2026-04-07</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>1/5</td><td>-0.0096</td><td>-0.2183</td><td>nan</td><td>nan</td><td>0.0466</td></tr><tr><td>2026-04-06</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>no_entry</td><td>2/5</td><td>0.0206</td><td>-0.1915</td><td>nan</td><td>nan</td><td>0.0733</td></tr><tr><td>2026-04-02</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>no_entry</td><td>1/5</td><td>-0.0721</td><td>0.0122</td><td>nan</td><td>nan</td><td>0.0696</td></tr><tr><td>2026-04-01</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>no_entry</td><td>3/5</td><td>0.0328</td><td>0.4946</td><td>nan</td><td>nan</td><td>0.0925</td></tr><tr><td>2026-03-31</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>3/5</td><td>-0.0004</td><td>0.5416</td><td>nan</td><td>nan</td><td>0.0317</td></tr><tr><td>2026-03-30</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>3/5</td><td>0.0152</td><td>0.6056</td><td>nan</td><td>nan</td><td>0.0294</td></tr><tr><td>2026-03-27</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>1/5</td><td>0.0124</td><td>0.0459</td><td>nan</td><td>nan</td><td>0.0141</td></tr><tr><td>2026-03-26</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>1/5</td><td>-0.0316</td><td>0.2697</td><td>nan</td><td>nan</td><td>0.0141</td></tr><tr><td>2026-03-25</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>0/5</td><td>-0.0317</td><td>0.3179</td><td>nan</td><td>nan</td><td>0.008</td></tr><tr><td>2026-03-24</td><td>above_200dma_and_slope_60_positive</td><td>weak_bullish</td><td>no_entry</td><td>0/5</td><td>-0.0076</td><td>0.1083</td><td>nan</td><td>nan</td><td>0.0146</td></tr><tr><td>2026-03-23</td><td>above_200dma_and_slope_60_positive</td><td>strong_bullish</td><td>no_entry</td><td>2/5</td><td>0.0077</td><td>0.3701</td><td>nan</td><td>nan</td><td>0.0739</td></tr><tr><td>2026-03-20</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>2/5</td><td>-0.0008</td><td>0.6667</td><td>nan</td><td>nan</td><td>0.0529</td></tr><tr><td>2026-03-19</td><td>above_200dma_and_slope_60_positive</td><td>bullish</td><td>no_entry</td><td>3/5</td><td>-0.0796</td><td>1.026</td><td>0.02430958331109445</td><td>nan</td><td>0.0753</td></tr></tbody>
+    </table>
+  </section>
+</body>
+</html>
