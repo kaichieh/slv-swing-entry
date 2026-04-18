@@ -799,6 +799,7 @@ def render_detail_color_legend() -> str:
           <span class="chip chip-red">紅 = 偏保守 / 風險</span>
           <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
         </div>
+        <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     """
 
 
@@ -1270,6 +1271,12 @@ def build_html(board: pd.DataFrame) -> str:
       letter-spacing: 0.08em;
       margin-right: 4px;
     }}
+    .detail-legend-note {{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: -2px;
+    }}
     .detail-grid {{
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1370,7 +1377,7 @@ def build_html(board: pd.DataFrame) -> str:
         <div class="board-head">
           <div>
             <div class="board-title">Board</div>
-            <div class="board-sub">technical summary 放在主表快速掃描，完整的 A~L 判讀與關鍵價位則放在右側 detail panel。</div>
+            <div class="board-sub">technical summary 放在主表快速掃描，完整的 A~L 判讀與關鍵價位則放在右側 detail panel。Action: 等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
           </div>
         </div>
         <table>
