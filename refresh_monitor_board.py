@@ -678,11 +678,12 @@ def render_table_row(row: pd.Series) -> str:
     latest_value = "n/a" if pd.isna(row.get("latest_value")) else f"{float(row['latest_value']):.4f}"
     symbol_color = escape(str(row.get("signal_color", "#9ca3af")))
     asset_key = escape(str(row.get("asset_key", "")))
+    chart_href = escape(str(row.get("chart_href", "#")))
     return f"""
       <tr>
         <td>
           <div class="symbol">
-            <strong style="color:{symbol_color}">{escape(str(row["symbol"]))}</strong>
+            <a class="symbol-link" href="{chart_href}"><strong style="color:{symbol_color}">{escape(str(row["symbol"]))}</strong></a>
             <div class="mini">{escape(str(row["display_latest_date"]))} · {escape(str(row["preferred_line"]))}</div>
             <div class="mini">latest {escape(latest_value)}</div>
           </div>
@@ -696,6 +697,37 @@ def render_table_row(row: pd.Series) -> str:
         <td class="summary">{escape(str(row.get("technical_summary", "n/a")))}</td>
         <td><div class="level">{escape(str(row.get("technical_key_level", "n/a")))}</div></td>
       </tr>
+    """
+
+
+def render_detail_metric(label: str, value: str) -> str:
+    return f"""
+          <div class="detail-metric">
+            <div class="metric-label">{escape(label)}</div>
+            <div class="metric-value">{escape(value or "n/a")}</div>
+          </div>
+    """
+
+
+def render_levels_detail(reading: dict[str, Any]) -> str:
+    levels = _technical_levels(reading)
+    if not levels:
+        return render_detail_metric("E Levels", "n/a")
+    items: list[str] = []
+    for level in levels:
+        level_type = TECHNICAL_ENUM_ZH["E_levels.type"].get(str(level.get("type", "")), str(level.get("type", "n/a")))
+        strength = TECHNICAL_ENUM_ZH["E_levels.strength"].get(str(level.get("strength", "")), str(level.get("strength", "n/a")))
+        status = TECHNICAL_ENUM_ZH["E_levels.status"].get(str(level.get("status", "")), str(level.get("status", "n/a")))
+        level_value = level.get("level")
+        value_text = f"{float(level_value):.2f}" if isinstance(level_value, (int, float)) else str(level_value or "n/a")
+        items.append(f"<li><strong>{escape(level_type)}</strong> {escape(value_text)} <span>{escape(strength)} / {escape(status)}</span></li>")
+    return f"""
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              {''.join(items)}
+            </ul>
+          </div>
     """
 
 
@@ -734,6 +766,99 @@ def render_detail_card(row: pd.Series) -> str:
           <div class="detail-box">
             <div class="label">D / H / I</div>
             <div class="value">{escape(_technical_label(reading, "D_kd_state"))} · {escape(_technical_label(reading, "H_macd_state"))} · {escape(_technical_label(reading, "I_divergence_state"))}</div>
+          </div>
+          <div class="detail-box">
+            <div class="label">Key Levels</div>
+            <div class="value">{escape(levels)}</div>
+          </div>
+        </div>
+
+        <ul class="detail-list">
+          <li><strong>Action note:</strong> {escape(str(row.get("action_note", "n/a")))}</li>
+          <li><strong>Pattern:</strong> {escape(_technical_label(reading, "J_candlestick_pattern"))}</li>
+          <li><strong>Chart:</strong> <a href="{escape(str(row["chart_href"]))}">{escape(str(row["chart_href"]))}</a></li>
+        </ul>
+      </aside>
+    """
+
+
+def render_detail_metric(label: str, value: str) -> str:
+    return f"""
+          <div class="detail-metric">
+            <div class="metric-label">{escape(label)}</div>
+            <div class="metric-value">{escape(value or "n/a")}</div>
+          </div>
+    """
+
+
+def render_levels_detail(reading: dict[str, Any]) -> str:
+    levels = _technical_levels(reading)
+    if not levels:
+        return render_detail_metric("E Levels", "n/a")
+    items: list[str] = []
+    for level in levels:
+        level_type = TECHNICAL_ENUM_ZH["E_levels.type"].get(str(level.get("type", "")), str(level.get("type", "n/a")))
+        strength = TECHNICAL_ENUM_ZH["E_levels.strength"].get(str(level.get("strength", "")), str(level.get("strength", "n/a")))
+        status = TECHNICAL_ENUM_ZH["E_levels.status"].get(str(level.get("status", "")), str(level.get("status", "n/a")))
+        level_value = level.get("level")
+        value_text = f"{float(level_value):.2f}" if isinstance(level_value, (int, float)) else str(level_value or "n/a")
+        items.append(
+            f"<li><strong>{escape(level_type)}</strong> {escape(value_text)} <span>{escape(strength)} / {escape(status)}</span></li>"
+        )
+    return f"""
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              {''.join(items)}
+            </ul>
+          </div>
+    """
+
+
+def render_detail_card(row: pd.Series) -> str:
+    reading = cast(dict[str, Any], row.get("detail_reading", {}))
+    latest_close = cast(dict[str, object], reading.get("supporting_metrics", {})).get("latest_close", "n/a")
+    levels = str(row.get("technical_key_level", "n/a"))
+    status_chip = render_chip(
+        str(row.get("action", "n/a")).replace("_", " ").title(),
+        "chip-blue" if str(row.get("action")) == "selected_now" else "chip-amber",
+    )
+    return f"""
+      <aside class="detail-card">
+        <div class="detail-header">
+          <div>
+            <div class="eyebrow">Detail Card</div>
+            <div class="detail-symbol">{escape(str(row["symbol"]))}</div>
+            <div class="detail-price">Close {escape(str(latest_close))} · {escape(str(row["display_latest_date"]))}</div>
+          </div>
+          {status_chip}
+        </div>
+
+        <div class="detail-summary">
+          <strong>{escape(str(row["symbol"]))}</strong> · {escape(str(row.get("technical_summary", "n/a")))}
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="label">A to E</div>
+            {render_detail_metric("A Trend", str(row.get("technical_trend_zh", "n/a")))}
+            {render_detail_metric("B Price vs MA", _technical_label(reading, "B_price_vs_ma"))}
+            {render_detail_metric("C RSI", str(row.get("technical_rsi_zh", "n/a")))}
+            {render_detail_metric("D KD", _technical_label(reading, "D_kd_state"))}
+            {render_levels_detail(reading)}
+          </div>
+          <div class="detail-box">
+            <div class="label">F to I</div>
+            {render_detail_metric("F Volume", str(row.get("technical_volume_zh", "n/a")))}
+            {render_detail_metric("G MA Structure", _technical_label(reading, "G_ma_structure"))}
+            {render_detail_metric("H MACD", _technical_label(reading, "H_macd_state"))}
+            {render_detail_metric("I Divergence", _technical_label(reading, "I_divergence_state"))}
+          </div>
+          <div class="detail-box">
+            <div class="label">Action & Pattern</div>
+            {render_detail_metric("K Trade Action", str(row.get("technical_action_zh", "n/a")))}
+            {render_detail_metric("J Pattern", _technical_label(reading, "J_candlestick_pattern"))}
+            {render_detail_metric("L Price Volume", _technical_label(reading, "L_price_volume_divergence"))}
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
@@ -966,6 +1091,16 @@ def build_html(board: pd.DataFrame) -> str:
       flex-direction: column;
       gap: 6px;
     }}
+    .symbol-link {{
+      display: inline-flex;
+      width: fit-content;
+      text-decoration: none;
+    }}
+    .symbol-link:hover strong {{
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }}
     .symbol strong {{
       font-size: 22px;
       line-height: 1;
@@ -1052,6 +1187,42 @@ def build_html(board: pd.DataFrame) -> str:
       font-size: 16px;
       font-weight: 700;
       line-height: 1.4;
+    }}
+    .detail-metric {{
+      padding-top: 10px;
+      margin-top: 10px;
+      border-top: 1px solid rgba(223, 210, 188, 0.65);
+    }}
+    .detail-metric:first-of-type {{
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }}
+    .metric-label {{
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }}
+    .metric-value {{
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.45;
+    }}
+    .level-list {{
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }}
+    .level-list li {{
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.45;
+    }}
+    .level-list span {{
+      color: var(--muted);
     }}
     .detail-list {{
       display: grid;

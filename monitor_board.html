@@ -198,6 +198,16 @@
       flex-direction: column;
       gap: 6px;
     }
+    .symbol-link {
+      display: inline-flex;
+      width: fit-content;
+      text-decoration: none;
+    }
+    .symbol-link:hover strong {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }
     .symbol strong {
       font-size: 22px;
       line-height: 1;
@@ -284,6 +294,42 @@
       font-size: 16px;
       font-weight: 700;
       line-height: 1.4;
+    }
+    .detail-metric {
+      padding-top: 10px;
+      margin-top: 10px;
+      border-top: 1px solid rgba(223, 210, 188, 0.65);
+    }
+    .detail-metric:first-of-type {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+    .metric-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .metric-value {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .level-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+    .level-list li {
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .level-list span {
+      color: var(--muted);
     }
     .detail-list {
       display: grid;
@@ -380,7 +426,7 @@
       <tr>
         <td>
           <div class="symbol">
-            <strong style="color:#9ca3af">IWM</strong>
+            <a class="symbol-link" href=".cache/iwm-swing-entry/signal_chart.html"><strong style="color:#9ca3af">IWM</strong></a>
             <div class="mini">2026-04-17 · baseline_threshold</div>
             <div class="mini">latest 0.4731</div>
           </div>
@@ -399,7 +445,7 @@
       <tr>
         <td>
           <div class="symbol">
-            <strong style="color:#f59e0b">NVDA</strong>
+            <a class="symbol-link" href=".cache/nvda-swing-entry/signal_chart.html"><strong style="color:#f59e0b">NVDA</strong></a>
             <div class="mini">2026-04-17 · ret_60_sma_gap_60_atr_pct_20</div>
             <div class="mini">latest 0.5032</div>
           </div>
@@ -418,7 +464,7 @@
       <tr>
         <td>
           <div class="symbol">
-            <strong style="color:#9ca3af">GLD</strong>
+            <a class="symbol-link" href=".cache/gld-swing-entry/signal_chart.html"><strong style="color:#9ca3af">GLD</strong></a>
             <div class="mini">2026-04-17 · gld_current_live_mixed_live</div>
             <div class="mini">latest 0.4814</div>
           </div>
@@ -437,7 +483,7 @@
       <tr>
         <td>
           <div class="symbol">
-            <strong style="color:#9ca3af">SLV</strong>
+            <a class="symbol-link" href=".cache/slv-swing-entry/signal_chart.html"><strong style="color:#9ca3af">SLV</strong></a>
             <div class="mini">2026-04-17 · hard_gate_two_expert_gdx_live</div>
             <div class="mini">latest 0.2247</div>
           </div>
@@ -456,7 +502,7 @@
       <tr>
         <td>
           <div class="symbol">
-            <strong style="color:#9ca3af">TSLA</strong>
+            <a class="symbol-link" href=".cache/tsla-swing-entry/signal_chart.html"><strong style="color:#9ca3af">TSLA</strong></a>
             <div class="mini">2026-04-17 · xgboost_tb30_distance_live</div>
             <div class="mini">latest 0.3546</div>
           </div>
@@ -475,7 +521,7 @@
       <tr>
         <td>
           <div class="symbol">
-            <strong style="color:#9ca3af">SPY</strong>
+            <a class="symbol-link" href=".cache/spy-swing-entry/signal_chart.html"><strong style="color:#9ca3af">SPY</strong></a>
             <div class="mini">2026-04-17 · baseline_top10</div>
             <div class="mini">latest 0.3184</div>
           </div>
@@ -511,16 +557,87 @@
 
         <div class="detail-grid">
           <div class="detail-box">
-            <div class="label">A / C / K</div>
-            <div class="value">多頭 · 過熱 · 觀望</div>
+            <div class="label">A to E</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">A Trend</div>
+            <div class="metric-value">多頭</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">B Price vs MA</div>
+            <div class="metric-value">在均線上方</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">C RSI</div>
+            <div class="metric-value">過熱</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">D KD</div>
+            <div class="metric-value">死亡交叉</div>
+          </div>
+    
+            
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              <li><strong>支撐</strong> 238.69 <span>中 / 守住中</span></li><li><strong>支撐</strong> 255.39 <span>中 / 守住中</span></li><li><strong>壓力</strong> 277.63 <span>中 / 測試中</span></li>
+            </ul>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">F / G / L</div>
-            <div class="value">上漲縮量 · 均線多頭排列 · 偏空價量背離</div>
+            <div class="label">F to I</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">F Volume</div>
+            <div class="metric-value">上漲縮量</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">G MA Structure</div>
+            <div class="metric-value">均線多頭排列</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">H MACD</div>
+            <div class="metric-value">多方柱狀體擴大</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">I Divergence</div>
+            <div class="metric-value">無</div>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">D / H / I</div>
-            <div class="value">死亡交叉 · 多方柱狀體擴大 · 無</div>
+            <div class="label">Action & Pattern</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">K Trade Action</div>
+            <div class="metric-value">觀望</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">J Pattern</div>
+            <div class="metric-value">無明確型態</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">L Price Volume</div>
+            <div class="metric-value">偏空價量背離</div>
+          </div>
+    
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
@@ -554,16 +671,87 @@
 
         <div class="detail-grid">
           <div class="detail-box">
-            <div class="label">A / C / K</div>
-            <div class="value">多頭 · 過熱 · 觀望</div>
+            <div class="label">A to E</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">A Trend</div>
+            <div class="metric-value">多頭</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">B Price vs MA</div>
+            <div class="metric-value">在均線上方</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">C RSI</div>
+            <div class="metric-value">過熱</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">D KD</div>
+            <div class="metric-value">死亡交叉</div>
+          </div>
+    
+            
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              <li><strong>支撐</strong> 238.69 <span>中 / 守住中</span></li><li><strong>支撐</strong> 255.39 <span>中 / 守住中</span></li><li><strong>壓力</strong> 277.63 <span>中 / 測試中</span></li>
+            </ul>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">F / G / L</div>
-            <div class="value">上漲縮量 · 均線多頭排列 · 偏空價量背離</div>
+            <div class="label">F to I</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">F Volume</div>
+            <div class="metric-value">上漲縮量</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">G MA Structure</div>
+            <div class="metric-value">均線多頭排列</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">H MACD</div>
+            <div class="metric-value">多方柱狀體擴大</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">I Divergence</div>
+            <div class="metric-value">無</div>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">D / H / I</div>
-            <div class="value">死亡交叉 · 多方柱狀體擴大 · 無</div>
+            <div class="label">Action & Pattern</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">K Trade Action</div>
+            <div class="metric-value">觀望</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">J Pattern</div>
+            <div class="metric-value">無明確型態</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">L Price Volume</div>
+            <div class="metric-value">偏空價量背離</div>
+          </div>
+    
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
@@ -595,16 +783,87 @@
 
         <div class="detail-grid">
           <div class="detail-box">
-            <div class="label">A / C / K</div>
-            <div class="value">多頭 · 過熱 · 等回檔買進</div>
+            <div class="label">A to E</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">A Trend</div>
+            <div class="metric-value">多頭</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">B Price vs MA</div>
+            <div class="metric-value">在均線上方</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">C RSI</div>
+            <div class="metric-value">過熱</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">D KD</div>
+            <div class="metric-value">高檔鈝化</div>
+          </div>
+    
+            
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              <li><strong>支撐</strong> 164.27 <span>中 / 守住中</span></li><li><strong>支撐</strong> 181.38 <span>中 / 守住中</span></li><li><strong>壓力</strong> 201.68 <span>中 / 測試中</span></li>
+            </ul>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">F / G / L</div>
-            <div class="value">上漲縮量 · 均線多頭排列 · 偏空價量背離</div>
+            <div class="label">F to I</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">F Volume</div>
+            <div class="metric-value">上漲縮量</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">G MA Structure</div>
+            <div class="metric-value">均線多頭排列</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">H MACD</div>
+            <div class="metric-value">多方柱狀體縮小</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">I Divergence</div>
+            <div class="metric-value">無</div>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">D / H / I</div>
-            <div class="value">高檔鈝化 · 多方柱狀體縮小 · 無</div>
+            <div class="label">Action & Pattern</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">K Trade Action</div>
+            <div class="metric-value">等回檔買進</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">J Pattern</div>
+            <div class="metric-value">無明確型態</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">L Price Volume</div>
+            <div class="metric-value">偏空價量背離</div>
+          </div>
+    
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
@@ -636,16 +895,87 @@
 
         <div class="detail-grid">
           <div class="detail-box">
-            <div class="label">A / C / K</div>
-            <div class="value">震盪 · 過熱 · 觀望</div>
+            <div class="label">A to E</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">A Trend</div>
+            <div class="metric-value">震盪</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">B Price vs MA</div>
+            <div class="metric-value">在均線上方</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">C RSI</div>
+            <div class="metric-value">過熱</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">D KD</div>
+            <div class="metric-value">高檔鈝化</div>
+          </div>
+    
+            
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              <li><strong>支撐</strong> 399.20 <span>中 / 守住中</span></li><li><strong>支撐</strong> 427.09 <span>中 / 守住中</span></li><li><strong>支撐</strong> 451.86 <span>強 / 已跌破／已突破</span></li><li><strong>壓力</strong> 448.70 <span>中 / 測試中</span></li>
+            </ul>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">F / G / L</div>
-            <div class="value">上漲縮量 · 均線混合 · 偏空價量背離</div>
+            <div class="label">F to I</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">F Volume</div>
+            <div class="metric-value">上漲縮量</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">G MA Structure</div>
+            <div class="metric-value">均線混合</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">H MACD</div>
+            <div class="metric-value">多方柱狀體擴大</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">I Divergence</div>
+            <div class="metric-value">無</div>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">D / H / I</div>
-            <div class="value">高檔鈝化 · 多方柱狀體擴大 · 無</div>
+            <div class="label">Action & Pattern</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">K Trade Action</div>
+            <div class="metric-value">觀望</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">J Pattern</div>
+            <div class="metric-value">射擊之星</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">L Price Volume</div>
+            <div class="metric-value">偏空價量背離</div>
+          </div>
+    
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
@@ -677,16 +1007,87 @@
 
         <div class="detail-grid">
           <div class="detail-box">
-            <div class="label">A / C / K</div>
-            <div class="value">多頭反彈 · 過熱 · 觀望</div>
+            <div class="label">A to E</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">A Trend</div>
+            <div class="metric-value">多頭反彈</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">B Price vs MA</div>
+            <div class="metric-value">在均線上方</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">C RSI</div>
+            <div class="metric-value">過熱</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">D KD</div>
+            <div class="metric-value">死亡交叉</div>
+          </div>
+    
+            
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              <li><strong>支撐</strong> 60.37 <span>中 / 守住中</span></li><li><strong>支撐</strong> 66.81 <span>中 / 守住中</span></li><li><strong>支撐</strong> 74.46 <span>強 / 已跌破／已突破</span></li><li><strong>壓力</strong> 75.16 <span>中 / 測試中</span></li>
+            </ul>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">F / G / L</div>
-            <div class="value">上漲縮量 · 均線混合 · 偏空價量背離</div>
+            <div class="label">F to I</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">F Volume</div>
+            <div class="metric-value">上漲縮量</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">G MA Structure</div>
+            <div class="metric-value">均線混合</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">H MACD</div>
+            <div class="metric-value">多方柱狀體擴大</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">I Divergence</div>
+            <div class="metric-value">無</div>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">D / H / I</div>
-            <div class="value">死亡交叉 · 多方柱狀體擴大 · 無</div>
+            <div class="label">Action & Pattern</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">K Trade Action</div>
+            <div class="metric-value">觀望</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">J Pattern</div>
+            <div class="metric-value">十字線</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">L Price Volume</div>
+            <div class="metric-value">偏空價量背離</div>
+          </div>
+    
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
@@ -718,16 +1119,87 @@
 
         <div class="detail-grid">
           <div class="detail-box">
-            <div class="label">A / C / K</div>
-            <div class="value">多頭反彈 · 偏強 · 觀望</div>
+            <div class="label">A to E</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">A Trend</div>
+            <div class="metric-value">多頭反彈</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">B Price vs MA</div>
+            <div class="metric-value">在均線上方</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">C RSI</div>
+            <div class="metric-value">偏強</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">D KD</div>
+            <div class="metric-value">高檔過熱</div>
+          </div>
+    
+            
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              <li><strong>支撐</strong> 337.24 <span>中 / 守住中</span></li><li><strong>支撐</strong> 367.86 <span>中 / 守住中</span></li><li><strong>支撐</strong> 396.84 <span>強 / 測試中</span></li><li><strong>壓力</strong> 409.28 <span>中 / 測試中</span></li>
+            </ul>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">F / G / L</div>
-            <div class="value">上漲縮量 · 均線發散 · 偏空價量背離</div>
+            <div class="label">F to I</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">F Volume</div>
+            <div class="metric-value">上漲縮量</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">G MA Structure</div>
+            <div class="metric-value">均線發散</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">H MACD</div>
+            <div class="metric-value">多方柱狀體擴大</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">I Divergence</div>
+            <div class="metric-value">無</div>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">D / H / I</div>
-            <div class="value">高檔過熱 · 多方柱狀體擴大 · 無</div>
+            <div class="label">Action & Pattern</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">K Trade Action</div>
+            <div class="metric-value">觀望</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">J Pattern</div>
+            <div class="metric-value">無明確型態</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">L Price Volume</div>
+            <div class="metric-value">偏空價量背離</div>
+          </div>
+    
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
@@ -759,16 +1231,87 @@
 
         <div class="detail-grid">
           <div class="detail-box">
-            <div class="label">A / C / K</div>
-            <div class="value">多頭 · 過熱 · 觀望</div>
+            <div class="label">A to E</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">A Trend</div>
+            <div class="metric-value">多頭</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">B Price vs MA</div>
+            <div class="metric-value">在均線上方</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">C RSI</div>
+            <div class="metric-value">過熱</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">D KD</div>
+            <div class="metric-value">死亡交叉</div>
+          </div>
+    
+            
+          <div class="detail-metric detail-metric-levels">
+            <div class="metric-label">E Levels</div>
+            <ul class="level-list">
+              <li><strong>支撐</strong> 629.28 <span>中 / 守住中</span></li><li><strong>支撐</strong> 666.63 <span>中 / 守住中</span></li><li><strong>壓力</strong> 712.38 <span>中 / 測試中</span></li>
+            </ul>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">F / G / L</div>
-            <div class="value">上漲縮量 · 均線多頭排列 · 偏空價量背離</div>
+            <div class="label">F to I</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">F Volume</div>
+            <div class="metric-value">上漲縮量</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">G MA Structure</div>
+            <div class="metric-value">均線多頭排列</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">H MACD</div>
+            <div class="metric-value">多方柱狀體擴大</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">I Divergence</div>
+            <div class="metric-value">無</div>
+          </div>
+    
           </div>
           <div class="detail-box">
-            <div class="label">D / H / I</div>
-            <div class="value">死亡交叉 · 多方柱狀體擴大 · 無</div>
+            <div class="label">Action & Pattern</div>
+            
+          <div class="detail-metric">
+            <div class="metric-label">K Trade Action</div>
+            <div class="metric-value">觀望</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">J Pattern</div>
+            <div class="metric-value">長紅K</div>
+          </div>
+    
+            
+          <div class="detail-metric">
+            <div class="metric-label">L Price Volume</div>
+            <div class="metric-value">偏空價量背離</div>
+          </div>
+    
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
