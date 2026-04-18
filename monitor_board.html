@@ -272,6 +272,20 @@
       line-height: 1.6;
       font-size: 15px;
     }
+    .detail-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: -2px;
+    }
+    .detail-legend .legend-title {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-right: 4px;
+    }
     .detail-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -555,31 +569,42 @@
           <strong>IWM</strong> · 多頭，先觀望
         </div>
 
+        
+        <div class="detail-legend">
+          <span class="legend-title">Color guide</span>
+          <span class="chip chip-green">綠 = 結構偏正向</span>
+          <span class="chip chip-amber">黃 = 偏熱 / 等條件</span>
+          <span class="chip chip-sand">咖啡 = 中性背景</span>
+          <span class="chip chip-red">紅 = 偏保守 / 風險</span>
+          <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
+        </div>
+    
+
         <div class="detail-grid">
           <div class="detail-box">
             <div class="label">A to E</div>
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value">多頭</div>
+            <div class="metric-value"><span class="chip chip-green">多頭</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">B Price vs MA</div>
-            <div class="metric-value">在均線上方</div>
+            <div class="metric-value"><span class="chip chip-green">在均線上方</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">C RSI</div>
-            <div class="metric-value">過熱</div>
+            <div class="metric-value"><span class="chip chip-red">過熱</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">D KD</div>
-            <div class="metric-value">死亡交叉</div>
+            <div class="metric-value"><span class="chip chip-red">死亡交叉</span></div>
           </div>
     
             
@@ -596,25 +621,25 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value">上漲縮量</div>
+            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">G MA Structure</div>
-            <div class="metric-value">均線多頭排列</div>
+            <div class="metric-value"><span class="chip chip-green">均線多頭排列</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">H MACD</div>
-            <div class="metric-value">多方柱狀體擴大</div>
+            <div class="metric-value"><span class="chip chip-green">多方柱狀體擴大</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">I Divergence</div>
-            <div class="metric-value">無</div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -623,19 +648,19 @@
             
           <div class="detail-metric">
             <div class="metric-label">K Trade Action</div>
-            <div class="metric-value">觀望</div>
+            <div class="metric-value"><span class="chip chip-red">觀望</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">無明確型態</div>
+            <div class="metric-value">無明確型態 · 中性</div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value">偏空價量背離</div>
+            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
           </div>
     
           </div>
@@ -647,7 +672,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is currently selected.</li>
-          <li><strong>Pattern:</strong> 無明確型態</li>
+          <li><strong>Pattern:</strong> 無明確型態 · 中性</li>
           <li><strong>Chart:</strong> <a href=".cache/iwm-swing-entry/signal_chart.html">.cache/iwm-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -669,31 +694,42 @@
           <strong>IWM</strong> · 多頭，先觀望
         </div>
 
+        
+        <div class="detail-legend">
+          <span class="legend-title">Color guide</span>
+          <span class="chip chip-green">綠 = 結構偏正向</span>
+          <span class="chip chip-amber">黃 = 偏熱 / 等條件</span>
+          <span class="chip chip-sand">咖啡 = 中性背景</span>
+          <span class="chip chip-red">紅 = 偏保守 / 風險</span>
+          <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
+        </div>
+    
+
         <div class="detail-grid">
           <div class="detail-box">
             <div class="label">A to E</div>
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value">多頭</div>
+            <div class="metric-value"><span class="chip chip-green">多頭</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">B Price vs MA</div>
-            <div class="metric-value">在均線上方</div>
+            <div class="metric-value"><span class="chip chip-green">在均線上方</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">C RSI</div>
-            <div class="metric-value">過熱</div>
+            <div class="metric-value"><span class="chip chip-red">過熱</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">D KD</div>
-            <div class="metric-value">死亡交叉</div>
+            <div class="metric-value"><span class="chip chip-red">死亡交叉</span></div>
           </div>
     
             
@@ -710,25 +746,25 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value">上漲縮量</div>
+            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">G MA Structure</div>
-            <div class="metric-value">均線多頭排列</div>
+            <div class="metric-value"><span class="chip chip-green">均線多頭排列</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">H MACD</div>
-            <div class="metric-value">多方柱狀體擴大</div>
+            <div class="metric-value"><span class="chip chip-green">多方柱狀體擴大</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">I Divergence</div>
-            <div class="metric-value">無</div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -737,19 +773,19 @@
             
           <div class="detail-metric">
             <div class="metric-label">K Trade Action</div>
-            <div class="metric-value">觀望</div>
+            <div class="metric-value"><span class="chip chip-red">觀望</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">無明確型態</div>
+            <div class="metric-value">無明確型態 · 中性</div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value">偏空價量背離</div>
+            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
           </div>
     
           </div>
@@ -761,7 +797,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is currently selected.</li>
-          <li><strong>Pattern:</strong> 無明確型態</li>
+          <li><strong>Pattern:</strong> 無明確型態 · 中性</li>
           <li><strong>Chart:</strong> <a href=".cache/iwm-swing-entry/signal_chart.html">.cache/iwm-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -781,31 +817,42 @@
           <strong>NVDA</strong> · 多頭偏熱，等回檔
         </div>
 
+        
+        <div class="detail-legend">
+          <span class="legend-title">Color guide</span>
+          <span class="chip chip-green">綠 = 結構偏正向</span>
+          <span class="chip chip-amber">黃 = 偏熱 / 等條件</span>
+          <span class="chip chip-sand">咖啡 = 中性背景</span>
+          <span class="chip chip-red">紅 = 偏保守 / 風險</span>
+          <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
+        </div>
+    
+
         <div class="detail-grid">
           <div class="detail-box">
             <div class="label">A to E</div>
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value">多頭</div>
+            <div class="metric-value"><span class="chip chip-green">多頭</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">B Price vs MA</div>
-            <div class="metric-value">在均線上方</div>
+            <div class="metric-value"><span class="chip chip-green">在均線上方</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">C RSI</div>
-            <div class="metric-value">過熱</div>
+            <div class="metric-value"><span class="chip chip-red">過熱</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">D KD</div>
-            <div class="metric-value">高檔鈝化</div>
+            <div class="metric-value"><span class="chip chip-amber">高檔鈝化</span></div>
           </div>
     
             
@@ -822,25 +869,25 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value">上漲縮量</div>
+            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">G MA Structure</div>
-            <div class="metric-value">均線多頭排列</div>
+            <div class="metric-value"><span class="chip chip-green">均線多頭排列</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">H MACD</div>
-            <div class="metric-value">多方柱狀體縮小</div>
+            <div class="metric-value"><span class="chip chip-amber">多方柱狀體縮小</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">I Divergence</div>
-            <div class="metric-value">無</div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -849,19 +896,19 @@
             
           <div class="detail-metric">
             <div class="metric-label">K Trade Action</div>
-            <div class="metric-value">等回檔買進</div>
+            <div class="metric-value"><span class="chip chip-amber">等回檔買進</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">無明確型態</div>
+            <div class="metric-value">無明確型態 · 中性</div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value">偏空價量背離</div>
+            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
           </div>
     
           </div>
@@ -873,7 +920,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is currently selected.</li>
-          <li><strong>Pattern:</strong> 無明確型態</li>
+          <li><strong>Pattern:</strong> 無明確型態 · 中性</li>
           <li><strong>Chart:</strong> <a href=".cache/nvda-swing-entry/signal_chart.html">.cache/nvda-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -893,31 +940,42 @@
           <strong>GLD</strong> · 震盪，先觀望
         </div>
 
+        
+        <div class="detail-legend">
+          <span class="legend-title">Color guide</span>
+          <span class="chip chip-green">綠 = 結構偏正向</span>
+          <span class="chip chip-amber">黃 = 偏熱 / 等條件</span>
+          <span class="chip chip-sand">咖啡 = 中性背景</span>
+          <span class="chip chip-red">紅 = 偏保守 / 風險</span>
+          <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
+        </div>
+    
+
         <div class="detail-grid">
           <div class="detail-box">
             <div class="label">A to E</div>
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value">震盪</div>
+            <div class="metric-value"><span class="chip chip-sand">震盪</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">B Price vs MA</div>
-            <div class="metric-value">在均線上方</div>
+            <div class="metric-value"><span class="chip chip-green">在均線上方</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">C RSI</div>
-            <div class="metric-value">過熱</div>
+            <div class="metric-value"><span class="chip chip-red">過熱</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">D KD</div>
-            <div class="metric-value">高檔鈝化</div>
+            <div class="metric-value"><span class="chip chip-amber">高檔鈝化</span></div>
           </div>
     
             
@@ -934,25 +992,25 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value">上漲縮量</div>
+            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">G MA Structure</div>
-            <div class="metric-value">均線混合</div>
+            <div class="metric-value"><span class="chip chip-sand">均線混合</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">H MACD</div>
-            <div class="metric-value">多方柱狀體擴大</div>
+            <div class="metric-value"><span class="chip chip-green">多方柱狀體擴大</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">I Divergence</div>
-            <div class="metric-value">無</div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -961,19 +1019,19 @@
             
           <div class="detail-metric">
             <div class="metric-label">K Trade Action</div>
-            <div class="metric-value">觀望</div>
+            <div class="metric-value"><span class="chip chip-red">觀望</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">射擊之星</div>
+            <div class="metric-value">射擊之星 · 偏空</div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value">偏空價量背離</div>
+            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
           </div>
     
           </div>
@@ -985,7 +1043,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is valid but currently waiting below cutoff.</li>
-          <li><strong>Pattern:</strong> 射擊之星</li>
+          <li><strong>Pattern:</strong> 射擊之星 · 偏空</li>
           <li><strong>Chart:</strong> <a href=".cache/gld-swing-entry/signal_chart.html">.cache/gld-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -1005,31 +1063,42 @@
           <strong>SLV</strong> · 多頭反彈，先觀望
         </div>
 
+        
+        <div class="detail-legend">
+          <span class="legend-title">Color guide</span>
+          <span class="chip chip-green">綠 = 結構偏正向</span>
+          <span class="chip chip-amber">黃 = 偏熱 / 等條件</span>
+          <span class="chip chip-sand">咖啡 = 中性背景</span>
+          <span class="chip chip-red">紅 = 偏保守 / 風險</span>
+          <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
+        </div>
+    
+
         <div class="detail-grid">
           <div class="detail-box">
             <div class="label">A to E</div>
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value">多頭反彈</div>
+            <div class="metric-value"><span class="chip chip-green">多頭反彈</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">B Price vs MA</div>
-            <div class="metric-value">在均線上方</div>
+            <div class="metric-value"><span class="chip chip-green">在均線上方</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">C RSI</div>
-            <div class="metric-value">過熱</div>
+            <div class="metric-value"><span class="chip chip-red">過熱</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">D KD</div>
-            <div class="metric-value">死亡交叉</div>
+            <div class="metric-value"><span class="chip chip-red">死亡交叉</span></div>
           </div>
     
             
@@ -1046,25 +1115,25 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value">上漲縮量</div>
+            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">G MA Structure</div>
-            <div class="metric-value">均線混合</div>
+            <div class="metric-value"><span class="chip chip-sand">均線混合</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">H MACD</div>
-            <div class="metric-value">多方柱狀體擴大</div>
+            <div class="metric-value"><span class="chip chip-green">多方柱狀體擴大</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">I Divergence</div>
-            <div class="metric-value">無</div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -1073,19 +1142,19 @@
             
           <div class="detail-metric">
             <div class="metric-label">K Trade Action</div>
-            <div class="metric-value">觀望</div>
+            <div class="metric-value"><span class="chip chip-red">觀望</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">十字線</div>
+            <div class="metric-value">十字線 · 中性</div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value">偏空價量背離</div>
+            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
           </div>
     
           </div>
@@ -1097,7 +1166,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is valid but currently waiting below cutoff.</li>
-          <li><strong>Pattern:</strong> 十字線</li>
+          <li><strong>Pattern:</strong> 十字線 · 中性</li>
           <li><strong>Chart:</strong> <a href=".cache/slv-swing-entry/signal_chart.html">.cache/slv-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -1117,31 +1186,42 @@
           <strong>TSLA</strong> · 多頭反彈，先觀望
         </div>
 
+        
+        <div class="detail-legend">
+          <span class="legend-title">Color guide</span>
+          <span class="chip chip-green">綠 = 結構偏正向</span>
+          <span class="chip chip-amber">黃 = 偏熱 / 等條件</span>
+          <span class="chip chip-sand">咖啡 = 中性背景</span>
+          <span class="chip chip-red">紅 = 偏保守 / 風險</span>
+          <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
+        </div>
+    
+
         <div class="detail-grid">
           <div class="detail-box">
             <div class="label">A to E</div>
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value">多頭反彈</div>
+            <div class="metric-value"><span class="chip chip-green">多頭反彈</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">B Price vs MA</div>
-            <div class="metric-value">在均線上方</div>
+            <div class="metric-value"><span class="chip chip-green">在均線上方</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">C RSI</div>
-            <div class="metric-value">偏強</div>
+            <div class="metric-value"><span class="chip chip-amber">偏強</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">D KD</div>
-            <div class="metric-value">高檔過熱</div>
+            <div class="metric-value"><span class="chip chip-red">高檔過熱</span></div>
           </div>
     
             
@@ -1158,25 +1238,25 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value">上漲縮量</div>
+            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">G MA Structure</div>
-            <div class="metric-value">均線發散</div>
+            <div class="metric-value"><span class="chip chip-amber">均線發散</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">H MACD</div>
-            <div class="metric-value">多方柱狀體擴大</div>
+            <div class="metric-value"><span class="chip chip-green">多方柱狀體擴大</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">I Divergence</div>
-            <div class="metric-value">無</div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -1185,19 +1265,19 @@
             
           <div class="detail-metric">
             <div class="metric-label">K Trade Action</div>
-            <div class="metric-value">觀望</div>
+            <div class="metric-value"><span class="chip chip-red">觀望</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">無明確型態</div>
+            <div class="metric-value">無明確型態 · 中性</div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value">偏空價量背離</div>
+            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
           </div>
     
           </div>
@@ -1209,7 +1289,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is valid but currently waiting below cutoff.</li>
-          <li><strong>Pattern:</strong> 無明確型態</li>
+          <li><strong>Pattern:</strong> 無明確型態 · 中性</li>
           <li><strong>Chart:</strong> <a href=".cache/tsla-swing-entry/signal_chart.html">.cache/tsla-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -1229,31 +1309,42 @@
           <strong>SPY</strong> · 多頭，先觀望
         </div>
 
+        
+        <div class="detail-legend">
+          <span class="legend-title">Color guide</span>
+          <span class="chip chip-green">綠 = 結構偏正向</span>
+          <span class="chip chip-amber">黃 = 偏熱 / 等條件</span>
+          <span class="chip chip-sand">咖啡 = 中性背景</span>
+          <span class="chip chip-red">紅 = 偏保守 / 風險</span>
+          <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
+        </div>
+    
+
         <div class="detail-grid">
           <div class="detail-box">
             <div class="label">A to E</div>
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value">多頭</div>
+            <div class="metric-value"><span class="chip chip-green">多頭</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">B Price vs MA</div>
-            <div class="metric-value">在均線上方</div>
+            <div class="metric-value"><span class="chip chip-green">在均線上方</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">C RSI</div>
-            <div class="metric-value">過熱</div>
+            <div class="metric-value"><span class="chip chip-red">過熱</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">D KD</div>
-            <div class="metric-value">死亡交叉</div>
+            <div class="metric-value"><span class="chip chip-red">死亡交叉</span></div>
           </div>
     
             
@@ -1270,25 +1361,25 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value">上漲縮量</div>
+            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">G MA Structure</div>
-            <div class="metric-value">均線多頭排列</div>
+            <div class="metric-value"><span class="chip chip-green">均線多頭排列</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">H MACD</div>
-            <div class="metric-value">多方柱狀體擴大</div>
+            <div class="metric-value"><span class="chip chip-green">多方柱狀體擴大</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">I Divergence</div>
-            <div class="metric-value">無</div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -1297,19 +1388,19 @@
             
           <div class="detail-metric">
             <div class="metric-label">K Trade Action</div>
-            <div class="metric-value">觀望</div>
+            <div class="metric-value"><span class="chip chip-red">觀望</span></div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">長紅K</div>
+            <div class="metric-value">長紅K · 偏多</div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value">偏空價量背離</div>
+            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
           </div>
     
           </div>
@@ -1321,7 +1412,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Keep as market/reference context only.</li>
-          <li><strong>Pattern:</strong> 長紅K</li>
+          <li><strong>Pattern:</strong> 長紅K · 偏多</li>
           <li><strong>Chart:</strong> <a href=".cache/spy-swing-entry/signal_chart.html">.cache/spy-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>

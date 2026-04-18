@@ -700,11 +700,70 @@ def render_table_row(row: pd.Series) -> str:
     """
 
 
-def render_detail_metric(label: str, value: str) -> str:
+def _detail_chip_class(field_key: str, enum_value: str) -> str:
+    if field_key == "A_trend":
+        return _chip_class(enum_value, "trend")
+    if field_key == "C_rsi_state":
+        return _chip_class(enum_value, "rsi")
+    if field_key == "F_volume_state":
+        return _chip_class(enum_value, "volume")
+    if field_key == "K_trade_action":
+        return _chip_class(enum_value, "action")
+    if field_key == "B_price_vs_ma":
+        if enum_value in {"above", "crossing_up"}:
+            return "chip-green"
+        if enum_value in {"below", "crossing_down"}:
+            return "chip-red"
+        return "chip-sand"
+    if field_key == "D_kd_state":
+        if enum_value == "golden_cross":
+            return "chip-green"
+        if enum_value in {"death_cross", "overbought"}:
+            return "chip-red"
+        if enum_value == "oversold":
+            return "chip-blue"
+        if enum_value in {"high_level_flattening", "low_level_flattening"}:
+            return "chip-amber"
+        return "chip-sand"
+    if field_key == "G_ma_structure":
+        if enum_value in {"bullish_alignment", "golden_cross"}:
+            return "chip-green"
+        if enum_value in {"bearish_alignment", "death_cross"}:
+            return "chip-red"
+        if enum_value == "expanding":
+            return "chip-amber"
+        return "chip-sand"
+    if field_key == "H_macd_state":
+        if enum_value in {"golden_cross", "bullish_expanding"}:
+            return "chip-green"
+        if enum_value in {"death_cross", "bearish_expanding"}:
+            return "chip-red"
+        if enum_value in {"bullish_contracting", "bearish_contracting"}:
+            return "chip-amber"
+        return "chip-sand"
+    if field_key == "I_divergence_state":
+        if "bullish" in enum_value:
+            return "chip-green"
+        if "bearish" in enum_value:
+            return "chip-red"
+        return "chip-sand"
+    if field_key == "L_price_volume_divergence":
+        if enum_value == "bullish_volume_divergence":
+            return "chip-green"
+        if enum_value == "bearish_volume_divergence":
+            return "chip-red"
+        if enum_value == "price_volume_confirmed":
+            return "chip-blue"
+        return "chip-sand"
+    return "chip-sand"
+
+
+def render_detail_metric(label: str, value: str, chip_class: str | None = None) -> str:
+    value_html = render_chip(value or "n/a", chip_class) if chip_class else escape(value or "n/a")
     return f"""
           <div class="detail-metric">
             <div class="metric-label">{escape(label)}</div>
-            <div class="metric-value">{escape(value or "n/a")}</div>
+            <div class="metric-value">{value_html}</div>
           </div>
     """
 
@@ -729,6 +788,37 @@ def render_levels_detail(reading: dict[str, Any]) -> str:
             </ul>
           </div>
     """
+
+
+def render_detail_color_legend() -> str:
+    return """
+        <div class="detail-legend">
+          <span class="legend-title">Color guide</span>
+          <span class="chip chip-green">綠 = 結構偏正向</span>
+          <span class="chip chip-amber">黃 = 偏熱 / 等條件</span>
+          <span class="chip chip-sand">咖啡 = 中性背景</span>
+          <span class="chip chip-red">紅 = 偏保守 / 風險</span>
+          <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
+        </div>
+    """
+
+
+def _pattern_with_bias(reading: dict[str, Any]) -> str:
+    pattern_key = _technical_value(reading, "J_candlestick_pattern")
+    pattern_label = _technical_label(reading, "J_candlestick_pattern")
+    bias_map = {
+        "bullish_engulfing": "偏多",
+        "hammer": "偏多",
+        "long_bullish_candle": "偏多",
+        "bearish_engulfing": "偏空",
+        "shooting_star": "偏空",
+        "long_bearish_candle": "偏空",
+        "doji": "中性",
+        "inside_bar": "中性",
+        "none": "中性",
+    }
+    bias = bias_map.get(pattern_key, "")
+    return f"{pattern_label} · {bias}" if bias else pattern_label
 
 
 def render_detail_card(row: pd.Series) -> str:
@@ -782,11 +872,12 @@ def render_detail_card(row: pd.Series) -> str:
     """
 
 
-def render_detail_metric(label: str, value: str) -> str:
+def render_detail_metric(label: str, value: str, chip_class: str | None = None) -> str:
+    value_html = render_chip(value or "n/a", chip_class) if chip_class else escape(value or "n/a")
     return f"""
           <div class="detail-metric">
             <div class="metric-label">{escape(label)}</div>
-            <div class="metric-value">{escape(value or "n/a")}</div>
+            <div class="metric-value">{value_html}</div>
           </div>
     """
 
@@ -838,27 +929,29 @@ def render_detail_card(row: pd.Series) -> str:
           <strong>{escape(str(row["symbol"]))}</strong> · {escape(str(row.get("technical_summary", "n/a")))}
         </div>
 
+        {render_detail_color_legend()}
+
         <div class="detail-grid">
           <div class="detail-box">
             <div class="label">A to E</div>
-            {render_detail_metric("A Trend", str(row.get("technical_trend_zh", "n/a")))}
-            {render_detail_metric("B Price vs MA", _technical_label(reading, "B_price_vs_ma"))}
-            {render_detail_metric("C RSI", str(row.get("technical_rsi_zh", "n/a")))}
-            {render_detail_metric("D KD", _technical_label(reading, "D_kd_state"))}
+            {render_detail_metric("A Trend", str(row.get("technical_trend_zh", "n/a")), _detail_chip_class("A_trend", str(row.get("technical_trend", ""))))}
+            {render_detail_metric("B Price vs MA", _technical_label(reading, "B_price_vs_ma"), _detail_chip_class("B_price_vs_ma", _technical_value(reading, "B_price_vs_ma")))}
+            {render_detail_metric("C RSI", str(row.get("technical_rsi_zh", "n/a")), _detail_chip_class("C_rsi_state", str(row.get("technical_rsi", ""))))}
+            {render_detail_metric("D KD", _technical_label(reading, "D_kd_state"), _detail_chip_class("D_kd_state", _technical_value(reading, "D_kd_state")))}
             {render_levels_detail(reading)}
           </div>
           <div class="detail-box">
             <div class="label">F to I</div>
-            {render_detail_metric("F Volume", str(row.get("technical_volume_zh", "n/a")))}
-            {render_detail_metric("G MA Structure", _technical_label(reading, "G_ma_structure"))}
-            {render_detail_metric("H MACD", _technical_label(reading, "H_macd_state"))}
-            {render_detail_metric("I Divergence", _technical_label(reading, "I_divergence_state"))}
+            {render_detail_metric("F Volume", str(row.get("technical_volume_zh", "n/a")), _detail_chip_class("F_volume_state", str(row.get("technical_volume", ""))))}
+            {render_detail_metric("G MA Structure", _technical_label(reading, "G_ma_structure"), _detail_chip_class("G_ma_structure", _technical_value(reading, "G_ma_structure")))}
+            {render_detail_metric("H MACD", _technical_label(reading, "H_macd_state"), _detail_chip_class("H_macd_state", _technical_value(reading, "H_macd_state")))}
+            {render_detail_metric("I Divergence", _technical_label(reading, "I_divergence_state"), _detail_chip_class("I_divergence_state", _technical_value(reading, "I_divergence_state")))}
           </div>
           <div class="detail-box">
             <div class="label">Action & Pattern</div>
-            {render_detail_metric("K Trade Action", str(row.get("technical_action_zh", "n/a")))}
-            {render_detail_metric("J Pattern", _technical_label(reading, "J_candlestick_pattern"))}
-            {render_detail_metric("L Price Volume", _technical_label(reading, "L_price_volume_divergence"))}
+            {render_detail_metric("K Trade Action", str(row.get("technical_action_zh", "n/a")), _detail_chip_class("K_trade_action", str(row.get("technical_action", ""))))}
+            {render_detail_metric("J Pattern", _pattern_with_bias(reading))}
+            {render_detail_metric("L Price Volume", _technical_label(reading, "L_price_volume_divergence"), _detail_chip_class("L_price_volume_divergence", _technical_value(reading, "L_price_volume_divergence")))}
           </div>
           <div class="detail-box">
             <div class="label">Key Levels</div>
@@ -868,7 +961,7 @@ def render_detail_card(row: pd.Series) -> str:
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> {escape(str(row.get("action_note", "n/a")))}</li>
-          <li><strong>Pattern:</strong> {escape(_technical_label(reading, "J_candlestick_pattern"))}</li>
+          <li><strong>Pattern:</strong> {escape(_pattern_with_bias(reading))}</li>
           <li><strong>Chart:</strong> <a href="{escape(str(row["chart_href"]))}">{escape(str(row["chart_href"]))}</a></li>
         </ul>
       </aside>
@@ -1164,6 +1257,20 @@ def build_html(board: pd.DataFrame) -> str:
       border: 1px solid rgba(39, 103, 73, 0.14);
       line-height: 1.6;
       font-size: 15px;
+    }}
+    .detail-legend {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: -2px;
+    }}
+    .detail-legend .legend-title {{
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-right: 4px;
     }}
     .detail-grid {{
       display: grid;
