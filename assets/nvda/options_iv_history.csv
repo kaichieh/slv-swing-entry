@@ -1,0 +1,2 @@
+date,underlying,spot,target_30d_atm_iv,interpolation_method,usable_expiries,near_expiry_days,near_expiry_iv,far_expiry_days,far_expiry_iv
+2026-04-20,NVDA,199.5099029541016,0.3214761887115376,linear_by_trading_days,6,25.0,0.2819831238988206,32.0,0.3372734146366244

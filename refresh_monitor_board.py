@@ -203,10 +203,76 @@ def _load_market_panic() -> dict[str, object] | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _load_options_iv_summary(asset_key: str) -> dict[str, object] | None:
+    path = ac.get_options_iv_summary_path(asset_key)
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _load_options_iv_history(asset_key: str) -> pd.DataFrame | None:
+    path = ac.get_options_iv_history_path(asset_key)
+    if not path.exists():
+        return None
+    frame = pd.read_csv(path)
+    if frame.empty or "date" not in frame.columns or "target_30d_atm_iv" not in frame.columns:
+        return None
+    frame["date"] = pd.to_datetime(frame["date"])
+    frame["target_30d_atm_iv"] = pd.to_numeric(frame["target_30d_atm_iv"], errors="coerce")
+    frame = frame.dropna(subset=["date", "target_30d_atm_iv"]).sort_values("date").reset_index(drop=True)
+    return frame if not frame.empty else None
+
+
 def refresh_market_panic_payload() -> dict[str, object]:
     payload = build_market_panic()
     ac.get_market_panic_path().write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     return payload
+
+
+def _compute_options_iv_visual(asset_key: str) -> dict[str, object]:
+    summary = _load_options_iv_summary(asset_key)
+    history = _load_options_iv_history(asset_key)
+
+    current_iv = _coerce_float(summary.get("target_30d_atm_iv")) if summary else float("nan")
+    asof_date = _coerce_str(summary.get("asof_date")) if summary else "n/a"
+
+    if history is not None:
+        latest_iv = _coerce_float(history.iloc[-1].get("target_30d_atm_iv"))
+        if not pd.isna(latest_iv):
+            current_iv = latest_iv
+            asof_date = str(history.iloc[-1]["date"].date())
+        iv_series = cast(pd.Series, history["target_30d_atm_iv"])
+        delta_1 = iv_series.pct_change(1).iloc[-1] if len(iv_series) >= 2 else float("nan")
+        rank_126 = ((iv_series - iv_series.rolling(126).min()) / (iv_series.rolling(126).max() - iv_series.rolling(126).min() + 1e-10)).iloc[-1]
+        rank_252 = ((iv_series - iv_series.rolling(252).min()) / (iv_series.rolling(252).max() - iv_series.rolling(252).min() + 1e-10)).iloc[-1]
+        percentile_20 = iv_series.rolling(20).rank(pct=True).iloc[-1]
+    else:
+        delta_1 = float("nan")
+        rank_126 = float("nan")
+        rank_252 = float("nan")
+        percentile_20 = float("nan")
+
+    display_rank = rank_252 if not pd.isna(rank_252) else rank_126
+    rank_bucket = "n/a"
+    if not pd.isna(display_rank):
+        if display_rank >= 0.75:
+            rank_bucket = "high"
+        elif display_rank <= 0.25:
+            rank_bucket = "low"
+        else:
+            rank_bucket = "mid"
+
+    return {
+        "iv_30": current_iv,
+        "iv_rank_126": rank_126,
+        "iv_rank_252": rank_252,
+        "iv_percentile_20": percentile_20,
+        "iv_change_1": delta_1,
+        "iv_display_rank": display_rank,
+        "iv_rank_bucket": rank_bucket,
+        "iv_asof_date": asof_date,
+        "iv_available": not pd.isna(current_iv),
+    }
 
 
 def _technical_label(reading: dict[str, object] | None, key: str) -> str:
@@ -300,6 +366,7 @@ def _chip_class(value: str, group: str) -> str:
 def _enrich_board_row(row: dict[str, object]) -> dict[str, object]:
     asset_key = str(row["asset_key"])
     reading = _load_technical_reading(asset_key)
+    options_iv = _compute_options_iv_visual(asset_key)
     trend = _technical_value(reading, "A_trend")
     rsi = _technical_value(reading, "C_rsi_state")
     volume = _technical_value(reading, "F_volume_state")
@@ -318,6 +385,7 @@ def _enrich_board_row(row: dict[str, object]) -> dict[str, object]:
     row["technical_action_zh"] = action_zh
     row["technical_summary"] = _technical_summary(trend_zh, rsi_zh, action_zh, volume_zh) if reading else "n/a"
     row["technical_key_level"] = _key_level_text(reading)
+    row.update(options_iv)
     row["detail_reading"] = reading or {}
     return row
 
@@ -612,6 +680,7 @@ def render_today_card(row: pd.Series) -> str:
       <div class="spotlight-date">{escape(latest_date)}</div>
       <div class="spotlight-symbol" style="color:{color}">{escape(str(row["symbol"]))}</div>
       <div class="spotlight-line">{escape(str(row["preferred_line"]))}</div>
+      {render_volatility_panel(row, compact=True)}
       <div class="spotlight-metric">today_status={escape(action)}</div>
       <div class="spotlight-metric">recent_selected={recent_count}/60</div>
       <div class="spotlight-metric">latest={latest}</div>
@@ -640,6 +709,7 @@ def render_priority_research_card(row: pd.Series) -> str:
       <div class="spotlight-date">{escape(latest_date)}</div>
       <div class="spotlight-symbol" style="color:{color}">{escape(str(row["symbol"]))}</div>
       <div class="spotlight-line">{escape(str(row["preferred_line"]))}</div>
+      {render_volatility_panel(row, compact=True)}
       <div class="spotlight-metric">today_status={escape(str(row["action"]))}</div>
       <div class="spotlight-metric">{escape(score_label)}={escape(research_score)}</div>
       <div class="spotlight-metric">best_rule={escape(str(row["research_rule"]))}</div>
@@ -670,6 +740,61 @@ def render_role_card(row: pd.Series) -> str:
 
 def render_chip(label: str, chip_class: str) -> str:
     return f'<span class="chip {chip_class}">{escape(label)}</span>'
+
+
+def _format_percent(value: object, digits: int = 1) -> str:
+    numeric = _coerce_float(value)
+    if pd.isna(numeric):
+        return "n/a"
+    return f"{numeric * 100:.{digits}f}%"
+
+
+def _format_rank_label(value: object) -> str:
+    numeric = _coerce_float(value)
+    if pd.isna(numeric):
+        return "n/a"
+    return f"{numeric * 100:.0f}"
+
+
+def _vol_chip_class(bucket: str) -> str:
+    if bucket == "high":
+        return "chip-red"
+    if bucket == "low":
+        return "chip-green"
+    if bucket == "mid":
+        return "chip-amber"
+    return "chip-sand"
+
+
+def render_volatility_panel(row: pd.Series, compact: bool = False) -> str:
+    if not bool(row.get("iv_available", False)):
+        return ""
+    iv_value = _format_percent(row.get("iv_30"))
+    iv_rank = _format_rank_label(row.get("iv_display_rank"))
+    iv_change = _format_percent(row.get("iv_change_1"))
+    rank_bucket = str(row.get("iv_rank_bucket", "n/a"))
+    asof_date = escape(str(row.get("iv_asof_date", "n/a")))
+    fill_pct = 0.0 if iv_rank == "n/a" else max(0.0, min(100.0, float(iv_rank)))
+    modifier = " volatility-panel-compact" if compact else ""
+    return f"""
+      <div class="volatility-panel{modifier}">
+        <div class="volatility-head">
+          <span class="volatility-title">30D ATM IV</span>
+          {render_chip(f"IV Rank {iv_rank}", _vol_chip_class(rank_bucket))}
+        </div>
+        <div class="volatility-value-row">
+          <span class="volatility-value">{iv_value}</span>
+          <span class="volatility-date">as of {asof_date}</span>
+        </div>
+        <div class="volatility-bar">
+          <span class="volatility-fill" style="width:{fill_pct:.1f}%"></span>
+        </div>
+        <div class="volatility-meta">
+          <span>1D Δ {iv_change}</span>
+          <span>20D pct {_format_rank_label(row.get("iv_percentile_20"))}</span>
+        </div>
+      </div>
+    """
 
 
 
@@ -1074,6 +1199,7 @@ def render_detail_card(row: pd.Series) -> str:
         </div>
 
         {render_detail_color_legend()}
+        {render_volatility_panel(row)}
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -1278,6 +1404,73 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
       border-radius: 999px;
       flex: 0 0 auto;
       border: 1px solid rgba(28, 25, 23, 0.08);
+    }}
+    .volatility-panel {{
+      margin: 14px 0 16px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 250, 244, 0.88), rgba(247, 239, 225, 0.92));
+      border: 1px solid rgba(223, 210, 188, 0.92);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    }}
+    .volatility-panel-compact {{
+      margin: 12px 0 10px;
+      padding: 12px 14px;
+    }}
+    .volatility-head {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }}
+    .volatility-title {{
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }}
+    .volatility-value-row {{
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }}
+    .volatility-value {{
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #7c2d12;
+    }}
+    .volatility-panel-compact .volatility-value {{
+      font-size: 22px;
+    }}
+    .volatility-date {{
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }}
+    .volatility-bar {{
+      margin-top: 10px;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(120, 113, 108, 0.16);
+    }}
+    .volatility-fill {{
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #16a34a 0%, #f59e0b 56%, #b91c1c 100%);
+    }}
+    .volatility-meta {{
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
     }}
     .hero {{
       display: grid;

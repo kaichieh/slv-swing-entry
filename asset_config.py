@@ -266,6 +266,20 @@ def get_metadata_path(asset_key: str | None = None) -> Path:
     return get_cache_dir(asset_key) / "metadata.json"
 
 
+def get_options_chain_path(asset_key: str | None = None) -> Path:
+    key = asset_key or get_asset_key()
+    return get_cache_dir(key) / f"{key}_options_chain.csv"
+
+
+def get_options_iv_summary_path(asset_key: str | None = None) -> Path:
+    key = asset_key or get_asset_key()
+    return get_cache_dir(key) / "options_iv_summary.json"
+
+
+def get_options_iv_history_path(asset_key: str | None = None) -> Path:
+    return get_asset_dir(asset_key) / "options_iv_history.csv"
+
+
 def get_chart_output_path(asset_key: str | None = None) -> Path:
     return get_cache_dir(asset_key) / "signal_chart.html"
 

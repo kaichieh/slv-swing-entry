@@ -37,14 +37,23 @@ class RefreshMonitorBoardTests(unittest.TestCase):
                     "research_rule": None,
                     "research_avg_return": None,
                     "research_trade_count": None,
+                    "iv_available": True,
+                    "iv_30": 0.284,
+                    "iv_change_1": 0.031,
+                    "iv_display_rank": 0.76,
+                    "iv_percentile_20": 0.85,
+                    "iv_rank_bucket": "high",
+                    "iv_asof_date": "2026-04-14",
                 }
             ]
         )
 
         html = rmb.build_html(board)
 
-        self.assertIn("today_status=watchlist_blocked", html)
+        self.assertIn("Watchlist Blocked", html)
         self.assertIn("GLD", html)
+        self.assertIn("30D ATM IV", html)
+        self.assertIn("IV Rank 76", html)
 
     def test_load_priority_research_board_excludes_assets_without_real_chart(self) -> None:
         operator_row = pd.Series(
@@ -125,6 +134,40 @@ class RefreshMonitorBoardTests(unittest.TestCase):
 
         self.assertEqual(list(board["asset_key"]), ["gld"])
         self.assertIn("research_score", board.columns)
+
+    def test_enrich_board_row_loads_options_iv_visual_fields(self) -> None:
+        row = {
+            "asset_key": "nvda",
+            "symbol": "NVDA",
+            "preferred_line": "baseline_live",
+            "lane_type": "binary_operator",
+            "role": "primary",
+            "status": "active",
+            "action": "selected_now",
+            "recent_selected_count": 5,
+            "latest_date": "2026-04-15",
+            "latest_value": 0.51,
+            "latest_selected": True,
+            "cutoff": 0.48,
+            "last_selected_date": "2026-04-15",
+            "days_since_last_selected": 0,
+            "action_note": "ready",
+        }
+        iv_history = pd.DataFrame(
+            {
+                "date": pd.to_datetime(["2026-04-14", "2026-04-15"]),
+                "target_30d_atm_iv": [0.25, 0.30],
+            }
+        )
+
+        with mock.patch.object(rmb, "_load_technical_reading", return_value=None):
+            with mock.patch.object(rmb, "_load_options_iv_summary", return_value={"target_30d_atm_iv": 0.30, "asof_date": "2026-04-15"}):
+                with mock.patch.object(rmb, "_load_options_iv_history", return_value=iv_history):
+                    enriched = rmb._enrich_board_row(row)
+
+        self.assertTrue(enriched["iv_available"])
+        self.assertEqual(enriched["iv_asof_date"], "2026-04-15")
+        self.assertAlmostEqual(float(enriched["iv_30"]), 0.30, places=6)
 
 
 if __name__ == "__main__":

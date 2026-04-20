@@ -72,6 +72,7 @@ VIX3M_YAHOO_SYMBOL = "^VIX3M"
 FETCH_TEXT_TIMEOUT_SECONDS = 60
 FETCH_TEXT_MAX_ATTEMPTS = 3
 FETCH_TEXT_RETRY_BASE_SECONDS = 1.5
+OPTIONS_IV_HISTORY_PATH = str(ac.get_options_iv_history_path())
 
 EXPERIMENTAL_FEATURE_COLUMNS = [
     "ret_60",
@@ -117,6 +118,13 @@ EXPERIMENTAL_FEATURE_COLUMNS = [
     "vix_vxv_spread_lag1",
     "vix_vxv_ratio_pct_63",
     "vix_vxv_ratio_pct_63_rolling_max_3",
+    "options_iv_30",
+    "options_iv_30_change_1",
+    "options_iv_30_z_20",
+    "options_iv_30_percentile_20",
+    "options_iv_30_iv_rank_252",
+    "options_iv_30_iv_rank_126",
+    "options_iv_30_high_regime_flag",
 ]
 
 
@@ -565,6 +573,59 @@ def add_vix_term_structure_features(frame: pd.DataFrame, vix3m_frame: pd.DataFra
     return merged
 
 
+def normalize_options_iv_history_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    normalized = frame.copy()
+    normalized.columns = [column.lower() for column in normalized.columns]
+    if "asof_date" in normalized.columns and "date" not in normalized.columns:
+        normalized = normalized.rename(columns={"asof_date": "date"})
+    if "target_30d_atm_iv" not in normalized.columns:
+        for candidate in ("options_iv_30", "atm_iv_30", "iv_30", "target_iv"):
+            if candidate in normalized.columns:
+                normalized = normalized.rename(columns={candidate: "target_30d_atm_iv"})
+                break
+    required = ["date", "target_30d_atm_iv"]
+    missing = [column for column in required if column not in normalized.columns]
+    if missing:
+        raise RuntimeError(f"Downloaded options IV dataset missing columns: {missing}")
+    normalized["date"] = pd.to_datetime(normalized["date"]).dt.normalize()
+    normalized["target_30d_atm_iv"] = pd.to_numeric(normalized["target_30d_atm_iv"], errors="coerce")
+    normalized = normalized.dropna(subset=["date", "target_30d_atm_iv"]).copy()
+    if normalized.empty:
+        raise RuntimeError("Normalized options IV history is empty.")
+    return cast(pd.DataFrame, normalized.sort_values("date").drop_duplicates(subset="date", keep="last").reset_index(drop=True))
+
+
+def load_options_iv_history(path: str = OPTIONS_IV_HISTORY_PATH) -> pd.DataFrame:
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Options IV history not found at {path}. Run options_iv.py first.")
+    frame = pd.read_csv(path)
+    if frame.empty:
+        raise RuntimeError("Cached options IV history is empty.")
+    return normalize_options_iv_history_frame(frame)
+
+
+def add_options_iv_features(frame: pd.DataFrame, options_iv_frame: pd.DataFrame) -> pd.DataFrame:
+    df = frame.copy().sort_values("date").reset_index(drop=True)
+    options_iv = normalize_options_iv_history_frame(options_iv_frame)[["date", "target_30d_atm_iv"]].rename(
+        columns={"target_30d_atm_iv": "options_iv_30"}
+    )
+    merged = pd.merge_asof(df, options_iv, on="date", direction="backward")
+    lagged_iv = cast(pd.Series, merged["options_iv_30"]).shift(1)
+    merged["options_iv_30"] = lagged_iv
+    merged["options_iv_30_change_1"] = lagged_iv.pct_change(1)
+    merged["options_iv_30_z_20"] = (lagged_iv - lagged_iv.rolling(20).mean()) / (lagged_iv.rolling(20).std() + 1e-10)
+    merged["options_iv_30_percentile_20"] = lagged_iv.rolling(20).rank(pct=True)
+    rolling_min_252 = lagged_iv.rolling(252).min()
+    rolling_max_252 = lagged_iv.rolling(252).max()
+    merged["options_iv_30_iv_rank_252"] = (lagged_iv - rolling_min_252) / (rolling_max_252 - rolling_min_252 + 1e-10)
+    rolling_min_126 = lagged_iv.rolling(126).min()
+    rolling_max_126 = lagged_iv.rolling(126).max()
+    merged["options_iv_30_iv_rank_126"] = (lagged_iv - rolling_min_126) / (rolling_max_126 - rolling_min_126 + 1e-10)
+    merged["options_iv_30_high_regime_flag"] = (merged["options_iv_30_percentile_20"] >= 0.8).astype(float)
+    merged.loc[merged["options_iv_30_percentile_20"].isna(), "options_iv_30_high_regime_flag"] = np.nan
+    return merged
+
+
 def get_selected_experimental_feature_columns() -> list[str]:
     configured = set(get_env_csv("AR_EXTRA_BASE_FEATURES", DEFAULT_EXTRA_BASE_FEATURES))
     return [column for column in EXPERIMENTAL_FEATURE_COLUMNS if column in configured]
@@ -572,6 +633,10 @@ def get_selected_experimental_feature_columns() -> list[str]:
 
 def selected_vix_features_requested() -> bool:
     return any(column.startswith("vix_") for column in get_selected_experimental_feature_columns())
+
+
+def selected_options_iv_features_requested() -> bool:
+    return any(column.startswith("options_iv_") for column in get_selected_experimental_feature_columns())
 
 
 def build_barrier_labels(
@@ -693,6 +758,8 @@ def add_features(frame: pd.DataFrame) -> pd.DataFrame:
     df = add_context_features(df)
     if selected_vix_features_requested():
         df = add_vix_features(df, download_vix_prices())
+    if selected_options_iv_features_requested():
+        df = add_options_iv_features(df, load_options_iv_history())
     labels, realized_returns = build_barrier_labels(
         df,
         int(config["horizon_days"]),

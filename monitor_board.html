@@ -151,6 +151,73 @@
       flex: 0 0 auto;
       border: 1px solid rgba(28, 25, 23, 0.08);
     }
+    .volatility-panel {
+      margin: 14px 0 16px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 250, 244, 0.88), rgba(247, 239, 225, 0.92));
+      border: 1px solid rgba(223, 210, 188, 0.92);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    }
+    .volatility-panel-compact {
+      margin: 12px 0 10px;
+      padding: 12px 14px;
+    }
+    .volatility-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .volatility-title {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .volatility-value-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .volatility-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #7c2d12;
+    }
+    .volatility-panel-compact .volatility-value {
+      font-size: 22px;
+    }
+    .volatility-date {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .volatility-bar {
+      margin-top: 10px;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(120, 113, 108, 0.16);
+    }
+    .volatility-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #16a34a 0%, #f59e0b 56%, #b91c1c 100%);
+    }
+    .volatility-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
     .hero {
       display: grid;
       grid-template-columns: 1.3fr 0.9fr;
@@ -539,25 +606,25 @@
           <div>
             <div class="eyebrow">Market Panic</div>
             <div class="market-panic-title">平靜</div>
-            <div class="market-panic-date">2026-04-17 · 期限結構平穩／信用偏撐盤</div>
+            <div class="market-panic-date">2026-04-20 · 信用偏撐盤</div>
           </div>
           <span class="chip chip-green">Score 0</span>
         </div>
         <div class="market-panic-row">
           <span class="chip chip-sand">VIX 正常</span>
-          <span class="chip chip-green">期限結構平穩</span>
+          <span class="chip chip-sand">期限結構正常</span>
           <span class="chip chip-green">信用偏撐盤</span>
         </div>
         <div class="market-panic-metrics">
-          <span>VIX 17.48</span>
-          <span>VIX/VIX3M 0.8416</span>
-          <span>HYG/IEF z20 1.47</span>
+          <span>VIX 19.16</span>
+          <span>VIX/VIX3M 0.9342</span>
+          <span>HYG/IEF z20 1.0068</span>
         </div>
         <div class="panic-history-head">
           <span>近兩個月回顧</span>
-          <span>2026-02-17 to 2026-04-17</span>
+          <span>2026-02-18 to 2026-04-20</span>
         </div>
-        <div class="panic-history-chart"><div class="panic-bar" title="2026-02-17 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-18 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-19 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-20 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-23 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-24 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-25 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-26 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-27 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-02 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-03 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-04 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-05 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-06 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-09 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-10 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-11 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-12 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-13 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-16 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-17 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-18 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-19 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-20 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-23 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-24 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-25 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-26 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-27 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-30 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-31 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-04-01 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-02 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-06 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-07 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-04-08 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-09 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-10 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-13 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-14 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-15 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-16 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-17 · calm · score 0" style="height:28px;background:#16a34a"></div></div>
+        <div class="panic-history-chart"><div class="panic-bar" title="2026-02-18 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-19 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-20 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-23 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-24 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-25 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-26 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-02-27 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-02 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-03 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-04 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-05 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-06 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-09 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-10 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-11 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-12 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-13 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-16 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-17 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-18 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-19 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-20 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-23 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-24 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-25 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-03-26 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-03-27 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-30 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-03-31 · panic · score 3" style="height:82px;background:#7f1d1d"></div><div class="panic-bar" title="2026-04-01 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-02 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-06 · guarded · score 1" style="height:46px;background:#f59e0b"></div><div class="panic-bar" title="2026-04-07 · stressed · score 2" style="height:64px;background:#dc2626"></div><div class="panic-bar" title="2026-04-08 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-09 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-10 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-13 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-14 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-15 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-16 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-17 · calm · score 0" style="height:28px;background:#16a34a"></div><div class="panic-bar" title="2026-04-20 · calm · score 0" style="height:28px;background:#16a34a"></div></div>
         <div class="panic-history-scale">
           <span class="panic-tick" style="left:0%">2/17</span><span class="panic-tick" style="left:21%">3/1</span><span class="panic-tick" style="left:72%">4/1</span><span class="panic-tick" style="left:100%">4/17</span>
         </div>
@@ -603,11 +670,11 @@
           </div>
         </td>
         <td><span class="chip chip-blue">Selected Now</span></td>
-        <td><span class="chip chip-green">多頭</span></td>
+        <td><span class="chip chip-sand">震盪</span></td>
         <td><span class="chip chip-red">過熱</span></td>
-        <td><span class="chip chip-sand">上漲縮量</span></td>
+        <td><span class="chip chip-sand">量能正常</span></td>
         <td><span class="chip chip-red">觀望</span></td>
-        <td class="summary">多頭，先觀望</td>
+        <td class="summary">震盪，先觀望</td>
         <td><div class="level">Resistance 278</div></td>
       </tr>
     
@@ -617,7 +684,7 @@
           <div class="symbol">
             <a class="symbol-link" href=".cache/nvda-swing-entry/signal_chart.html"><strong style="color:#f59e0b">NVDA</strong></a>
             <div class="mini">2026-04-17 · ret_60_sma_gap_60_atr_pct_20</div>
-            <div class="mini">latest 0.5032</div>
+            <div class="mini">latest 0.5036</div>
           </div>
         </td>
         <td><span class="chip chip-blue">Selected Now</span></td>
@@ -634,14 +701,14 @@
         <td>
           <div class="symbol">
             <a class="symbol-link" href=".cache/tsmc_tw-swing-entry/signal_chart.html"><strong style="color:#9ca3af">TSMC</strong></a>
-            <div class="mini">2026-04-17 · tsmc_tw_threshold_live</div>
-            <div class="mini">latest 0.4948</div>
+            <div class="mini">2026-04-20 · tsmc_tw_threshold_live</div>
+            <div class="mini">latest 0.4946</div>
           </div>
         </td>
         <td><span class="chip chip-blue">Selected Now</span></td>
         <td><span class="chip chip-green">多頭</span></td>
         <td><span class="chip chip-amber">偏強</span></td>
-        <td><span class="chip chip-sand">量能正常</span></td>
+        <td><span class="chip chip-sand">上漲縮量</span></td>
         <td><span class="chip chip-red">觀望</span></td>
         <td class="summary">多頭，先觀望</td>
         <td><div class="level">Resistance 2100</div></td>
@@ -653,7 +720,7 @@
           <div class="symbol">
             <a class="symbol-link" href=".cache/gld-swing-entry/signal_chart.html"><strong style="color:#9ca3af">GLD</strong></a>
             <div class="mini">2026-04-17 · gld_current_live_mixed_live</div>
-            <div class="mini">latest 0.4814</div>
+            <div class="mini">latest 0.4811</div>
           </div>
         </td>
         <td><span class="chip chip-amber">Watchlist Wait</span></td>
@@ -687,7 +754,7 @@
       <tr class="board-row" data-target="detail-mu">
         <td>
           <div class="symbol">
-            <a class="symbol-link" href=".cache/mu-swing-entry/signal_chart.html"><strong style="color:#f59e0b">MU</strong></a>
+            <a class="symbol-link" href=".cache/mu-swing-entry/signal_chart.html"><strong style="color:#9ca3af">MU</strong></a>
             <div class="mini">2026-04-17 · mu_tb30_ret_60_vol_ratio_20_120_top12_5</div>
             <div class="mini">latest 0.5176</div>
           </div>
@@ -707,7 +774,7 @@
           <div class="symbol">
             <a class="symbol-link" href=".cache/slv-swing-entry/signal_chart.html"><strong style="color:#9ca3af">SLV</strong></a>
             <div class="mini">2026-04-17 · hard_gate_two_expert_gdx_live</div>
-            <div class="mini">latest 0.2247</div>
+            <div class="mini">latest 0.2297</div>
           </div>
         </td>
         <td><span class="chip chip-amber">Watchlist Wait</span></td>
@@ -731,7 +798,7 @@
         <td><span class="chip chip-amber">Watchlist Wait</span></td>
         <td><span class="chip chip-green">多頭反彈</span></td>
         <td><span class="chip chip-amber">偏強</span></td>
-        <td><span class="chip chip-sand">上漲縮量</span></td>
+        <td><span class="chip chip-sand">上漲放量</span></td>
         <td><span class="chip chip-red">觀望</span></td>
         <td class="summary">多頭反彈，先觀望</td>
         <td><div class="level">Resistance 409</div></td>
@@ -783,13 +850,13 @@
           <div>
             <div class="eyebrow">Detail Card</div>
             <div class="detail-symbol">IWM</div>
-            <div class="detail-price">Close 276.31 · 2026-04-17</div>
+            <div class="detail-price">Close 275.78 · 2026-04-17</div>
           </div>
           <span class="chip chip-blue">Selected Now</span>
         </div>
 
         <div class="detail-summary">
-          <strong>IWM</strong> · 多頭，先觀望
+          <strong>IWM</strong> · 震盪，先觀望
         </div>
 
         
@@ -803,6 +870,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -810,7 +878,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value"><span class="chip chip-green">多頭</span></div>
+            <div class="metric-value"><span class="chip chip-sand">震盪</span></div>
           </div>
     
             
@@ -835,7 +903,7 @@
           <div class="detail-metric detail-metric-levels">
             <div class="metric-label">E Levels</div>
             <ul class="level-list">
-              <li><strong>支撐</strong> 238.69 <span>中 / 守住中</span></li><li><strong>支撐</strong> 255.39 <span>中 / 守住中</span></li><li><strong>壓力</strong> 277.63 <span>中 / 測試中</span></li>
+              <li><strong>支撐</strong> 238.69 <span>中 / 守住中</span></li><li><strong>支撐</strong> 255.36 <span>中 / 守住中</span></li><li><strong>壓力</strong> 277.63 <span>中 / 測試中</span></li>
             </ul>
           </div>
     
@@ -845,7 +913,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
+            <div class="metric-value"><span class="chip chip-sand">量能正常</span></div>
           </div>
     
             
@@ -884,7 +952,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -909,13 +977,13 @@
           <div>
             <div class="eyebrow">Detail Card</div>
             <div class="detail-symbol">IWM</div>
-            <div class="detail-price">Close 276.31 · 2026-04-17</div>
+            <div class="detail-price">Close 275.78 · 2026-04-17</div>
           </div>
           <span class="chip chip-blue">Selected Now</span>
         </div>
 
         <div class="detail-summary">
-          <strong>IWM</strong> · 多頭，先觀望
+          <strong>IWM</strong> · 震盪，先觀望
         </div>
 
         
@@ -929,6 +997,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -936,7 +1005,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">A Trend</div>
-            <div class="metric-value"><span class="chip chip-green">多頭</span></div>
+            <div class="metric-value"><span class="chip chip-sand">震盪</span></div>
           </div>
     
             
@@ -961,7 +1030,7 @@
           <div class="detail-metric detail-metric-levels">
             <div class="metric-label">E Levels</div>
             <ul class="level-list">
-              <li><strong>支撐</strong> 238.69 <span>中 / 守住中</span></li><li><strong>支撐</strong> 255.39 <span>中 / 守住中</span></li><li><strong>壓力</strong> 277.63 <span>中 / 測試中</span></li>
+              <li><strong>支撐</strong> 238.69 <span>中 / 守住中</span></li><li><strong>支撐</strong> 255.36 <span>中 / 守住中</span></li><li><strong>壓力</strong> 277.63 <span>中 / 測試中</span></li>
             </ul>
           </div>
     
@@ -971,7 +1040,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
+            <div class="metric-value"><span class="chip chip-sand">量能正常</span></div>
           </div>
     
             
@@ -1010,7 +1079,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
+            <div class="metric-value"><span class="chip chip-sand">無</span></div>
           </div>
     
           </div>
@@ -1033,7 +1102,7 @@
           <div>
             <div class="eyebrow">Detail Card</div>
             <div class="detail-symbol">NVDA</div>
-            <div class="detail-price">Close 200.47 · 2026-04-17</div>
+            <div class="detail-price">Close 201.68 · 2026-04-17</div>
           </div>
           <span class="chip chip-blue">Selected Now</span>
         </div>
@@ -1052,6 +1121,25 @@
           <span class="chip chip-blue">藍 = 已選中 / 特別確認</span>
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
+    
+        
+      <div class="volatility-panel">
+        <div class="volatility-head">
+          <span class="volatility-title">30D ATM IV</span>
+          <span class="chip chip-sand">IV Rank n/a</span>
+        </div>
+        <div class="volatility-value-row">
+          <span class="volatility-value">32.1%</span>
+          <span class="volatility-date">as of 2026-04-20</span>
+        </div>
+        <div class="volatility-bar">
+          <span class="volatility-fill" style="width:0.0%"></span>
+        </div>
+        <div class="volatility-meta">
+          <span>1D Δ n/a</span>
+          <span>20D pct n/a</span>
+        </div>
+      </div>
     
 
         <div class="detail-grid">
@@ -1085,7 +1173,7 @@
           <div class="detail-metric detail-metric-levels">
             <div class="metric-label">E Levels</div>
             <ul class="level-list">
-              <li><strong>支撐</strong> 164.27 <span>中 / 守住中</span></li><li><strong>支撐</strong> 181.38 <span>中 / 守住中</span></li><li><strong>壓力</strong> 201.68 <span>中 / 測試中</span></li>
+              <li><strong>支撐</strong> 164.27 <span>中 / 守住中</span></li><li><strong>支撐</strong> 181.44 <span>中 / 守住中</span></li><li><strong>壓力</strong> 201.70 <span>中 / 測試中</span></li>
             </ul>
           </div>
     
@@ -1107,7 +1195,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">H MACD</div>
-            <div class="metric-value"><span class="chip chip-amber">多方柱狀體縮小</span></div>
+            <div class="metric-value"><span class="chip chip-green">多方柱狀體擴大</span></div>
           </div>
     
             
@@ -1128,7 +1216,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">無明確型態 · 中性</div>
+            <div class="metric-value">長紅K · 偏多</div>
           </div>
     
             
@@ -1146,7 +1234,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is currently selected.</li>
-          <li><strong>Pattern:</strong> 無明確型態 · 中性</li>
+          <li><strong>Pattern:</strong> 長紅K · 偏多</li>
           <li><strong>Chart:</strong> <a href=".cache/nvda-swing-entry/signal_chart.html">.cache/nvda-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -1157,7 +1245,7 @@
           <div>
             <div class="eyebrow">Detail Card</div>
             <div class="detail-symbol">TSMC</div>
-            <div class="detail-price">Close 2030.0 · 2026-04-17</div>
+            <div class="detail-price">Close 2025.0 · 2026-04-20</div>
           </div>
           <span class="chip chip-blue">Selected Now</span>
         </div>
@@ -1177,6 +1265,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -1209,7 +1298,7 @@
           <div class="detail-metric detail-metric-levels">
             <div class="metric-label">E Levels</div>
             <ul class="level-list">
-              <li><strong>支撐</strong> 1760.00 <span>中 / 守住中</span></li><li><strong>支撐</strong> 1901.25 <span>中 / 守住中</span></li><li><strong>支撐</strong> 1853.67 <span>強 / 守住中</span></li><li><strong>壓力</strong> 2100.00 <span>中 / 守住中</span></li>
+              <li><strong>支撐</strong> 1760.00 <span>中 / 守住中</span></li><li><strong>支撐</strong> 1910.00 <span>中 / 守住中</span></li><li><strong>支撐</strong> 1859.25 <span>強 / 守住中</span></li><li><strong>壓力</strong> 2100.00 <span>中 / 守住中</span></li>
             </ul>
           </div>
     
@@ -1219,7 +1308,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value"><span class="chip chip-sand">量能正常</span></div>
+            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
           </div>
     
             
@@ -1252,13 +1341,13 @@
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">長黑K · 偏空</div>
+            <div class="metric-value">射擊之星 · 偏空</div>
           </div>
     
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value"><span class="chip chip-sand">無</span></div>
+            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
           </div>
     
           </div>
@@ -1270,7 +1359,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is currently selected.</li>
-          <li><strong>Pattern:</strong> 長黑K · 偏空</li>
+          <li><strong>Pattern:</strong> 射擊之星 · 偏空</li>
           <li><strong>Chart:</strong> <a href=".cache/tsmc_tw-swing-entry/signal_chart.html">.cache/tsmc_tw-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -1281,7 +1370,7 @@
           <div>
             <div class="eyebrow">Detail Card</div>
             <div class="detail-symbol">GLD</div>
-            <div class="detail-price">Close 446.42 · 2026-04-17</div>
+            <div class="detail-price">Close 445.93 · 2026-04-17</div>
           </div>
           <span class="chip chip-amber">Watchlist Wait</span>
         </div>
@@ -1301,6 +1390,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -1333,7 +1423,7 @@
           <div class="detail-metric detail-metric-levels">
             <div class="metric-label">E Levels</div>
             <ul class="level-list">
-              <li><strong>支撐</strong> 399.20 <span>中 / 守住中</span></li><li><strong>支撐</strong> 427.09 <span>中 / 守住中</span></li><li><strong>支撐</strong> 451.86 <span>強 / 已跌破／已突破</span></li><li><strong>壓力</strong> 448.70 <span>中 / 測試中</span></li>
+              <li><strong>支撐</strong> 399.20 <span>中 / 守住中</span></li><li><strong>支撐</strong> 427.06 <span>中 / 守住中</span></li><li><strong>支撐</strong> 451.85 <span>強 / 已跌破／已突破</span></li><li><strong>壓力</strong> 448.70 <span>中 / 測試中</span></li>
             </ul>
           </div>
     
@@ -1376,7 +1466,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">射擊之星 · 偏空</div>
+            <div class="metric-value">十字線 · 中性</div>
           </div>
     
             
@@ -1394,7 +1484,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is valid but currently waiting below cutoff.</li>
-          <li><strong>Pattern:</strong> 射擊之星 · 偏空</li>
+          <li><strong>Pattern:</strong> 十字線 · 中性</li>
           <li><strong>Chart:</strong> <a href=".cache/gld-swing-entry/signal_chart.html">.cache/gld-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -1425,6 +1515,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -1549,6 +1640,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -1653,7 +1745,7 @@
           <div>
             <div class="eyebrow">Detail Card</div>
             <div class="detail-symbol">SLV</div>
-            <div class="detail-price">Close 73.93 · 2026-04-17</div>
+            <div class="detail-price">Close 73.63 · 2026-04-17</div>
           </div>
           <span class="chip chip-amber">Watchlist Wait</span>
         </div>
@@ -1673,6 +1765,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -1705,7 +1798,7 @@
           <div class="detail-metric detail-metric-levels">
             <div class="metric-label">E Levels</div>
             <ul class="level-list">
-              <li><strong>支撐</strong> 60.37 <span>中 / 守住中</span></li><li><strong>支撐</strong> 66.81 <span>中 / 守住中</span></li><li><strong>支撐</strong> 74.46 <span>強 / 已跌破／已突破</span></li><li><strong>壓力</strong> 75.16 <span>中 / 測試中</span></li>
+              <li><strong>支撐</strong> 60.37 <span>中 / 守住中</span></li><li><strong>支撐</strong> 66.80 <span>中 / 守住中</span></li><li><strong>支撐</strong> 74.45 <span>強 / 已跌破／已突破</span></li><li><strong>壓力</strong> 75.16 <span>中 / 守住中</span></li>
             </ul>
           </div>
     
@@ -1748,7 +1841,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">J Pattern</div>
-            <div class="metric-value">十字線 · 中性</div>
+            <div class="metric-value">無明確型態 · 中性</div>
           </div>
     
             
@@ -1766,7 +1859,7 @@
 
         <ul class="detail-list">
           <li><strong>Action note:</strong> Preferred line is valid but currently waiting below cutoff.</li>
-          <li><strong>Pattern:</strong> 十字線 · 中性</li>
+          <li><strong>Pattern:</strong> 無明確型態 · 中性</li>
           <li><strong>Chart:</strong> <a href=".cache/slv-swing-entry/signal_chart.html">.cache/slv-swing-entry/signal_chart.html</a></li>
         </ul>
       </aside>
@@ -1777,7 +1870,7 @@
           <div>
             <div class="eyebrow">Detail Card</div>
             <div class="detail-symbol">TSLA</div>
-            <div class="detail-price">Close 401.76 · 2026-04-17</div>
+            <div class="detail-price">Close 400.62 · 2026-04-17</div>
           </div>
           <span class="chip chip-amber">Watchlist Wait</span>
         </div>
@@ -1797,6 +1890,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -1829,7 +1923,7 @@
           <div class="detail-metric detail-metric-levels">
             <div class="metric-label">E Levels</div>
             <ul class="level-list">
-              <li><strong>支撐</strong> 337.24 <span>中 / 守住中</span></li><li><strong>支撐</strong> 367.86 <span>中 / 守住中</span></li><li><strong>支撐</strong> 396.84 <span>強 / 測試中</span></li><li><strong>壓力</strong> 409.28 <span>中 / 測試中</span></li>
+              <li><strong>支撐</strong> 337.24 <span>中 / 守住中</span></li><li><strong>支撐</strong> 367.80 <span>中 / 守住中</span></li><li><strong>支撐</strong> 396.82 <span>強 / 測試中</span></li><li><strong>壓力</strong> 409.28 <span>中 / 守住中</span></li>
             </ul>
           </div>
     
@@ -1839,7 +1933,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">F Volume</div>
-            <div class="metric-value"><span class="chip chip-sand">上漲縮量</span></div>
+            <div class="metric-value"><span class="chip chip-sand">上漲放量</span></div>
           </div>
     
             
@@ -1878,7 +1972,7 @@
             
           <div class="detail-metric">
             <div class="metric-label">L Price Volume</div>
-            <div class="metric-value"><span class="chip chip-red">偏空價量背離</span></div>
+            <div class="metric-value"><span class="chip chip-blue">價量配合確認</span></div>
           </div>
     
           </div>
@@ -1921,6 +2015,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -2025,7 +2120,7 @@
           <div>
             <div class="eyebrow">Detail Card</div>
             <div class="detail-symbol">SPY</div>
-            <div class="detail-price">Close 710.45 · 2026-04-17</div>
+            <div class="detail-price">Close 710.14 · 2026-04-17</div>
           </div>
           <span class="chip chip-amber">Reference Only</span>
         </div>
@@ -2045,6 +2140,7 @@
         </div>
         <div class="detail-legend-note">等回檔買進 = 看多但等更好的位置；觀望 = 先不動，等更多確認。</div>
     
+        
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -2077,7 +2173,7 @@
           <div class="detail-metric detail-metric-levels">
             <div class="metric-label">E Levels</div>
             <ul class="level-list">
-              <li><strong>支撐</strong> 629.28 <span>中 / 守住中</span></li><li><strong>支撐</strong> 666.63 <span>中 / 守住中</span></li><li><strong>壓力</strong> 712.38 <span>中 / 測試中</span></li>
+              <li><strong>支撐</strong> 629.28 <span>中 / 守住中</span></li><li><strong>支撐</strong> 666.62 <span>中 / 守住中</span></li><li><strong>壓力</strong> 712.39 <span>中 / 測試中</span></li>
             </ul>
           </div>
     

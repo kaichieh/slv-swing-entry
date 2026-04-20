@@ -39,10 +39,18 @@ From there you can click into each asset chart:
 
 ## Generate Reports
 
+Use the explicit interpreter path for this repo:
+
+```powershell
+C:\Python313\python.exe
+```
+
+This avoids ambiguity with other local Python installs and virtual environments that do not have `numpy` / `pandas` installed.
+
 ### Refresh everything except SLV
 
 ```powershell
-python .\refresh_reports.py
+C:\Python313\python.exe .\refresh_reports.py
 ```
 
 This will:
@@ -55,7 +63,7 @@ This will:
 ### Refresh only selected assets
 
 ```powershell
-python .\refresh_reports.py iwm nvda xle
+C:\Python313\python.exe .\refresh_reports.py iwm nvda xle
 ```
 
 This will refresh only those assets, then rebuild the shared monitor board.
@@ -93,6 +101,23 @@ it runs:
 Then it rebuilds:
 
 - `monitor_board.html`
+
+## Options IV Skeleton
+
+There is now a starter script for per-asset options implied volatility:
+
+- `options_iv.py`
+
+It expects an options chain file at:
+
+- `.cache/<asset>-swing-entry/<asset>_options_chain.csv`
+
+and writes:
+
+- `.cache/<asset>-swing-entry/options_iv_summary.json`
+- `assets/<asset>/options_iv_history.csv`
+
+This is intentionally a first-step pipeline for `30D ATM IV`, not a full volatility surface. The history file can now also feed optional `prepare.py` features. See [docs/options-iv-pipeline.md](D:/coding/slv/slv-swing-entry/docs/options-iv-pipeline.md) for the accepted schema and flow.
 
 ## Notes
 
