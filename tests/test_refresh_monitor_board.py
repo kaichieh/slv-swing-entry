@@ -52,8 +52,9 @@ class RefreshMonitorBoardTests(unittest.TestCase):
 
         self.assertIn("Watchlist Blocked", html)
         self.assertIn("GLD", html)
-        self.assertIn("30D ATM IV", html)
-        self.assertIn("IV Rank 76", html)
+        self.assertIn("<th>IV</th>", html)
+        self.assertIn("28.4%", html)
+        self.assertIn("R 76", html)
 
     def test_load_priority_research_board_excludes_assets_without_real_chart(self) -> None:
         operator_row = pd.Series(
@@ -168,6 +169,38 @@ class RefreshMonitorBoardTests(unittest.TestCase):
         self.assertTrue(enriched["iv_available"])
         self.assertEqual(enriched["iv_asof_date"], "2026-04-15")
         self.assertAlmostEqual(float(enriched["iv_30"]), 0.30, places=6)
+
+    def test_render_table_row_with_iv_includes_compact_iv_cell(self) -> None:
+        row = pd.Series(
+            {
+                "asset_key": "spy",
+                "symbol": "SPY",
+                "preferred_line": "baseline_live",
+                "action": "selected_now",
+                "technical_trend_zh": "n/a",
+                "technical_trend": "",
+                "technical_rsi_zh": "n/a",
+                "technical_rsi": "",
+                "technical_volume_zh": "n/a",
+                "technical_volume": "",
+                "technical_action_zh": "n/a",
+                "technical_action": "",
+                "technical_summary": "n/a",
+                "technical_key_level": "n/a",
+                "display_latest_date": "2026-04-20",
+                "latest_value": 0.1,
+                "signal_color": "#000",
+                "chart_href": "chart.html",
+                "iv_30": 0.13,
+                "iv_display_rank": 0.2,
+                "iv_rank_bucket": "low",
+            }
+        )
+
+        html = rmb.render_table_row_with_iv(row)
+
+        self.assertIn("13.0%", html)
+        self.assertIn("R 20", html)
 
 
 if __name__ == "__main__":

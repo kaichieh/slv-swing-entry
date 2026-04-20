@@ -261,6 +261,13 @@ def _compute_options_iv_visual(asset_key: str) -> dict[str, object]:
             rank_bucket = "low"
         else:
             rank_bucket = "mid"
+    elif not pd.isna(current_iv):
+        if current_iv >= 0.50:
+            rank_bucket = "high"
+        elif current_iv <= 0.20:
+            rank_bucket = "low"
+        else:
+            rank_bucket = "mid"
 
     return {
         "iv_30": current_iv,
@@ -838,6 +845,57 @@ def render_table_row(row: pd.Series) -> str:
     """
 
 
+def render_table_row_with_iv(row: pd.Series) -> str:
+    status_label = str(row["action"]).replace("_", " ")
+    status_chip = render_chip(
+        status_label.title(),
+        "chip-blue"
+        if str(row["action"]) == "selected_now"
+        else "chip-amber"
+        if str(row["action"]) in {"watchlist_wait", "watchlist_blocked"}
+        else "chip-sand"
+        if str(row["action"]) == "reference_only"
+        else "chip-red",
+    )
+    trend_chip = render_chip(str(row.get("technical_trend_zh", "n/a")), _chip_class(str(row.get("technical_trend", "")), "trend"))
+    rsi_chip = render_chip(str(row.get("technical_rsi_zh", "n/a")), _chip_class(str(row.get("technical_rsi", "")), "rsi"))
+    volume_chip = render_chip(str(row.get("technical_volume_zh", "n/a")), _chip_class(str(row.get("technical_volume", "")), "volume"))
+    action_chip = render_chip(str(row.get("technical_action_zh", "n/a")), _chip_class(str(row.get("technical_action", "")), "action"))
+    latest_value = "n/a" if pd.isna(row.get("latest_value")) else f"{float(row['latest_value']):.4f}"
+    iv_value = _format_percent(row.get("iv_30"))
+    iv_rank = _format_rank_label(row.get("iv_display_rank"))
+    iv_bucket = str(row.get("iv_rank_bucket", "n/a"))
+    iv_bucket_class = re.sub(r"[^a-z0-9_-]+", "-", iv_bucket.lower()).strip("-") or "na"
+    iv_value_class = f"iv-cell-value iv-cell-value-{iv_bucket_class}"
+    symbol_color = escape(str(row.get("signal_color", "#9ca3af")))
+    asset_key = escape(str(row.get("asset_key", "")))
+    chart_href = escape(str(row.get("chart_href", "#")))
+    return f"""
+      <tr class="board-row" data-target="detail-{asset_key}">
+        <td>
+          <div class="symbol">
+            <a class="symbol-link" href="{chart_href}"><strong style="color:{symbol_color}">{escape(str(row["symbol"]))}</strong></a>
+            <div class="mini">{escape(str(row["display_latest_date"]))} 繚 {escape(str(row["preferred_line"]))}</div>
+            <div class="mini">latest {escape(latest_value)}</div>
+          </div>
+        </td>
+        <td>{status_chip}</td>
+        <td>{trend_chip}</td>
+        <td>{rsi_chip}</td>
+        <td>{volume_chip}</td>
+        <td>{action_chip}</td>
+        <td>
+          <div class="iv-cell iv-cell-{iv_bucket_class}">
+            <div class="{iv_value_class}">{escape(iv_value)}</div>
+            <div class="iv-cell-rank">{render_chip(f"R {iv_rank}" if iv_rank != "n/a" else "R n/a", _vol_chip_class(iv_bucket))}</div>
+          </div>
+        </td>
+        <td class="summary">{escape(str(row.get("technical_summary", "n/a")))}</td>
+        <td><div class="level">{escape(str(row.get("technical_key_level", "n/a")))}</div></td>
+      </tr>
+    """
+
+
 def _detail_chip_class(field_key: str, enum_value: str) -> str:
     if field_key == "A_trend":
         return _chip_class(enum_value, "trend")
@@ -1077,6 +1135,50 @@ def render_market_panic_card(panic: dict[str, Any] | None) -> str:
     """
 
 
+def render_iv_leaderboard(board: pd.DataFrame) -> str:
+    if "iv_30" not in board.columns:
+        return ""
+    candidates = board.loc[board["iv_available"] == True].copy()
+    if candidates.empty:
+        return ""
+    ranked = candidates.sort_values("iv_30", ascending=False).head(10)
+    rows = []
+    for _, row in ranked.iterrows():
+        symbol = escape(str(row["symbol"]))
+        iv_value = _format_percent(row.get("iv_30"))
+        rank_label = _format_rank_label(row.get("iv_display_rank"))
+        bucket = str(row.get("iv_rank_bucket", "n/a"))
+        chip = render_chip(f"IV Rank {rank_label}" if rank_label != "n/a" else "IV Rank n/a", _vol_chip_class(bucket))
+        rows.append(
+            f"""
+              <div class="iv-leader-row">
+                <div class="iv-leader-left">
+                  <span class="iv-leader-symbol">{symbol}</span>
+                  <span class="iv-leader-date">{escape(str(row.get("iv_asof_date", "n/a")))}</span>
+                </div>
+                <div class="iv-leader-right">
+                  <span class="iv-leader-value">{iv_value}</span>
+                  {chip}
+                </div>
+              </div>
+            """
+        )
+    return f"""
+      <section class="iv-leaderboard-card">
+        <div class="iv-leaderboard-head">
+          <div>
+            <div class="eyebrow">IV Heatmap</div>
+            <div class="iv-leaderboard-title">30D ATM IV 排名</div>
+          </div>
+          <div class="iv-leaderboard-note">高到低排序，先看誰現在最熱</div>
+        </div>
+        <div class="iv-leaderboard-list">
+          {''.join(rows)}
+        </div>
+      </section>
+    """
+
+
 def render_signal_color_legend() -> str:
     return """
       <div class="signal-legend">
@@ -1246,7 +1348,7 @@ def render_detail_template(row: pd.Series) -> str:
 def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) -> str:
     counts = board["action"].value_counts().to_dict()
     summary = " | ".join(f"{key}={value}" for key, value in counts.items())
-    board_rows = "\n".join(render_table_row(row) for _, row in board.iterrows())
+    board_rows = "\n".join(render_table_row_with_iv(row) for _, row in board.iterrows())
     detail_row = board.iloc[0] if not board.empty else pd.Series(dtype="object")
     current_detail = render_detail_card(detail_row) if not board.empty else ""
     detail_templates = "\n".join(render_detail_template(row) for _, row in board.iterrows())
@@ -1628,6 +1730,11 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
       border-bottom: 1px solid rgba(223, 210, 188, 0.8);
       white-space: nowrap;
     }}
+    thead th:first-child,
+    tbody td:first-child {{
+      width: 12ch;
+      max-width: 12ch;
+    }}
     tbody td {{
       padding: 16px;
       vertical-align: top;
@@ -1644,11 +1751,13 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
       display: flex;
       flex-direction: column;
       gap: 6px;
+      max-width: 12ch;
     }}
     .symbol-link {{
       display: inline-flex;
       width: fit-content;
       text-decoration: none;
+      max-width: 100%;
     }}
     .symbol-link:hover strong {{
       text-decoration: underline;
@@ -1658,11 +1767,15 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
     .symbol strong {{
       font-size: 22px;
       line-height: 1;
+      display: inline-block;
+      max-width: 100%;
     }}
     .mini {{
       color: var(--muted);
       font-size: 12px;
       line-height: 1.4;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }}
     .chip {{
       display: inline-flex;
@@ -1688,6 +1801,53 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
     .level {{
       font-size: 14px;
       font-weight: 700;
+    }}
+    .iv-cell {{
+      display: grid;
+      gap: 6px;
+      min-width: 100px;
+      padding: 8px 10px;
+      border-radius: 14px;
+    }}
+    .iv-cell-high {{
+      background: rgba(245, 158, 11, 0.12);
+    }}
+    .iv-cell-mid {{
+      background: rgba(100, 116, 139, 0.10);
+    }}
+    .iv-cell-low {{
+      background: rgba(59, 130, 246, 0.10);
+    }}
+    .iv-cell-n-a,
+    .iv-cell-na {{
+      background: rgba(148, 163, 184, 0.10);
+    }}
+    .iv-cell-value {{
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }}
+    .iv-cell-high .iv-cell-value,
+    .iv-cell-value-high {{
+      color: #b45309;
+    }}
+    .iv-cell-mid .iv-cell-value,
+    .iv-cell-value-mid {{
+      color: #1f2937;
+    }}
+    .iv-cell-low .iv-cell-value,
+    .iv-cell-value-low {{
+      color: #1d4ed8;
+    }}
+    .iv-cell-n-a .iv-cell-value,
+    .iv-cell-na .iv-cell-value,
+    .iv-cell-value-n-a,
+    .iv-cell-value-na {{
+      color: #6b7280;
+    }}
+    .iv-cell-rank {{
+      display: inline-flex;
+      align-items: center;
     }}
     .detail-card {{
       padding: 24px;
@@ -1872,6 +2032,7 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
               <th>RSI</th>
               <th>Volume</th>
               <th>Action</th>
+              <th>IV</th>
               <th>Technical Summary</th>
               <th>Key Level</th>
             </tr>
