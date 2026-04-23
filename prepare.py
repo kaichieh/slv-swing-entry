@@ -329,6 +329,35 @@ def fetch_text(url: str, *, accept_json: bool = False) -> str:
     raise RuntimeError(f"Unable to fetch URL: {url}")
 
 
+def download_prices_from_yfinance(symbol: str) -> pd.DataFrame:
+    try:
+        import yfinance as yf
+    except ModuleNotFoundError as exc:
+        raise RuntimeError("yfinance is not installed.") from exc
+
+    frame = yf.download(
+        symbol,
+        period="max",
+        interval="1d",
+        auto_adjust=False,
+        progress=False,
+        threads=False,
+    )
+    if frame.empty:
+        raise RuntimeError(f"yfinance returned no rows for {symbol}.")
+    frame = frame.copy()
+    if isinstance(frame.columns, pd.MultiIndex):
+        price_columns = {"Open", "High", "Low", "Close", "Volume", "Adj Close"}
+        if any(str(column[0]) in price_columns for column in frame.columns):
+            frame.columns = [str(column[0]) for column in frame.columns]
+        elif any(str(column[-1]) in price_columns for column in frame.columns):
+            frame.columns = [str(column[-1]) for column in frame.columns]
+        else:
+            frame.columns = ["_".join(str(part) for part in column if str(part)) for column in frame.columns]
+    frame = frame.reset_index()
+    return normalize_ohlcv_frame(frame)
+
+
 def download_prices_from_yahoo(symbol: str) -> pd.DataFrame:
     payload = json.loads(fetch_text(yahoo_chart_url(symbol), accept_json=True))
     result = payload["chart"]["result"][0]
@@ -349,6 +378,13 @@ def download_prices_from_yahoo(symbol: str) -> pd.DataFrame:
     return normalize_ohlcv_frame(frame)
 
 
+def download_prices_from_yahoo_sources(symbol: str) -> pd.DataFrame:
+    try:
+        return download_prices_from_yfinance(symbol)
+    except Exception:
+        return download_prices_from_yahoo(symbol)
+
+
 def download_prices_from_stooq(url: str) -> pd.DataFrame:
     frame = pd.read_csv(StringIO(fetch_text(url)))
     if frame.empty:
@@ -360,12 +396,14 @@ def download_vix_prices(url: str = VIX_CSV_URL) -> pd.DataFrame:
     ensure_cache_dir()
     try:
         normalized = download_vix_prices_from_fred(url)
+        normalized = apply_max_price_date(normalized)
         normalized.to_csv(VIX_CACHE_PATH, index=False)
         return normalized
     except Exception as exc:
         if should_retry_fetch(exc):
             try:
                 normalized = download_vix_prices_from_yahoo(VIX_YAHOO_SYMBOL)
+                normalized = apply_max_price_date(normalized)
                 normalized.to_csv(VIX_CACHE_PATH, index=False)
                 return normalized
             except Exception as yahoo_exc:
@@ -377,19 +415,21 @@ def download_vix_prices(url: str = VIX_CSV_URL) -> pd.DataFrame:
         cached = pd.read_csv(VIX_CACHE_PATH)
         if cached.empty:
             raise RuntimeError("Cached VIX dataset is empty.")
-        return normalize_vix_frame(cached)
+        return apply_max_price_date(normalize_vix_frame(cached))
 
 
 def download_vix3m_prices(url: str = VIX3M_CSV_URL) -> pd.DataFrame:
     ensure_cache_dir()
     try:
         normalized = download_vix3m_prices_from_fred(url)
+        normalized = apply_max_price_date(normalized)
         normalized.to_csv(VIX3M_CACHE_PATH, index=False)
         return normalized
     except Exception as exc:
         if should_retry_fetch(exc):
             try:
                 normalized = download_vix_prices_from_yahoo(VIX3M_YAHOO_SYMBOL)
+                normalized = apply_max_price_date(normalized)
                 normalized.to_csv(VIX3M_CACHE_PATH, index=False)
                 return normalized
             except Exception as yahoo_exc:
@@ -401,7 +441,7 @@ def download_vix3m_prices(url: str = VIX3M_CSV_URL) -> pd.DataFrame:
         cached = pd.read_csv(VIX3M_CACHE_PATH)
         if cached.empty:
             raise RuntimeError("Cached VIX3M dataset is empty.")
-        return normalize_vix_frame(cached)
+        return apply_max_price_date(normalize_vix_frame(cached))
 
 
 def should_fallback_to_cached_prices(exc: Exception) -> bool:
@@ -437,7 +477,7 @@ def download_vix3m_prices_from_fred(url: str) -> pd.DataFrame:
 
 
 def download_vix_prices_from_yahoo(symbol: str) -> pd.DataFrame:
-    frame = download_prices_from_yahoo(symbol)
+    frame = download_prices_from_yahoo_sources(symbol)
     return normalize_vix_frame(frame[["date", "close"]].copy())
 
 
@@ -445,8 +485,8 @@ def download_symbol_prices(symbol: str, stooq_url: str, cache_path: str) -> pd.D
     ensure_cache_dir()
     Path(cache_path).parent.mkdir(parents=True, exist_ok=True)
     try:
-        frame = download_prices_from_yahoo(symbol)
-    except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError, RemoteDisconnected):
+        frame = download_prices_from_yahoo_sources(symbol)
+    except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError, RuntimeError, RemoteDisconnected):
         try:
             frame = download_prices_from_stooq(stooq_url)
         except Exception as exc:
@@ -458,8 +498,20 @@ def download_symbol_prices(symbol: str, stooq_url: str, cache_path: str) -> pd.D
             if frame.empty:
                 raise RuntimeError(f"Cached {symbol} dataset is empty.")
             frame = normalize_ohlcv_frame(frame)
+    frame = apply_max_price_date(frame)
     frame.to_csv(cache_path, index=False)
     return frame
+
+
+def apply_max_price_date(frame: pd.DataFrame) -> pd.DataFrame:
+    max_price_date = os.getenv("AR_MAX_PRICE_DATE", "").strip()
+    if not max_price_date:
+        return frame
+    cutoff = pd.to_datetime(max_price_date).date()
+    filtered = frame[pd.to_datetime(frame["date"]).dt.date <= cutoff].copy()
+    if filtered.empty:
+        raise RuntimeError(f"AR_MAX_PRICE_DATE={max_price_date} removed all downloaded price rows.")
+    return filtered
 
 
 def download_asset_prices() -> pd.DataFrame:
