@@ -1,12 +1,12 @@
 {
   "symbol": "IWM",
   "asset_key": "iwm",
-  "date": "2026-04-17",
+  "date": "2026-04-24",
   "technical_reading": {
     "A_trend": "bullish",
     "B_price_vs_ma": "above",
     "C_rsi_state": "overbought",
-    "D_kd_state": "death_cross",
+    "D_kd_state": "overbought",
     "E_levels": [
       {
         "type": "support",
@@ -16,22 +16,22 @@
       },
       {
         "type": "support",
-        "level": 255.39,
+        "level": 262.5,
         "strength": "medium",
         "status": "holding"
       },
       {
         "type": "resistance",
-        "level": 277.63,
+        "level": 279.79,
         "strength": "medium",
         "status": "tested"
       }
     ],
     "F_volume_state": "contracting_on_rise",
     "G_ma_structure": "bullish_alignment",
-    "H_macd_state": "bullish_expanding",
+    "H_macd_state": "bullish_contracting",
     "I_divergence_state": "none",
-    "J_candlestick_pattern": "none",
+    "J_candlestick_pattern": "doji",
     "K_trade_action": "wait",
     "L_price_volume_divergence": "bearish_volume_divergence"
   },
@@ -39,7 +39,7 @@
     "A_trend": "多頭",
     "B_price_vs_ma": "在均線上方",
     "C_rsi_state": "過熱／超買",
-    "D_kd_state": "死亡交叉",
+    "D_kd_state": "高檔過熱",
     "E_levels": [
       {
         "type": "support",
@@ -53,7 +53,7 @@
       {
         "type": "support",
         "type_zh": "支撐",
-        "level": 255.39,
+        "level": 262.5,
         "strength": "medium",
         "strength_zh": "中",
         "status": "holding",
@@ -62,7 +62,7 @@
       {
         "type": "resistance",
         "type_zh": "壓力",
-        "level": 277.63,
+        "level": 279.79,
         "strength": "medium",
         "strength_zh": "中",
         "status": "tested",
@@ -71,22 +71,22 @@
     ],
     "F_volume_state": "上漲縮量",
     "G_ma_structure": "均線多頭排列",
-    "H_macd_state": "多方柱狀體擴大",
+    "H_macd_state": "多方柱狀體縮小",
     "I_divergence_state": "無",
-    "J_candlestick_pattern": "無明確型態",
+    "J_candlestick_pattern": "十字線",
     "K_trade_action": "觀望",
     "L_price_volume_divergence": "偏空價量背離"
   },
   "supporting_metrics": {
-    "latest_close": 276.31,
-    "ret_20": 0.1158,
-    "ret_60": 0.0318,
-    "sma_gap_20": 0.0819,
-    "sma_gap_60": 0.0699,
-    "drawdown_20": 0.0,
-    "rsi_14": 90.0024,
-    "volume_vs_20": -0.2547,
-    "predicted_probability": 0.4628,
+    "latest_close": 276.65,
+    "ret_20": 0.118,
+    "ret_60": 0.0507,
+    "sma_gap_20": 0.0539,
+    "sma_gap_60": 0.0676,
+    "drawdown_20": -0.0025,
+    "rsi_14": 86.5703,
+    "volume_vs_20": -0.3566,
+    "predicted_probability": 0.4686,
     "decision_threshold": 0.476,
     "monitor_action": "selected_now"
   },

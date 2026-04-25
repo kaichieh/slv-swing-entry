@@ -26,8 +26,10 @@ from predict_latest import (
     build_rule_rationale,
     classify_signal,
     fit_model,
+    get_live_execution_rule,
     get_rule_top_pct,
     predict_probabilities,
+    resolve_execution_cutoff,
     score_latest_row,
     summarize_rule,
     write_latest_prediction_output,
@@ -39,6 +41,7 @@ DEFAULT_LOOKBACK_DAYS = 5 * 252
 SIGNAL_COLORS = {
     "no_entry": "#9ca3af",
     "weak_bullish": "#fde68a",
+    "early_entry": "#2563eb",
     "bullish": "#f59e0b",
     "strong_bullish": "#16a34a",
     "very_strong_bullish": "#065f46",
@@ -52,7 +55,7 @@ def get_env_int(name: str, default: int) -> int:
 
 def _normalize_default_chart_signal_mode(value: object) -> str:
     mode = str(value).strip().lower()
-    return mode if mode in {"raw", "execution"} else "raw"
+    return mode if mode in {"raw", "execution"} else "execution"
 
 
 def _payload_raw_model_signal(payload: dict[str, object]) -> str:
@@ -93,6 +96,14 @@ def _apply_latest_prediction_overlay(latest_row: dict[str, object], payload: dic
         latest_row["buy_point_ok"] = bool(buy_point_summary["buy_point_ok"])
     if buy_point_summary.get("buy_point_warnings") is not None:
         latest_row["buy_point_warnings"] = _joined_payload_lines(buy_point_summary["buy_point_warnings"])
+    if buy_point_summary.get("buy_point_passes") is not None:
+        latest_row["buy_point_passes"] = _joined_payload_lines(buy_point_summary["buy_point_passes"])
+    if buy_point_summary.get("dip_entry_active") is not None:
+        latest_row["dip_entry_active"] = bool(buy_point_summary["dip_entry_active"])
+    if buy_point_summary.get("dip_entry_passes") is not None:
+        latest_row["dip_entry_passes"] = _joined_payload_lines(buy_point_summary["dip_entry_passes"])
+    if buy_point_summary.get("dip_entry_warnings") is not None:
+        latest_row["dip_entry_warnings"] = _joined_payload_lines(buy_point_summary["dip_entry_warnings"])
     if signal_summary.get("predicted_probability") is not None:
         latest_row["probability"] = _rounded_payload_value(signal_summary["predicted_probability"], 4)
     if signal_summary.get("decision_threshold") is not None:
@@ -122,6 +133,8 @@ def _apply_latest_prediction_overlay(latest_row: dict[str, object], payload: dic
         "sma_gap_60": 4,
         "volume_vs_20": 4,
         "rsi_14": 2,
+        "close_location_20": 4,
+        "distance_from_60d_low": 4,
     }.items():
         if latest_feature_snapshot.get(field_name) is not None:
             latest_row[field_name] = _rounded_payload_value(latest_feature_snapshot[field_name], digits)
@@ -161,6 +174,7 @@ def build_chart_rows(lookback_days: int, context: dict[str, object] | None = Non
     model_artifacts = cast(dict[str, object], context["model_artifacts"])
     threshold = float(context["threshold"])
     history_probabilities = np.asarray(context["historical_probabilities"], dtype=np.float32)
+    execution_cutoff = resolve_execution_cutoff(get_live_execution_rule(), threshold, history_probabilities)
     rule_top_pct = float(context["rule_top_pct"])
     train_frame = context["train_frame"]
     scored = live_features.dropna(subset=feature_names).copy()
@@ -173,8 +187,14 @@ def build_chart_rows(lookback_days: int, context: dict[str, object] | None = Non
         row = cast(pd.Series, scored.iloc[idx])
         snapshot = {name: float(row[name]) for name in scored.columns if name != "date"}
         probability = float(scored_probabilities[idx])
-        raw_signal, band_info = classify_signal(probability, float(threshold), history_probabilities)
-        signal, buy_point_summary = apply_buy_point_overlay(raw_signal, snapshot, asset_key=asset_key)
+        raw_signal, band_info = classify_signal(probability, float(execution_cutoff), history_probabilities)
+        signal, buy_point_summary = apply_buy_point_overlay(
+            raw_signal,
+            snapshot,
+            asset_key=asset_key,
+            probability=probability,
+            model_threshold=float(threshold),
+        )
         rule_info = summarize_rule(probability, history_probabilities, rule_top_pct)
         rationale_text = " | ".join(build_model_rationale(snapshot))
         rule_text = build_rule_rationale(probability, float(threshold), rule_info)
@@ -189,8 +209,12 @@ def build_chart_rows(lookback_days: int, context: dict[str, object] | None = Non
                 "raw_model_signal": raw_signal,
                 "buy_point_ok": bool(buy_point_summary["buy_point_ok"]),
                 "buy_point_warnings": " | ".join(buy_point_warnings),
+                "buy_point_passes": " | ".join(cast(list[str], buy_point_summary.get("buy_point_passes", []))),
+                "dip_entry_active": bool(buy_point_summary.get("dip_entry_active", False)),
+                "dip_entry_passes": " | ".join(cast(list[str], buy_point_summary.get("dip_entry_passes", []))),
+                "dip_entry_warnings": " | ".join(cast(list[str], buy_point_summary.get("dip_entry_warnings", []))),
                 "probability": round(probability, 4),
-                "threshold": round(float(threshold), 4),
+                "threshold": round(float(execution_cutoff), 4),
                 "confidence_gap": band_info["confidence_gap"],
                 "rule_selected": bool(rule_info["selected"]),
                 "rule_cutoff": round(rule_cutoff, 4),
@@ -204,11 +228,13 @@ def build_chart_rows(lookback_days: int, context: dict[str, object] | None = Non
                 "sma_gap_20": round(float(snapshot.get("sma_gap_20", 0.0)), 4),
                 "volume_vs_20": round(float(snapshot.get("volume_vs_20", 0.0)), 4),
                 "rsi_14": round(float(snapshot.get("rsi_14", 0.0)), 2),
+                "close_location_20": round(float(snapshot.get("close_location_20", 0.0)), 4),
+                "distance_from_60d_low": round(float(snapshot.get("distance_from_60d_low", 0.0)), 4),
             }
         )
 
     meta = {
-        "threshold": round(float(threshold), 4),
+        "threshold": round(float(execution_cutoff), 4),
         "latest_date": rows[-1]["date"] if rows else None,
         "lookback_days": lookback_days,
         "signal_colors": SIGNAL_COLORS,
@@ -222,7 +248,7 @@ def build_chart_payload(rows: list[dict[str, object]], meta: dict[str, object]) 
     algorithm_name = str(config.get("live_model_family", config.get("model_family", "logistic")))
     label_mode = str(config.get("live_label_mode", config.get("label_mode", "drop-neutral")))
     default_chart_signal_mode = _normalize_default_chart_signal_mode(
-        config.get("default_chart_signal_mode", "raw")
+        config.get("default_chart_signal_mode", "execution")
     )
     symbol = ac.get_asset_symbol()
     title = f"{symbol} {algorithm_name}"

@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-leu	LEU	leu_watchlist_only	binary_operator	watchlist_only	active	watchlist_wait	48	2026-04-17	0.449	False	0.416	2026-04-14	3	Preferred line is valid but currently waiting below cutoff.
+leu	LEU	leu_watchlist_only	binary_operator	watchlist_only	active	watchlist_wait	48	2026-04-24	0.4401	False	0.421	2026-04-23	1	Preferred line is valid but currently waiting below cutoff.

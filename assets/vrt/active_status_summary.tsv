@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-vrt_watchlist_only	binary_operator	watchlist_only	True	active	33	2026-04-17	0.5005	False	0.3	2026-04-17	Watchlist-only line using logistic; keep top_20pct as context and wait for a stronger dedicated live rule.
+vrt_watchlist_only	binary_operator	watchlist_only	True	active	32	2026-04-24	0.5007	False	0.3	2026-04-24	Watchlist-only line using logistic; keep top_20pct as context and wait for a stronger dedicated live rule.
