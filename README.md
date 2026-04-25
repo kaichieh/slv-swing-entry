@@ -47,6 +47,16 @@ C:\Python313\python.exe
 
 This avoids ambiguity with other local Python installs and virtual environments that do not have `numpy` / `pandas` installed.
 
+Price downloads now use `yfinance` first, then fall back to the repo's direct Yahoo chart endpoint, then Stooq/cache. For close-based reports generated before the current U.S. session is complete, set `AR_MAX_PRICE_DATE` to the latest completed market date so partial intraday rows are excluded.
+
+Example:
+
+```powershell
+$env:PYTHONPATH = "D:\coding\slv\slv-swing-entry\.packages;C:\Users\Jay\AppData\Roaming\Python\Python313\site-packages;" + $env:PYTHONPATH
+$env:AR_MAX_PRICE_DATE = "2026-04-22"
+C:\Python313\python.exe .\refresh_reports.py
+```
+
 ### Refresh everything except SLV
 
 ```powershell

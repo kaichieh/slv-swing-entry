@@ -69,6 +69,81 @@ class PredictLatestLiveRuleTests(unittest.TestCase):
         self.assertEqual(signal, "bullish")
         self.assertTrue(details["buy_point_ok"])
 
+    def test_apply_buy_point_overlay_promotes_clean_dip_to_early_entry(self) -> None:
+        with mock.patch.object(
+            pl.ac,
+            "load_asset_config",
+            return_value={
+                "asset_key": "nvda",
+                "live_dip_entry_overlay": {
+                    "enabled": True,
+                    "signal": "early_entry",
+                    "max_rsi_14": 45.0,
+                    "max_drawdown_20": -0.08,
+                    "max_ret_20": 0.02,
+                    "max_sma_gap_20": 0.01,
+                    "max_close_location_20": 0.25,
+                    "max_distance_from_60d_low": 0.08,
+                },
+            },
+        ):
+            signal, details = pl.apply_buy_point_overlay(
+                "weak_bullish",
+                {
+                    "rsi_14": 28.0,
+                    "drawdown_20": -0.12,
+                    "ret_20": -0.08,
+                    "sma_gap_20": -0.05,
+                    "close_location_20": 0.04,
+                    "distance_from_60d_low": 0.01,
+                },
+                asset_key="nvda",
+                probability=0.49,
+                model_threshold=0.48,
+            )
+
+        details = cast(dict[str, object], details)
+        self.assertEqual(signal, "early_entry")
+        self.assertTrue(details["buy_point_ok"])
+        self.assertTrue(details["dip_entry_active"])
+
+    def test_apply_buy_point_overlay_requires_model_threshold_for_dip_entry(self) -> None:
+        with mock.patch.object(
+            pl.ac,
+            "load_asset_config",
+            return_value={
+                "asset_key": "mu",
+                "live_dip_entry_overlay": {
+                    "enabled": True,
+                    "signal": "early_entry",
+                    "max_rsi_14": 45.0,
+                    "max_drawdown_20": -0.08,
+                    "max_ret_20": 0.02,
+                    "max_sma_gap_20": 0.01,
+                    "max_close_location_20": 0.25,
+                    "max_distance_from_60d_low": 0.12,
+                },
+            },
+        ):
+            signal, details = pl.apply_buy_point_overlay(
+                "weak_bullish",
+                {
+                    "rsi_14": 32.0,
+                    "drawdown_20": -0.22,
+                    "ret_20": -0.18,
+                    "sma_gap_20": -0.12,
+                    "close_location_20": 0.03,
+                    "distance_from_60d_low": 0.09,
+                },
+                asset_key="mu",
+                probability=0.43,
+                model_threshold=0.44,
+            )
+
+        details = cast(dict[str, object], details)
+        self.assertEqual(signal, "weak_bullish")
+        self.assertFalse(details["dip_entry_active"])
+
     def test_fit_hard_gate_two_expert_model_preserves_winner_features_without_selected_extras(self) -> None:
         frame = pd.DataFrame(
             {

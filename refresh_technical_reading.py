@@ -351,6 +351,8 @@ def classify_trade_action(payload: Mapping[str, object], snapshot: Mapping[str, 
 
     if signal == "no_entry" and not rule_selected:
         return "wait"
+    if signal == "early_entry" and buy_point_ok:
+        return "buy_pullback"
     if monitor_action == "selected_now" and buy_point_ok:
         return "buy_breakout" if price_vs_ma == "above" else "buy_pullback"
     if rule_selected and not buy_point_ok:

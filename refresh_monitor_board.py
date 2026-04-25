@@ -631,6 +631,7 @@ def load_signal_color(asset_key: str) -> str:
     return {
         "no_entry": "#9ca3af",
         "weak_bullish": "#fde68a",
+        "early_entry": "#2563eb",
         "bullish": "#f59e0b",
         "strong_bullish": "#16a34a",
         "very_strong_bullish": "#065f46",
@@ -687,7 +688,7 @@ def render_today_card(row: pd.Series) -> str:
       <div class="spotlight-date">{escape(latest_date)}</div>
       <div class="spotlight-symbol" style="color:{color}">{escape(str(row["symbol"]))}</div>
       <div class="spotlight-line">{escape(str(row["preferred_line"]))}</div>
-      {render_volatility_panel(row, compact=True)}
+      {render_volatility_panel_v2(row, compact=True)}
       <div class="spotlight-metric">today_status={escape(action)}</div>
       <div class="spotlight-metric">recent_selected={recent_count}/60</div>
       <div class="spotlight-metric">latest={latest}</div>
@@ -716,7 +717,7 @@ def render_priority_research_card(row: pd.Series) -> str:
       <div class="spotlight-date">{escape(latest_date)}</div>
       <div class="spotlight-symbol" style="color:{color}">{escape(str(row["symbol"]))}</div>
       <div class="spotlight-line">{escape(str(row["preferred_line"]))}</div>
-      {render_volatility_panel(row, compact=True)}
+      {render_volatility_panel_v2(row, compact=True)}
       <div class="spotlight-metric">today_status={escape(str(row["action"]))}</div>
       <div class="spotlight-metric">{escape(score_label)}={escape(research_score)}</div>
       <div class="spotlight-metric">best_rule={escape(str(row["research_rule"]))}</div>
@@ -803,6 +804,49 @@ def render_volatility_panel(row: pd.Series, compact: bool = False) -> str:
       </div>
     """
 
+
+
+def render_volatility_panel_v2(row: pd.Series, compact: bool = False) -> str:
+    if not bool(row.get("iv_available", False)):
+        return ""
+    iv_value = _format_percent(row.get("iv_30"))
+    iv_rank = _format_rank_label(row.get("iv_display_rank"))
+    iv_change = _format_percent(row.get("iv_change_1"))
+    iv_pct_20 = _format_rank_label(row.get("iv_percentile_20"))
+    rank_bucket = str(row.get("iv_rank_bucket", "n/a"))
+    asof_date = escape(str(row.get("iv_asof_date", "n/a")))
+    fill_pct = 0.0 if iv_rank == "n/a" else max(0.0, min(100.0, float(iv_rank)))
+    sparse = iv_rank == "n/a" and iv_change == "n/a" and iv_pct_20 == "n/a"
+    modifier_parts: list[str] = []
+    if compact or sparse:
+        modifier_parts.append("volatility-panel-compact")
+    if sparse:
+        modifier_parts.append("volatility-panel-sparse")
+    modifier = f" {' '.join(modifier_parts)}" if modifier_parts else ""
+    meta_html = ""
+    if not sparse:
+        meta_html = f"""
+        <div class="volatility-bar">
+          <span class="volatility-fill" style="width:{fill_pct:.1f}%"></span>
+        </div>
+        <div class="volatility-meta">
+          <span>1D Δ {iv_change}</span>
+          <span>20D pct {iv_pct_20}</span>
+        </div>
+        """
+    return f"""
+      <div class="volatility-panel{modifier}">
+        <div class="volatility-head">
+          <span class="volatility-title">30D ATM IV</span>
+          {render_chip(f"IV Rank {iv_rank}", _vol_chip_class(rank_bucket))}
+        </div>
+        <div class="volatility-value-row">
+          <span class="volatility-value">{iv_value}</span>
+          <span class="volatility-date">as of {asof_date}</span>
+        </div>
+        {meta_html}
+      </div>
+    """
 
 
 def render_table_row(row: pd.Series) -> str:
@@ -1093,8 +1137,22 @@ def render_market_panic_card(panic: dict[str, Any] | None) -> str:
         "stressed": "#dc2626",
         "panic": "#7f1d1d",
     }
-    tick_labels = ("2/17", "3/1", "4/1", "4/17")
-    tick_positions = ("0%", "21%", "72%", "100%")
+    tick_positions = ("0%", "33.3%", "66.7%", "100%")
+    tick_labels: tuple[str, ...]
+    if history_2m:
+        history_dates = [pd.to_datetime(item.get("date")) for item in history_2m]
+        tick_indices = (
+            0,
+            max(0, round((len(history_dates) - 1) / 3)),
+            max(0, round((len(history_dates) - 1) * 2 / 3)),
+            len(history_dates) - 1,
+        )
+        tick_labels = tuple(
+            f"{history_dates[index].month}/{history_dates[index].day}"
+            for index in tick_indices
+        )
+    else:
+        tick_labels = ("n/a", "n/a", "n/a", "n/a")
     bars = "".join(
         f'<div class="panic-bar" title="{escape(str(item.get("date", "")))} · {escape(str(item.get("panic_regime", "")))} · score {escape(str(item.get("panic_score", "")))}" style="height:{28 + int(item.get("panic_score", 0)) * 18}px;background:{bar_color.get(str(item.get("panic_regime", "")), "#a8a29e")}"></div>'
         for item in history_2m
@@ -1185,6 +1243,7 @@ def render_signal_color_legend() -> str:
         <span class="signal-legend-title">Symbol Color</span>
         <span class="signal-legend-item"><span class="signal-dot" style="background:#9ca3af"></span> no_entry</span>
         <span class="signal-legend-item"><span class="signal-dot" style="background:#fde68a"></span> weak_bullish</span>
+        <span class="signal-legend-item"><span class="signal-dot" style="background:#2563eb"></span> early_entry</span>
         <span class="signal-legend-item"><span class="signal-dot" style="background:#f59e0b"></span> bullish</span>
         <span class="signal-legend-item"><span class="signal-dot" style="background:#16a34a"></span> strong_bullish</span>
         <span class="signal-legend-item"><span class="signal-dot" style="background:#065f46"></span> very_strong_bullish</span>
@@ -1301,7 +1360,7 @@ def render_detail_card(row: pd.Series) -> str:
         </div>
 
         {render_detail_color_legend()}
-        {render_volatility_panel(row)}
+        {render_volatility_panel_v2(row)}
 
         <div class="detail-grid">
           <div class="detail-box">
@@ -1519,12 +1578,20 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
       margin: 12px 0 10px;
       padding: 12px 14px;
     }}
+    .volatility-panel-sparse {{
+      margin: 10px 0 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+    }}
     .volatility-head {{
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
       margin-bottom: 8px;
+    }}
+    .volatility-panel-sparse .volatility-head {{
+      margin-bottom: 4px;
     }}
     .volatility-title {{
       font-size: 12px;
@@ -1547,10 +1614,16 @@ def build_html(board: pd.DataFrame, market_panic: dict[str, Any] | None = None) 
     .volatility-panel-compact .volatility-value {{
       font-size: 22px;
     }}
+    .volatility-panel-sparse .volatility-value {{
+      font-size: 18px;
+    }}
     .volatility-date {{
       color: var(--muted);
       font-size: 12px;
       white-space: nowrap;
+    }}
+    .volatility-panel-sparse .volatility-date {{
+      font-size: 11px;
     }}
     .volatility-bar {{
       margin-top: 10px;

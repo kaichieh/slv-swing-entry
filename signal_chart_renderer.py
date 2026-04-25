@@ -360,7 +360,7 @@ def _render_signal_chart_script() -> str:
         "tooltip.style.display = 'block';"
         "tooltip.style.left = `${event.clientX}px`;"
         "tooltip.style.top = `${event.clientY}px`;"
-        "tooltip.textContent = `${row.buy_point_ok ? 'buy_point pass' : 'buy_point blocked'}\n${row.date}\nclose=${row.close}\nsignal=${row.signal}\nmodel_signal=${row.raw_model_signal}\nchart_mode=${mode}\np=${row.probability}\ngap=${row.confidence_gap}\n${row.rule_name}=${row.rule_selected ? 'yes' : 'no'}\nbuy_point_note=${row.buy_point_warnings || 'clean'}\nmodel_reason=${row.model_rationale}\nrule_reason=${row.rule_rationale}\nret_20=${row.ret_20}\nret_60=${row.ret_60}\ndrawdown_20=${row.drawdown_20}\nsma_gap_20=${row.sma_gap_20}\nrsi_14=${row.rsi_14}`;"
+        "tooltip.textContent = `${row.buy_point_ok ? 'buy_point pass' : 'buy_point blocked'}\n${row.date}\nclose=${row.close}\nsignal=${row.signal}\nmodel_signal=${row.raw_model_signal}\nchart_mode=${mode}\np=${row.probability}\ngap=${row.confidence_gap}\n${row.rule_name}=${row.rule_selected ? 'yes' : 'no'}\ndip_entry=${row.dip_entry_active ? 'yes' : 'no'}\nbuy_point_note=${row.buy_point_warnings || 'clean'}\nbuy_point_passes=${row.buy_point_passes || ''}\ndip_entry_passes=${row.dip_entry_passes || ''}\ndip_entry_warnings=${row.dip_entry_warnings || ''}\nmodel_reason=${row.model_rationale}\nrule_reason=${row.rule_rationale}\nret_20=${row.ret_20}\nret_60=${row.ret_60}\ndrawdown_20=${row.drawdown_20}\nsma_gap_20=${row.sma_gap_20}\nrsi_14=${row.rsi_14}\nclose_location_20=${row.close_location_20}\ndistance_from_60d_low=${row.distance_from_60d_low}`;"
         "});"
         "rect.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });"
         "barsLayer.appendChild(rect);"

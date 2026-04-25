@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-mu	MU	mu_tb30_ret_60_vol_ratio_20_120_top12_5	binary_live_model	execution_preference	inactive	watchlist_blocked	58	2026-04-17	0.5176	False	0.5077	2026-04-16	1	Preferred line clears threshold, but the buy-point overlay blocks entry today.
+mu	MU	mu_tb30_ret_60_vol_ratio_20_120_top12_5	binary_live_model	execution_preference	watchlist_ready	selected_now	26	2026-04-24	0.5479	True	0.5086	2026-04-24	0	Preferred line is currently selected.

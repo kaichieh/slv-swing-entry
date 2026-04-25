@@ -1,4 +1,4 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-ret_60_sma_gap_60_atr_pct_20	binary_watchlist	primary	True	watchlist_ready	48	2026-04-17	0.5032	True	0.486	2026-04-17	Best current NVDA watchlist candidate. Keep this return-gap line as the default lane.
+ret_60_sma_gap_60_atr_pct_20	binary_watchlist	primary	True	watchlist_ready	51	2026-04-24	0.503	True	0.486	2026-04-24	Best current NVDA watchlist candidate. Keep this return-gap line as the default lane.
 binary_top12_5	binary_watchlist	sidecar	False	secondary	6	2026-03-17	0.492579	False	0.512625	2026-02-25	Secondary NVDA watchlist candidate; keep for comparison rather than the default lane.
 binary_top10	binary_watchlist	sidecar	False	secondary	6	2026-03-17	0.492579	False	0.514794	2026-02-25	Secondary NVDA watchlist candidate; keep for comparison rather than the default lane.

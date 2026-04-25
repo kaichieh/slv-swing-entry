@@ -605,7 +605,66 @@ def assess_buy_point(snapshot: dict[str, float]) -> tuple[bool, list[str], list[
     return len(warnings) == 0, passes, warnings
 
 
-def apply_buy_point_overlay(signal: str, snapshot: dict[str, float], asset_key: str = "") -> tuple[str, dict[str, object]]:
+def _snapshot_float(snapshot: dict[str, float], key: str, default: float | None = None) -> float | None:
+    value = snapshot.get(key)
+    if value is None:
+        return default
+    return float(value)
+
+
+def _assess_dip_entry_overlay(
+    snapshot: dict[str, float],
+    *,
+    asset_key: str,
+    probability: float | None,
+    model_threshold: float | None,
+    buy_point_ok: bool,
+) -> tuple[bool, list[str], list[str]]:
+    settings = ac.get_live_dip_entry_overlay(asset_key)
+    if not bool(settings["enabled"]):
+        return False, [], []
+
+    passes: list[str] = []
+    warnings: list[str] = []
+    if not buy_point_ok:
+        warnings.append("base buy-point filter did not pass")
+
+    if probability is None or model_threshold is None:
+        warnings.append("model probability or threshold is missing")
+    elif probability >= model_threshold:
+        passes.append(f"model probability clears model threshold ({probability:.4f} >= {model_threshold:.4f})")
+    else:
+        warnings.append(f"model probability is below model threshold ({probability:.4f} < {model_threshold:.4f})")
+
+    checks = (
+        ("drawdown_20", float(settings["max_drawdown_20"]), "<=", "20d drawdown is deep enough"),
+        ("rsi_14", float(settings["max_rsi_14"]), "<=", "RSI is cool enough"),
+        ("ret_20", float(settings["max_ret_20"]), "<=", "20d return is not extended"),
+        ("sma_gap_20", float(settings["max_sma_gap_20"]), "<=", "price is not extended above 20d SMA"),
+        ("close_location_20", float(settings["max_close_location_20"]), "<=", "close is near the 20d range low"),
+        ("distance_from_60d_low", float(settings["max_distance_from_60d_low"]), "<=", "close is near the 60d low"),
+    )
+    for feature, limit, _op, pass_text in checks:
+        value = _snapshot_float(snapshot, feature)
+        if value is None:
+            warnings.append(f"{feature} is missing")
+            continue
+        if value <= limit:
+            passes.append(f"{pass_text} ({feature}={value:.4f})")
+        else:
+            warnings.append(f"{feature}={value:.4f} is above {limit:.4f}")
+
+    return len(warnings) == 0, passes, warnings
+
+
+def apply_buy_point_overlay(
+    signal: str,
+    snapshot: dict[str, float],
+    asset_key: str = "",
+    *,
+    probability: float | None = None,
+    model_threshold: float | None = None,
+) -> tuple[str, dict[str, object]]:
     buy_point_ok, passes, warnings = assess_buy_point(snapshot)
     adjusted_signal = signal
 
@@ -623,6 +682,20 @@ def apply_buy_point_overlay(signal: str, snapshot: dict[str, float], asset_key: 
         warnings = ["GLD term panic block active: recent VIX/VIX3M stress remains extreme"] + warnings
         buy_point_ok = False
 
+    dip_entry_active = False
+    dip_entry_passes: list[str] = []
+    dip_entry_warnings: list[str] = []
+    if not term_panic:
+        dip_entry_active, dip_entry_passes, dip_entry_warnings = _assess_dip_entry_overlay(
+            snapshot,
+            asset_key=asset_key,
+            probability=probability,
+            model_threshold=model_threshold,
+            buy_point_ok=buy_point_ok,
+        )
+        if dip_entry_active and signal in {"no_entry", "weak_bullish"}:
+            adjusted_signal = str(ac.get_live_dip_entry_overlay(asset_key)["signal"])
+
     if not buy_point_ok and not term_panic:
         if signal in {"very_strong_bullish", "strong_bullish"}:
             adjusted_signal = "bullish"
@@ -635,6 +708,9 @@ def apply_buy_point_overlay(signal: str, snapshot: dict[str, float], asset_key: 
         "buy_point_ok": buy_point_ok,
         "buy_point_passes": passes,
         "buy_point_warnings": warnings,
+        "dip_entry_active": dip_entry_active,
+        "dip_entry_passes": dip_entry_passes if dip_entry_active else [],
+        "dip_entry_warnings": dip_entry_warnings if dip_entry_active else [],
     }
 
 
@@ -770,7 +846,13 @@ def main() -> None:
     model_predicted_label = int(probability >= threshold)
     raw_signal, band_info = classify_signal(probability, float(execution_cutoff), historical_probabilities)
     model_signal, model_band_info = classify_signal(probability, float(threshold), historical_probabilities)
-    signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot, asset_key=asset_key)
+    signal, buy_point_summary = apply_buy_point_overlay(
+        raw_signal,
+        raw_snapshot,
+        asset_key=asset_key,
+        probability=probability,
+        model_threshold=float(threshold),
+    )
     rule_top_pct = get_rule_top_pct()
     rule_summary = summarize_rule(probability, historical_probabilities, rule_top_pct)
     model_rationale = build_model_rationale(raw_snapshot)
@@ -833,7 +915,17 @@ def main() -> None:
         "latest_feature_snapshot": {
             key: round(value, 4)
             for key, value in raw_snapshot.items()
-            if key in {"ret_20", "ret_60", "drawdown_20", "volume_vs_20", "rsi_14", "sma_gap_20", "sma_gap_60"}
+            if key in {
+                "ret_20",
+                "ret_60",
+                "drawdown_20",
+                "volume_vs_20",
+                "rsi_14",
+                "sma_gap_20",
+                "sma_gap_60",
+                "close_location_20",
+                "distance_from_60d_low",
+            }
         },
     }
     if live_operator_line_id:
@@ -903,7 +995,13 @@ def build_latest_prediction_output(context: Mapping[str, Any]) -> dict[str, obje
     model_predicted_label = int(probability >= threshold)
     raw_signal, band_info = classify_signal(probability, float(execution_cutoff), historical_probabilities)
     model_signal, model_band_info = classify_signal(probability, float(threshold), historical_probabilities)
-    signal, buy_point_summary = apply_buy_point_overlay(raw_signal, raw_snapshot, asset_key=asset_key)
+    signal, buy_point_summary = apply_buy_point_overlay(
+        raw_signal,
+        raw_snapshot,
+        asset_key=asset_key,
+        probability=probability,
+        model_threshold=float(threshold),
+    )
     rule_summary = summarize_rule(probability, historical_probabilities, rule_top_pct)
     model_rationale = build_model_rationale(raw_snapshot)
     rule_rationale = build_rule_rationale(probability, float(threshold), rule_summary)
@@ -964,7 +1062,17 @@ def build_latest_prediction_output(context: Mapping[str, Any]) -> dict[str, obje
         "latest_feature_snapshot": {
             key: round(value, 4)
             for key, value in raw_snapshot.items()
-            if key in {"ret_20", "ret_60", "drawdown_20", "volume_vs_20", "rsi_14", "sma_gap_20", "sma_gap_60"}
+            if key in {
+                "ret_20",
+                "ret_60",
+                "drawdown_20",
+                "volume_vs_20",
+                "rsi_14",
+                "sma_gap_20",
+                "sma_gap_60",
+                "close_location_20",
+                "distance_from_60d_low",
+            }
         },
     }
     if live_operator_line_id:

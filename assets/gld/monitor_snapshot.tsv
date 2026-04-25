@@ -1,2 +1,2 @@
 asset_key	symbol	preferred_line	lane_type	role	status	action	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	days_since_last_selected	action_note
-gld	GLD	gld_current_live_mixed_live	binary_operator	primary	inactive	watchlist_wait	37	2026-04-17	0.4814	False	0.492	2026-04-15	2	Preferred line is valid but currently waiting below cutoff.
+gld	GLD	gld_current_live_mixed_live	binary_operator	primary	inactive	watchlist_blocked	37	2026-04-24	0.4996	False	0.493	2026-04-23	1	Preferred line clears threshold, but the buy-point overlay blocks entry today.

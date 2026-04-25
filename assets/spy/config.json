@@ -4,5 +4,15 @@
   "horizon_days": 60,
   "upper_barrier": 0.08,
   "lower_barrier": -0.04,
-  "label_mode": "drop-neutral"
+  "label_mode": "drop-neutral",
+  "live_dip_entry_overlay": {
+    "enabled": true,
+    "signal": "early_entry",
+    "max_rsi_14": 45.0,
+    "max_drawdown_20": -0.08,
+    "max_ret_20": 0.02,
+    "max_sma_gap_20": 0.01,
+    "max_close_location_20": 0.25,
+    "max_distance_from_60d_low": 0.08
+  }
 }

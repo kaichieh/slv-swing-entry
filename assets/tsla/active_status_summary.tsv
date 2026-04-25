@@ -1,2 +1,2 @@
 line_id	lane_type	role	preferred	status	recent_selected_count	latest_date	latest_value	latest_selected	cutoff	last_selected_date	usage_note
-xgboost_tb30_distance_live	binary_live_model	execution_preference	True	inactive	3	2026-04-17	0.3546	False	0.697	2026-04-08	Primary TSLA live line stays on the adopted tuned XGBoost TB30 distance_to_252_high strategy.
+xgboost_tb30_distance_live	binary_live_model	execution_preference	True	inactive	1	2026-04-24	0.3214	False	0.699	2026-04-08	Primary TSLA live line stays on the adopted tuned XGBoost TB30 distance_to_252_high strategy.

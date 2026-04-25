@@ -156,8 +156,8 @@ def validate_latest_signal_cache(payload: dict[str, object], signal_rows: pd.Dat
             if _rounded_or_none(actual, digits) != _rounded_or_none(expected, digits):
                 mismatches.append(f"{field_name} row={actual} payload={expected}")
             continue
-        actual_text = fmt_date(actual) if field_name == "date" else str(actual).strip()
-        expected_text = fmt_date(expected) if field_name == "date" else str(expected).strip()
+        actual_text = fmt_date(actual) if field_name == "date" else ("" if actual_missing else str(actual).strip())
+        expected_text = fmt_date(expected) if field_name == "date" else ("" if expected_missing else str(expected).strip())
         if actual_text != expected_text:
             mismatches.append(f"{field_name} row={actual_text} payload={expected_text}")
 

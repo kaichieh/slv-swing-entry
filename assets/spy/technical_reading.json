@@ -1,12 +1,12 @@
 {
   "symbol": "SPY",
   "asset_key": "spy",
-  "date": "2026-04-17",
+  "date": "2026-04-24",
   "technical_reading": {
-    "A_trend": "bullish",
+    "A_trend": "sideways",
     "B_price_vs_ma": "above",
     "C_rsi_state": "overbought",
-    "D_kd_state": "death_cross",
+    "D_kd_state": "golden_cross",
     "E_levels": [
       {
         "type": "support",
@@ -16,30 +16,30 @@
       },
       {
         "type": "support",
-        "level": 666.63,
+        "level": 680.99,
         "strength": "medium",
         "status": "holding"
       },
       {
         "type": "resistance",
-        "level": 712.38,
+        "level": 714.47,
         "strength": "medium",
         "status": "tested"
       }
     ],
     "F_volume_state": "contracting_on_rise",
     "G_ma_structure": "bullish_alignment",
-    "H_macd_state": "bullish_expanding",
+    "H_macd_state": "bullish_contracting",
     "I_divergence_state": "none",
-    "J_candlestick_pattern": "long_bullish_candle",
+    "J_candlestick_pattern": "none",
     "K_trade_action": "wait",
     "L_price_volume_divergence": "bearish_volume_divergence"
   },
   "technical_reading_zh": {
-    "A_trend": "多頭",
+    "A_trend": "震盪",
     "B_price_vs_ma": "在均線上方",
     "C_rsi_state": "過熱／超買",
-    "D_kd_state": "死亡交叉",
+    "D_kd_state": "黃金交叉",
     "E_levels": [
       {
         "type": "support",
@@ -53,7 +53,7 @@
       {
         "type": "support",
         "type_zh": "支撐",
-        "level": 666.63,
+        "level": 680.99,
         "strength": "medium",
         "strength_zh": "中",
         "status": "holding",
@@ -62,7 +62,7 @@
       {
         "type": "resistance",
         "type_zh": "壓力",
-        "level": 712.38,
+        "level": 714.47,
         "strength": "medium",
         "strength_zh": "中",
         "status": "tested",
@@ -71,22 +71,22 @@
     ],
     "F_volume_state": "上漲縮量",
     "G_ma_structure": "均線多頭排列",
-    "H_macd_state": "多方柱狀體擴大",
+    "H_macd_state": "多方柱狀體縮小",
     "I_divergence_state": "無",
-    "J_candlestick_pattern": "長紅K",
+    "J_candlestick_pattern": "無明確型態",
     "K_trade_action": "觀望",
     "L_price_volume_divergence": "偏空價量背離"
   },
   "supporting_metrics": {
-    "latest_close": 710.45,
-    "ret_20": 0.0768,
-    "ret_60": 0.0365,
-    "sma_gap_20": 0.0657,
-    "sma_gap_60": 0.0481,
+    "latest_close": 713.94,
+    "ret_20": 0.1067,
+    "ret_60": 0.0266,
+    "sma_gap_20": 0.0484,
+    "sma_gap_60": 0.0511,
     "drawdown_20": 0.0,
-    "rsi_14": 96.8464,
-    "volume_vs_20": -0.4533,
-    "predicted_probability": 0.4572,
+    "rsi_14": 87.3964,
+    "volume_vs_20": -0.3396,
+    "predicted_probability": 0.4673,
     "decision_threshold": 0.443,
     "monitor_action": "reference_only"
   },

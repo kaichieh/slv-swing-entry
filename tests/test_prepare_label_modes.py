@@ -41,11 +41,31 @@ class PrepareLabelModeTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as temp_dir:
             cache_path = Path(temp_dir) / "nested" / "gld.csv"
-            with mock.patch.object(prepare, "download_prices_from_yahoo", return_value=frame):
+            with mock.patch.object(prepare, "download_prices_from_yfinance", return_value=frame):
                 saved = prepare.download_symbol_prices("GLD", "unused", str(cache_path))
 
             self.assertTrue(cache_path.exists())
             self.assertEqual(len(saved), 3)
+
+    def test_download_symbol_prices_falls_back_to_direct_yahoo_when_yfinance_fails(self) -> None:
+        frame = pd.DataFrame(
+            {
+                "date": pd.date_range("2020-01-01", periods=3, freq="D"),
+                "open": [1.0, 2.0, 3.0],
+                "high": [1.1, 2.1, 3.1],
+                "low": [0.9, 1.9, 2.9],
+                "close": [1.0, 2.0, 3.0],
+                "volume": [100.0, 200.0, 300.0],
+            }
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "fallback.csv"
+            with mock.patch.object(prepare, "download_prices_from_yfinance", side_effect=TimeoutError):
+                with mock.patch.object(prepare, "download_prices_from_yahoo", return_value=frame) as direct_yahoo:
+                    saved = prepare.download_symbol_prices("GLD", "unused", str(cache_path))
+
+        direct_yahoo.assert_called_once_with("GLD")
+        self.assertEqual(len(saved), 3)
 
     def test_download_symbol_prices_uses_cached_csv_when_stooq_parse_fails(self) -> None:
         cached = pd.DataFrame(
@@ -62,9 +82,10 @@ class PrepareLabelModeTests(unittest.TestCase):
             cache_path = Path(temp_dir) / "cached.csv"
             cached.to_csv(cache_path, index=False)
 
-            with mock.patch.object(prepare, "download_prices_from_yahoo", side_effect=TimeoutError):
-                with mock.patch.object(prepare, "download_prices_from_stooq", side_effect=pd.errors.ParserError("bad csv")):
-                    saved = prepare.download_symbol_prices("GLD", "unused", str(cache_path))
+            with mock.patch.object(prepare, "download_prices_from_yfinance", side_effect=TimeoutError):
+                with mock.patch.object(prepare, "download_prices_from_yahoo", side_effect=TimeoutError):
+                    with mock.patch.object(prepare, "download_prices_from_stooq", side_effect=pd.errors.ParserError("bad csv")):
+                        saved = prepare.download_symbol_prices("GLD", "unused", str(cache_path))
 
         self.assertEqual(len(saved), 3)
         self.assertEqual(list(saved["close"]), [1.0, 2.0, 3.0])
@@ -84,13 +105,14 @@ class PrepareLabelModeTests(unittest.TestCase):
             cache_path = Path(temp_dir) / "cached.csv"
             cached.to_csv(cache_path, index=False)
 
-            with mock.patch.object(prepare, "download_prices_from_yahoo", side_effect=TimeoutError):
-                with mock.patch.object(
-                    prepare,
-                    "download_prices_from_stooq",
-                    side_effect=RuntimeError("Downloaded dataset missing columns: ['open']"),
-                ):
-                    saved = prepare.download_symbol_prices("GLD", "unused", str(cache_path))
+            with mock.patch.object(prepare, "download_prices_from_yfinance", side_effect=TimeoutError):
+                with mock.patch.object(prepare, "download_prices_from_yahoo", side_effect=TimeoutError):
+                    with mock.patch.object(
+                        prepare,
+                        "download_prices_from_stooq",
+                        side_effect=RuntimeError("Downloaded dataset missing columns: ['open']"),
+                    ):
+                        saved = prepare.download_symbol_prices("GLD", "unused", str(cache_path))
 
         self.assertEqual(len(saved), 3)
         self.assertEqual(list(saved["close"]), [7.0, 8.0, 9.0])
@@ -110,9 +132,10 @@ class PrepareLabelModeTests(unittest.TestCase):
             cache_path = Path(temp_dir) / "cached.csv"
             cached.to_csv(cache_path, index=False)
 
-            with mock.patch.object(prepare, "download_prices_from_yahoo", side_effect=RemoteDisconnected("closed")):
-                with mock.patch.object(prepare, "download_prices_from_stooq", side_effect=TimeoutError):
-                    saved = prepare.download_symbol_prices("GLD", "unused", str(cache_path))
+            with mock.patch.object(prepare, "download_prices_from_yfinance", side_effect=RemoteDisconnected("closed")):
+                with mock.patch.object(prepare, "download_prices_from_yahoo", side_effect=RemoteDisconnected("closed")):
+                    with mock.patch.object(prepare, "download_prices_from_stooq", side_effect=TimeoutError):
+                        saved = prepare.download_symbol_prices("GLD", "unused", str(cache_path))
 
         self.assertEqual(len(saved), 3)
         self.assertEqual(list(saved["close"]), [4.0, 5.0, 6.0])

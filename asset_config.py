@@ -221,6 +221,28 @@ def get_live_term_panic_settings(asset_key: str | None = None) -> dict[str, obje
     }
 
 
+def get_live_dip_entry_overlay(asset_key: str | None = None) -> dict[str, object]:
+    config = load_asset_config(asset_key)
+    raw = config.get("live_dip_entry_overlay", {})
+    if not isinstance(raw, dict):
+        raw = {}
+
+    def get_float(name: str, default: float) -> float:
+        value = raw.get(name, default)
+        return float(cast(float | int | str, value))
+
+    return {
+        "enabled": bool(raw.get("enabled", False)),
+        "signal": str(raw.get("signal", "early_entry")).strip() or "early_entry",
+        "max_rsi_14": get_float("max_rsi_14", 45.0),
+        "max_drawdown_20": get_float("max_drawdown_20", -0.08),
+        "max_ret_20": get_float("max_ret_20", 0.02),
+        "max_sma_gap_20": get_float("max_sma_gap_20", 0.01),
+        "max_close_location_20": get_float("max_close_location_20", 0.25),
+        "max_distance_from_60d_low": get_float("max_distance_from_60d_low", 0.12),
+    }
+
+
 def get_live_mixed_signature(asset_key: str | None = None) -> dict[str, object]:
     config = load_asset_config(asset_key)
     return {

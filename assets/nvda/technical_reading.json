@@ -1,7 +1,7 @@
 {
   "symbol": "NVDA",
   "asset_key": "nvda",
-  "date": "2026-04-17",
+  "date": "2026-04-24",
   "technical_reading": {
     "A_trend": "bullish",
     "B_price_vs_ma": "above",
@@ -16,24 +16,24 @@
       },
       {
         "type": "support",
-        "level": 181.38,
+        "level": 188.38,
         "strength": "medium",
         "status": "holding"
       },
       {
         "type": "resistance",
-        "level": 201.68,
+        "level": 210.95,
         "strength": "medium",
         "status": "tested"
       }
     ],
-    "F_volume_state": "contracting_on_rise",
+    "F_volume_state": "expanding_on_rise",
     "G_ma_structure": "bullish_alignment",
-    "H_macd_state": "bullish_contracting",
+    "H_macd_state": "bullish_expanding",
     "I_divergence_state": "none",
-    "J_candlestick_pattern": "none",
+    "J_candlestick_pattern": "long_bullish_candle",
     "K_trade_action": "buy_pullback",
-    "L_price_volume_divergence": "bearish_volume_divergence"
+    "L_price_volume_divergence": "price_volume_confirmed"
   },
   "technical_reading_zh": {
     "A_trend": "多頭",
@@ -53,7 +53,7 @@
       {
         "type": "support",
         "type_zh": "支撐",
-        "level": 181.38,
+        "level": 188.38,
         "strength": "medium",
         "strength_zh": "中",
         "status": "holding",
@@ -62,31 +62,31 @@
       {
         "type": "resistance",
         "type_zh": "壓力",
-        "level": 201.68,
+        "level": 210.95,
         "strength": "medium",
         "strength_zh": "中",
         "status": "tested",
         "status_zh": "測試中"
       }
     ],
-    "F_volume_state": "上漲縮量",
+    "F_volume_state": "上漲放量",
     "G_ma_structure": "均線多頭排列",
-    "H_macd_state": "多方柱狀體縮小",
+    "H_macd_state": "多方柱狀體擴大",
     "I_divergence_state": "無",
-    "J_candlestick_pattern": "無明確型態",
+    "J_candlestick_pattern": "長紅K",
     "K_trade_action": "等回檔買進",
-    "L_price_volume_divergence": "偏空價量背離"
+    "L_price_volume_divergence": "價量配合確認"
   },
   "supporting_metrics": {
-    "latest_close": 200.47,
-    "ret_20": 0.1227,
-    "ret_60": 0.0936,
-    "sma_gap_20": 0.1053,
-    "sma_gap_60": 0.0909,
+    "latest_close": 208.27,
+    "ret_20": 0.2162,
+    "ret_60": 0.0875,
+    "sma_gap_20": 0.1056,
+    "sma_gap_60": 0.1257,
     "drawdown_20": 0.0,
-    "rsi_14": 92.5821,
-    "volume_vs_20": -0.3301,
-    "predicted_probability": 0.5032,
+    "rsi_14": 86.6827,
+    "volume_vs_20": 0.4154,
+    "predicted_probability": 0.503,
     "decision_threshold": 0.486,
     "monitor_action": "selected_now"
   },
